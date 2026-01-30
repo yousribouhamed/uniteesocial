@@ -508,59 +508,67 @@ function CreateEventView({ onClose }: { onClose: () => void }) {
 // --- Event Card Component ---
 function EventCard({ event }: { event: EventItem }) {
   return (
-    <div className="flex flex-col gap-2 flex-1 min-w-0">
-      {/* Cover Image */}
-      <div className="relative w-full h-[200px] rounded-xl overflow-hidden bg-[#d5dde2]">
-        <Image
-          src={event.coverImage}
-          alt={event.title}
-          fill
-          className="object-cover"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.style.display = "none";
-          }}
-        />
-        {/* 3-dot menu */}
-        <button className="absolute top-2 right-2 w-6 h-6 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
-          <MoreVertical className="w-3.5 h-3.5 text-[#516778]" />
-        </button>
-      </div>
+    <div className="bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col gap-4">
+        {/* Cover Image */}
+        <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d9d9d9]">
+          <Image
+            src={event.coverImage}
+            alt={event.title}
+            fill
+            className="object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = "none";
+            }}
+          />
+          {/* 3-dot menu */}
+          <button className="absolute top-1.5 right-1.5 w-6 h-6 bg-[#d8e6ff] rounded-full flex items-center justify-center hover:bg-[#c5d8f7] transition-colors">
+            <MoreVertical className="w-3.5 h-3.5 text-white" />
+          </button>
+        </div>
 
-      {/* Title */}
-      <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
-        {event.title}
-      </h3>
+        {/* Content */}
+        <div className="flex flex-col gap-4">
+          {/* Title + Badges */}
+          <div className="flex flex-col gap-2">
+            <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
+              {event.title}
+            </h3>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1 h-[22px] px-2 bg-[#22292f] text-white text-xs font-normal rounded">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 0L6.12 3.88L10 5L6.12 6.12L5 10L3.88 6.12L0 5L3.88 3.88L5 0Z" fill="white"/>
+                </svg>
+                {event.chapter}
+              </span>
+              <span className="inline-flex items-center h-[22px] px-2 bg-[#22292f] text-white text-xs font-normal rounded">
+                {event.type}
+              </span>
+              {event.date && (
+                <span className="text-sm font-normal text-[#516778] leading-[18px]">
+                  {event.date}
+                </span>
+              )}
+            </div>
+          </div>
 
-      {/* Badges + optional date */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
-          {event.chapter}
-        </span>
-        <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
-          {event.type}
-        </span>
-        {event.date && (
-          <span className="text-sm font-normal text-[#516778] leading-[18px]">
-            {event.date}
-          </span>
-        )}
-      </div>
-
-      {/* Location */}
-      <div className="flex items-center gap-2">
-        <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
-        <span className="text-sm font-normal text-[#22292f] leading-[18px]">
-          {event.location}
-        </span>
-      </div>
-
-      {/* Sign-ups */}
-      <div className="flex items-center gap-2">
-        <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
-        <span className="text-sm font-normal text-[#22292f] leading-[18px]">
-          {event.signups}/{event.maxSignups}
-        </span>
+          {/* Location + Signups */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
+              <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                {event.location}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
+              <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                {event.signups}/{event.maxSignups}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
