@@ -771,7 +771,7 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
                   <div key={dateGroup} className="flex flex-col gap-4">
                     {/* Date Group Header */}
                     <div className="flex items-center gap-4">
-                      <span className="text-sm font-semibold text-[#3f52ff] leading-[18px] whitespace-nowrap">
+                      <span className="text-sm font-semibold text-[#516778] leading-[18px] whitespace-nowrap">
                         {dateGroup}
                       </span>
                       <div className="flex-1 h-px bg-[#d5dde2]" />
