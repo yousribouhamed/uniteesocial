@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { AriaSwitch } from "@/components/ui/aria-switch";
 import { motion } from "framer-motion";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import {
@@ -33,6 +34,11 @@ import {
   ChevronLeft,
   ChevronUp,
   ExternalLink,
+  Calendar, // Added for ModuleItem
+  Ticket, // Added for ModuleItem
+  CalendarDays, // Added for ModuleItem
+  MessageSquare, // Added for ModuleItem
+  Users, // Added for ModuleItem
 } from "lucide-react";
 import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 
@@ -693,41 +699,19 @@ function BrandingContent({ initialData }: { initialData?: any }) {
   );
 }
 
-// --- Toggle Switch Component ---
-function ToggleSwitch({
-  enabled,
-  onToggle,
-}: {
-  enabled: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      onClick={onToggle}
-      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${enabled ? "bg-[#3f52ff]" : "bg-[#d5dde2]"
-        }`}
-    >
-      <span
-        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ${enabled ? "translate-x-[18px] ml-0.5" : "translate-x-0 ml-0.5"
-          }`}
-      />
-    </button>
-  );
-}
-
 // --- Radio Option Component ---
 function RadioOption({
   label,
   selected,
-  onSelect,
+  onClick, // Changed from onSelect to onClick for consistency with button
 }: {
   label: string;
   selected: boolean;
-  onSelect: () => void;
+  onClick: () => void; // Changed from onSelect to onClick
 }) {
   return (
     <button
-      onClick={onSelect}
+      onClick={onClick} // Changed from onSelect to onClick
       className="flex items-center gap-2 cursor-pointer"
     >
       <div
@@ -745,46 +729,31 @@ function RadioOption({
 
 // --- Module Item Component ---
 function ModuleItem({
-  title,
+  icon, // New prop
+  label, // New prop
   description,
-  enabled,
-  onToggle,
-  radioOptions,
-  selectedRadio,
-  onRadioSelect,
+  action, // New prop, replaces enabled, onToggle, radioOptions, selectedRadio, onRadioSelect
 }: {
-  title: string;
+  icon: React.ReactNode; // New prop
+  label: string; // New prop
   description: string;
-  enabled: boolean;
-  onToggle: () => void;
-  radioOptions?: string[];
-  selectedRadio?: number;
-  onRadioSelect?: (index: number) => void;
+  action: React.ReactNode; // New prop
 }) {
   return (
-    <>
-      <div className="flex items-center justify-between w-full">
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center gap-3"> {/* Added flex container for icon and text */}
+        <div className="w-8 h-8 rounded-lg bg-[#f9fafb] border border-[#d5dde2] flex items-center justify-center shrink-0">
+          {icon}
+        </div>
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-semibold text-[#22292f]">{title}</span>
+          <span className="text-sm font-semibold text-[#22292f]">{label}</span>
           <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
             {description}
           </span>
         </div>
-        <ToggleSwitch enabled={enabled} onToggle={onToggle} />
       </div>
-      {enabled && radioOptions && (
-        <div className="bg-[#eceff2] rounded-lg p-2 flex flex-col gap-2 w-full">
-          {radioOptions.map((option, i) => (
-            <RadioOption
-              key={option}
-              label={option}
-              selected={selectedRadio === i}
-              onSelect={() => onRadioSelect?.(i)}
-            />
-          ))}
-        </div>
-      )}
-    </>
+      {action}
+    </div>
   );
 }
 
@@ -1033,54 +1002,80 @@ function ModulesContent({ initialData }: { initialData?: any }) {
     }
   };
 
-  const toggleModule = (key: keyof typeof modules) => {
-    setModules((prev) => ({ ...prev, [key]: !prev[key] }));
+  const updateModule = (key: keyof typeof modules) => (checked: boolean) => {
+    setModules((prev) => ({ ...prev, [key]: checked }));
   };
 
   return (
-    <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-2 items-start">
-      <ModuleItem
-        title="Events"
-        description="Manage event listings and availability"
-        enabled={modules.events}
-        onToggle={() => toggleModule("events")}
-      />
-      <ModuleItem
-        title="Tickets"
-        description="Display upcoming events in a unified calendar"
-        enabled={modules.tickets}
-        onToggle={() => toggleModule("tickets")}
-      />
-      <ModuleItem
-        title="Calendar View"
-        description="Allow users to browse and connect with members"
-        enabled={modules.calendarView}
-        onToggle={() => toggleModule("calendarView")}
-      />
-      <ModuleItem
-        title="Chat"
-        description="Allow users to browse and connect with members"
-        enabled={modules.chat}
-        onToggle={() => toggleModule("chat")}
-      />
-      <ModuleItem
-        title="Explore Members"
-        description="Allow users to discover and connect with companies"
-        enabled={modules.exploreMembers}
-        onToggle={() => toggleModule("exploreMembers")}
-        radioOptions={["Option 1", "Option 2"]}
-        selectedRadio={exploreMembersRadio}
-        onRadioSelect={setExploreMembersRadio}
-      />
-      <ModuleItem
-        title="Explore Company"
-        description="Opportunities to connect with professionals"
-        enabled={modules.exploreCompany}
-        onToggle={() => toggleModule("exploreCompany")}
-        radioOptions={["Option 1", "Option 2"]}
-        selectedRadio={exploreCompanyRadio}
-        onRadioSelect={setExploreCompanyRadio}
-      />
+    <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
+        <ModuleItem
+          icon={<Calendar className="w-4 h-4 text-[#71717b]" />}
+          label="Events"
+          description="Create and manage events"
+          action={<AriaSwitch isSelected={modules.events} onChange={updateModule("events")} />}
+        />
+        <ModuleItem
+          icon={<Ticket className="w-4 h-4 text-[#71717b]" />}
+          label="Tickets"
+          description="Sell tickets for events"
+          action={<AriaSwitch isSelected={modules.tickets} onChange={updateModule("tickets")} />}
+        />
+        <ModuleItem
+          icon={<CalendarDays className="w-4 h-4 text-[#71717b]" />}
+          label="Calendar View"
+          description="Display events in a calendar view"
+          action={<AriaSwitch isSelected={modules.calendarView} onChange={updateModule("calendarView")} />}
+        />
+        <ModuleItem
+          icon={<MessageSquare className="w-4 h-4 text-[#71717b]" />}
+          label="Chat"
+          description="Enable chat for events"
+          action={<AriaSwitch isSelected={modules.chat} onChange={updateModule("chat")} />}
+        />
+        <ModuleItem
+          icon={<Users className="w-4 h-4 text-[#71717b]" />}
+          label="Explore Members"
+          description="Allow members to explore other members"
+          action={
+            <div className="flex items-center gap-4">
+              <RadioOption
+                selected={exploreMembersRadio === 0}
+                onClick={() => setExploreMembersRadio(0)}
+                label="All"
+              />
+              <RadioOption
+                selected={exploreMembersRadio === 1}
+                onClick={() => setExploreMembersRadio(1)}
+                label="City Only"
+              />
+              <div className="h-6 w-px bg-[#d5dde2] mx-2" />
+              <AriaSwitch isSelected={modules.exploreMembers} onChange={updateModule("exploreMembers")} />
+            </div>
+          }
+        />
+        <ModuleItem
+          icon={<Building2 className="w-4 h-4 text-[#71717b]" />}
+          label="Explore Company"
+          description="Allow members to explore companies"
+          action={
+            <div className="flex items-center gap-4">
+              <RadioOption
+                selected={exploreCompanyRadio === 0}
+                onClick={() => setExploreCompanyRadio(0)}
+                label="All"
+              />
+              <RadioOption
+                selected={exploreCompanyRadio === 1}
+                onClick={() => setExploreCompanyRadio(1)}
+                label="City Only"
+              />
+              <div className="h-6 w-px bg-[#d5dde2] mx-2" />
+              <AriaSwitch isSelected={modules.exploreCompany} onChange={updateModule("exploreCompany")} />
+            </div>
+          }
+        />
+      </div>
 
       {/* Divider */}
       <div className="h-px bg-[#d5dde2] w-full mt-2" />
@@ -1794,30 +1789,30 @@ function ViewChapterPanel({
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#22292f]">Enable Notifications</span>
-              <ToggleSwitch
-                enabled={notifications.enableNotifications}
-                onToggle={() => toggleNotification("enableNotifications")}
+              <AriaSwitch
+                isSelected={notifications.enableNotifications}
+                onChange={() => toggleNotification("enableNotifications")}
               />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#22292f]">Auto-Notify New Events</span>
-              <ToggleSwitch
-                enabled={notifications.autoNotifyNewEvents}
-                onToggle={() => toggleNotification("autoNotifyNewEvents")}
+              <AriaSwitch
+                isSelected={notifications.autoNotifyNewEvents}
+                onChange={() => toggleNotification("autoNotifyNewEvents")}
               />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#22292f]">Auto-Notify New Updates</span>
-              <ToggleSwitch
-                enabled={notifications.autoNotifyNewUpdates}
-                onToggle={() => toggleNotification("autoNotifyNewUpdates")}
+              <AriaSwitch
+                isSelected={notifications.autoNotifyNewUpdates}
+                onChange={() => toggleNotification("autoNotifyNewUpdates")}
               />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#22292f]">Auto-Notify Announcements</span>
-              <ToggleSwitch
-                enabled={notifications.autoNotifyAnnouncements}
-                onToggle={() => toggleNotification("autoNotifyAnnouncements")}
+              <AriaSwitch
+                isSelected={notifications.autoNotifyAnnouncements}
+                onChange={() => toggleNotification("autoNotifyAnnouncements")}
               />
             </div>
           </div>
@@ -2169,9 +2164,9 @@ function ChaptersContent() {
                     </td>
                     {/* Visible Toggle */}
                     <td className="px-3 py-3">
-                      <ToggleSwitch
-                        enabled={visibleStates[chapter.code]}
-                        onToggle={() => toggleVisible(chapter.code)}
+                      <AriaSwitch
+                        isSelected={visibleStates[chapter.code]}
+                        onChange={() => toggleVisible(chapter.code)}
                       />
                     </td>
                     {/* Status */}

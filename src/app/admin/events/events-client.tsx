@@ -20,6 +20,8 @@ import {
 import AdminSidebar from "@/components/admin-sidebar";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Suspense } from "react";
+import { AriaDatePicker } from "@/components/ui/aria-date-picker";
+import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
 
 // --- Types ---
 interface EventItem {
@@ -151,9 +153,9 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
   const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
   const [chapter, setChapter] = useState(event?.chapter || "Dubai Chapter");
   const [type, setType] = useState<"Onsite" | "Online" | "Hybrid">(event?.type || "Onsite");
-  const [startDate, setStartDate] = useState(event?.dateGroup || "lun. 24 nov.");
+  const [startDate, setStartDate] = useState<DateValue | null>(today(getLocalTimeZone()));
   const [startTime, setStartTime] = useState("00:00");
-  const [endDate, setEndDate] = useState("lun. 24 nov.");
+  const [endDate, setEndDate] = useState<DateValue | null>(today(getLocalTimeZone()));
   const [endTime, setEndTime] = useState("02:00");
   const [locationInput, setLocationInput] = useState(event?.location || "");
   const [geoFenceRadius, setGeoFenceRadius] = useState(650);
@@ -178,8 +180,18 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
     }
   };
 
-  // Helper to parse day and month from startDate string for the widget
-  const getDayAndMonth = (dateStr: string) => {
+  const getDayAndMonth = (date: DateValue | null | string) => {
+    if (!date) return { day: "25", month: "OCT." };
+
+    if (typeof date === 'object' && 'day' in date) {
+      const monthNames = ["JAN.", "FEV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOU.", "SEP.", "OCT.", "NOV.", "DEC."];
+      return {
+        day: date.day.toString(),
+        month: monthNames[date.month - 1]
+      };
+    }
+
+    const dateStr = date as string;
     const dayMatch = dateStr.match(/\d+/);
     const day = dayMatch ? dayMatch[0] : "25";
 
@@ -335,7 +347,7 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-base font-medium text-[#22292f] leading-none">{startDate}</span>
+                    <span className="text-base font-medium text-[#22292f] leading-none">{startDate?.toString()}</span>
                     <span className="text-sm font-normal text-[#859bab] leading-[21px] mt-1">{startTime} - {endTime} UTC+4</span>
                   </div>
                 </div>
@@ -406,13 +418,10 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                   </div>
                   <span className="text-sm font-semibold text-[#22292f]">Start</span>
                 </div>
-                <div className="flex gap-1">
-                  <input
-                    type="text"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="bg-[#d8e6ff] rounded-lg px-3 py-2 text-base font-normal text-[#22292f] w-[136px] outline-none"
-                  />
+                <div className="flex gap-1 items-center">
+                  <div className="w-[136px]">
+                    <AriaDatePicker value={startDate} onChange={setStartDate} />
+                  </div>
                   <input
                     type="text"
                     value={startTime}
@@ -442,13 +451,10 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                   </div>
                   <span className="text-sm font-semibold text-[#22292f]">End</span>
                 </div>
-                <div className="flex gap-1">
-                  <input
-                    type="text"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="bg-[#d8e6ff] rounded-lg px-3 py-2 text-base font-normal text-[#22292f] w-[136px] outline-none"
-                  />
+                <div className="flex gap-1 items-center">
+                  <div className="w-[136px]">
+                    <AriaDatePicker value={endDate} onChange={setEndDate} />
+                  </div>
                   <input
                     type="text"
                     value={endTime}
@@ -585,8 +591,8 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                 location: locationInput,
                 signups: event?.signups || 0,
                 maxSignups: event?.maxSignups || 300,
-                dateGroup: startDate, // Using start date as date group for now
-                date: startDate,
+                dateGroup: startDate?.toString() || "", // Using start date as date group for now
+                date: startDate?.toString(),
               };
               onSave(savedEvent);
             }}
