@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import {
   Bell,
   Building2,
@@ -78,11 +79,10 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
                 <button
                   key={tab}
                   onClick={() => setActiveTopTab(tab)}
-                  className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${
-                    activeTopTab === tab
+                  className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTopTab === tab
                       ? "text-[#3f52ff]"
                       : "text-[#516778] hover:text-[#22292f]"
-                  }`}
+                    }`}
                 >
                   {activeTopTab === tab && (
                     <motion.div
@@ -121,11 +121,10 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
                       <button
                         key={tab}
                         onClick={() => setActiveInnerTab(tab)}
-                        className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${
-                          activeInnerTab === tab
+                        className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeInnerTab === tab
                             ? "text-[#3f52ff]"
                             : "text-[#516778] hover:text-[#22292f]"
-                        }`}
+                          }`}
                       >
                         {activeInnerTab === tab && (
                           <motion.div
@@ -587,14 +586,12 @@ function ToggleSwitch({
   return (
     <button
       onClick={onToggle}
-      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${
-        enabled ? "bg-[#3f52ff]" : "bg-[#d5dde2]"
-      }`}
+      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${enabled ? "bg-[#3f52ff]" : "bg-[#d5dde2]"
+        }`}
     >
       <span
-        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ${
-          enabled ? "translate-x-[18px] ml-0.5" : "translate-x-0 ml-0.5"
-        }`}
+        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ${enabled ? "translate-x-[18px] ml-0.5" : "translate-x-0 ml-0.5"
+          }`}
       />
     </button>
   );
@@ -616,11 +613,10 @@ function RadioOption({
       className="flex items-center gap-2 cursor-pointer"
     >
       <div
-        className={`w-4 h-4 rounded-full border flex items-center justify-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] ${
-          selected
+        className={`w-4 h-4 rounded-full border flex items-center justify-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] ${selected
             ? "bg-[#173254] border-[#173254]"
             : "bg-white border-[#d5dde2]"
-        }`}
+          }`}
       >
         {selected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
       </div>
@@ -947,9 +943,8 @@ function StatCard({
 }) {
   return (
     <div
-      className={`flex-1 bg-white border border-[#d5dde2] p-4 flex items-center justify-between -mr-px ${
-        isFirst ? "rounded-l-lg" : ""
-      } ${isLast ? "rounded-r-lg" : ""}`}
+      className={`flex-1 bg-white border border-[#d5dde2] p-4 flex items-center justify-between -mr-px ${isFirst ? "rounded-l-lg" : ""
+        } ${isLast ? "rounded-r-lg" : ""}`}
     >
       <div className="flex items-center gap-2">
         <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7px] flex items-center justify-center">
@@ -1107,11 +1102,10 @@ function TeamTabContent() {
                         setSelectedRole(role);
                         setShowRoleDropdown(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-[#f5f5f5] transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                        selectedRole === role
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-[#f5f5f5] transition-colors first:rounded-t-lg last:rounded-b-lg ${selectedRole === role
                           ? "text-[#3f52ff] font-medium"
                           : "text-[#22292f]"
-                      }`}
+                        }`}
                     >
                       {role}
                     </button>
@@ -1203,11 +1197,10 @@ function TeamMemberCard({
                       onRoleChange(role);
                       setShowDropdown(false);
                     }}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-[#f5f5f5] transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                      member.role === role
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-[#f5f5f5] transition-colors first:rounded-t-lg last:rounded-b-lg ${member.role === role
                         ? "text-[#3f52ff] font-medium"
                         : "text-[#22292f]"
-                    }`}
+                      }`}
                   >
                     {role}
                   </button>
@@ -1260,11 +1253,10 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${
-              activeTab === tab
+            className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
                 ? "text-[#3f52ff]"
                 : "text-[#516778] hover:text-[#22292f]"
-            }`}
+              }`}
           >
             {activeTab === tab && (
               <motion.div
@@ -1685,11 +1677,64 @@ function ViewChapterPanel({
   );
 }
 
+function ChapterActionMenu({
+  onView,
+  onEdit,
+  onDelete,
+}: {
+  onView: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <Menu>
+      <MenuButton className="p-1 hover:bg-[#f5f5f5] rounded transition-colors focus:outline-none">
+        <MoreVertical className="w-4 h-4 text-[#859bab]" />
+      </MenuButton>
+
+      <Portal>
+        <MenuItems
+          anchor="bottom end"
+          transition
+          className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-lg shadow-lg min-w-[120px] py-1 transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+        >
+          <MenuItem>
+            <button
+              onClick={onView}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] data-[focus]:bg-[#f5f5f5] hover:bg-[#f5f5f5] transition-colors focus:outline-none"
+            >
+              <Eye className="w-4 h-4 text-[#859bab]" />
+              View
+            </button>
+          </MenuItem>
+          <MenuItem>
+            <button
+              onClick={onEdit}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] data-[focus]:bg-[#f5f5f5] hover:bg-[#f5f5f5] transition-colors focus:outline-none"
+            >
+              <Pencil className="w-4 h-4 text-[#859bab]" />
+              Edit
+            </button>
+          </MenuItem>
+          <MenuItem>
+            <button
+              onClick={onDelete}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#E22023] data-[focus]:bg-red-50 hover:bg-red-50 transition-colors focus:outline-none"
+            >
+              <Trash2 className="w-4 h-4 text-[#E22023]" />
+              Delete
+            </button>
+          </MenuItem>
+        </MenuItems>
+      </Portal>
+    </Menu>
+  );
+}
+
 // --- Chapters Content ---
 function ChaptersContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
   const [deleteChapter, setDeleteChapter] = useState<{
     name: string;
     code: string;
@@ -1811,307 +1856,269 @@ function ChaptersContent() {
 
   return (
     <>
-    <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
-      {/* Section Header */}
-      <div className="flex flex-col gap-2 px-2">
-        <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
-          Chapters Management
-        </h1>
-        <p className="text-base font-semibold text-[#859bab] leading-[18px]">
-          Create and manage chapters for event segmentation and storytelling
-        </p>
-      </div>
-
-      {/* Stat Cards Row */}
-      <div className="flex">
-        <StatCard
-          icon={<Tags className="w-4 h-4 text-[#516778]" />}
-          title="Total Chapters"
-          subtitle="All chapters in organization"
-          value={3}
-          isFirst
-        />
-        <StatCard
-          icon={<Tag className="w-4 h-4 text-[#516778]" />}
-          title="Active Chapters"
-          subtitle="Currently operational"
-          value={3}
-        />
-        <StatCard
-          icon={<Eye className="w-4 h-4 text-[#516778]" />}
-          title="Visible in App"
-          subtitle="Shown to mobile users"
-          value={2}
-        />
-        <StatCard
-          icon={<Link2 className="w-4 h-4 text-[#516778]" />}
-          title="Linked Events"
-          subtitle="Total events across chapters"
-          value={20}
-          isLast
-        />
-      </div>
-
-      {/* White Card - Table Section */}
-      <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
-        {/* Header Row */}
-        <div className="flex items-center justify-between">
-          <span className="text-base font-semibold text-[#22292f] leading-[18px]">
-            All Chapters
-          </span>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Create Chapter
-          </button>
+      <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+        {/* Section Header */}
+        <div className="flex flex-col gap-2 px-2">
+          <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+            Chapters Management
+          </h1>
+          <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+            Create and manage chapters for event segmentation and storytelling
+          </p>
         </div>
 
-        {/* Search Input */}
-        <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg focus-within:border-[#3f52ff] transition-colors max-w-md">
-          <Search className="w-4 h-4 text-[#859bab] shrink-0" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by chapter name, city or country"
-            className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+        {/* Stat Cards Row */}
+        <div className="flex">
+          <StatCard
+            icon={<Tags className="w-4 h-4 text-[#516778]" />}
+            title="Total Chapters"
+            subtitle="All chapters in organization"
+            value={3}
+            isFirst
           />
-          <kbd className="text-xs text-[#859bab] bg-[#eceff2] px-1.5 py-0.5 rounded border border-[#d5dde2]">
-            ⌘K
-          </kbd>
+          <StatCard
+            icon={<Tag className="w-4 h-4 text-[#516778]" />}
+            title="Active Chapters"
+            subtitle="Currently operational"
+            value={3}
+          />
+          <StatCard
+            icon={<Eye className="w-4 h-4 text-[#516778]" />}
+            title="Visible in App"
+            subtitle="Shown to mobile users"
+            value={2}
+          />
+          <StatCard
+            icon={<Link2 className="w-4 h-4 text-[#516778]" />}
+            title="Linked Events"
+            subtitle="Total events across chapters"
+            value={20}
+            isLast
+          />
         </div>
 
-        {/* Table */}
-        <div className="w-full overflow-x-auto">
-          <table className="w-full table-fixed">
-            <colgroup>
-              <col className="w-[14%]" />
-              <col className="w-[14%]" />
-              <col className="w-[8%]" />
-              <col className="w-[12%]" />
-              <col className="w-[10%]" />
-              <col className="w-[12%]" />
-              <col className="w-[18%]" />
-              <col className="w-[8%]" />
-            </colgroup>
-            <thead>
-              <tr className="[&>th]:bg-[#eceff2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
-                {tableHeaders.map((header) => (
-                  <th
-                    key={header}
-                    className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]"
-                  >
-                    <div className="flex items-center gap-1">
-                      {header}
-                      {header !== "Action" && (
-                        <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {chaptersData.map((chapter) => (
-                <tr
-                  key={chapter.code}
-                  className="border-b border-[#eceff2] last:border-b-0"
-                >
-                  {/* Chapter */}
-                  <td className="px-3 py-3">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-[#22292f]">
-                        {chapter.name}
-                      </span>
-                      <span className="text-xs text-[#859bab]">
-                        {chapter.code}
-                      </span>
-                    </div>
-                  </td>
-                  {/* Location */}
-                  <td className="px-3 py-3">
-                    <div className="flex flex-col">
-                      <span className="text-sm text-[#22292f]">
-                        {chapter.city}
-                      </span>
-                      <span className="text-xs text-[#859bab]">
-                        {chapter.country}
-                      </span>
-                    </div>
-                  </td>
-                  {/* Team */}
-                  <td className="px-3 py-3 text-sm text-[#22292f]">
-                    {chapter.team}
-                  </td>
-                  {/* Events */}
-                  <td className="px-3 py-3 text-sm text-[#22292f]">
-                    {chapter.events}
-                  </td>
-                  {/* Visible Toggle */}
-                  <td className="px-3 py-3">
-                    <ToggleSwitch
-                      enabled={visibleStates[chapter.code]}
-                      onToggle={() => toggleVisible(chapter.code)}
-                    />
-                  </td>
-                  {/* Status */}
-                  <td className="px-3 py-3">
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#22892e] bg-[#e8f5e9] px-2 py-0.5 rounded-full">
-                      <CheckCircle2 className="w-3 h-3" />
-                      {chapter.status}
-                    </span>
-                  </td>
-                  {/* Last Update */}
-                  <td className="px-3 py-3">
-                    <div className="flex flex-col">
-                      <span className="text-sm text-[#22292f]">
-                        {chapter.lastUpdate}
-                      </span>
-                      {chapter.updatedBy && (
-                        <span className="text-xs text-[#859bab]">
-                          {chapter.updatedBy}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  {/* Action */}
-                  <td className="px-3 py-3">
-                    <div className="relative">
-                      <button
-                        onClick={() =>
-                          setOpenActionMenu(
-                            openActionMenu === chapter.code ? null : chapter.code
-                          )
-                        }
-                        className="p-1 hover:bg-[#f5f5f5] rounded transition-colors"
-                      >
-                        <MoreVertical className="w-4 h-4 text-[#859bab]" />
-                      </button>
-                      {openActionMenu === chapter.code && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-40"
-                            onClick={() => setOpenActionMenu(null)}
-                          />
-                          <div className="absolute right-0 top-full mt-1 bg-white border border-[#d5dde2] rounded-lg shadow-lg z-50 min-w-[120px] py-1">
-                            <button
-                              onClick={() => {
-                                setViewChapter({
-                                  name: chapter.name,
-                                  code: chapter.code,
-                                  city: chapter.city,
-                                  country: chapter.country,
-                                  team: chapter.team,
-                                  events: chapter.events,
-                                  lastUpdate: chapter.lastUpdate,
-                                });
-                                setOpenActionMenu(null);
-                              }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] hover:bg-[#f5f5f5] transition-colors"
-                            >
-                              <Eye className="w-4 h-4 text-[#859bab]" />
-                              View
-                            </button>
-                            <button
-                              onClick={() => setOpenActionMenu(null)}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#3f52ff] hover:bg-[#f5f5f5] transition-colors"
-                            >
-                              <Pencil className="w-4 h-4 text-[#3f52ff]" />
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => {
-                                setDeleteChapter({
-                                  name: chapter.name,
-                                  code: chapter.code,
-                                  events: chapter.events,
-                                });
-                                setOpenActionMenu(null);
-                              }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] hover:bg-[#f5f5f5] transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4 text-[#859bab]" />
-                              Delete
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </td>
+        {/* White Card - Table Section */}
+        <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+          {/* Header Row */}
+          <div className="flex items-center justify-between">
+            <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+              All Chapters
+            </span>
+            <button
+              onClick={() => setShowCreateForm(true)}
+              className="flex items-center gap-1 px-3 py-1.5 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Create Chapter
+            </button>
+          </div>
+
+          {/* Search Input */}
+          <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg focus-within:border-[#3f52ff] transition-colors max-w-md">
+            <Search className="w-4 h-4 text-[#859bab] shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by chapter name, city or country"
+              className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+            />
+            <kbd className="text-xs text-[#859bab] bg-[#eceff2] px-1.5 py-0.5 rounded border border-[#d5dde2]">
+              ⌘K
+            </kbd>
+          </div>
+
+          {/* Table */}
+          <div className="w-full overflow-x-auto">
+            <table className="w-full table-fixed">
+              <colgroup>
+                <col className="w-[14%]" />
+                <col className="w-[14%]" />
+                <col className="w-[8%]" />
+                <col className="w-[12%]" />
+                <col className="w-[10%]" />
+                <col className="w-[12%]" />
+                <col className="w-[18%]" />
+                <col className="w-[8%]" />
+              </colgroup>
+              <thead>
+                <tr className="[&>th]:bg-[#eceff2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
+                  {tableHeaders.map((header) => (
+                    <th
+                      key={header}
+                      className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]"
+                    >
+                      <div className="flex items-center gap-1">
+                        {header}
+                        {header !== "Action" && (
+                          <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
+                        )}
+                      </div>
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {chaptersData.map((chapter) => (
+                  <tr
+                    key={chapter.code}
+                    className="border-b border-[#eceff2] last:border-b-0"
+                  >
+                    {/* Chapter */}
+                    <td className="px-3 py-3">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-[#22292f]">
+                          {chapter.name}
+                        </span>
+                        <span className="text-xs text-[#859bab]">
+                          {chapter.code}
+                        </span>
+                      </div>
+                    </td>
+                    {/* Location */}
+                    <td className="px-3 py-3">
+                      <div className="flex flex-col">
+                        <span className="text-sm text-[#22292f]">
+                          {chapter.city}
+                        </span>
+                        <span className="text-xs text-[#859bab]">
+                          {chapter.country}
+                        </span>
+                      </div>
+                    </td>
+                    {/* Team */}
+                    <td className="px-3 py-3 text-sm text-[#22292f]">
+                      {chapter.team}
+                    </td>
+                    {/* Events */}
+                    <td className="px-3 py-3 text-sm text-[#22292f]">
+                      {chapter.events}
+                    </td>
+                    {/* Visible Toggle */}
+                    <td className="px-3 py-3">
+                      <ToggleSwitch
+                        enabled={visibleStates[chapter.code]}
+                        onToggle={() => toggleVisible(chapter.code)}
+                      />
+                    </td>
+                    {/* Status */}
+                    <td className="px-3 py-3">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#22892e] bg-[#e8f5e9] px-2 py-0.5 rounded-full">
+                        <CheckCircle2 className="w-3 h-3" />
+                        {chapter.status}
+                      </span>
+                    </td>
+                    {/* Last Update */}
+                    <td className="px-3 py-3">
+                      <div className="flex flex-col">
+                        <span className="text-sm text-[#22292f]">
+                          {chapter.lastUpdate}
+                        </span>
+                        {chapter.updatedBy && (
+                          <span className="text-xs text-[#859bab]">
+                            {chapter.updatedBy}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    {/* Action */}
+                    <td className="px-3 py-3">
+                      <ChapterActionMenu
+                        onView={() => {
+                          setViewChapter({
+                            name: chapter.name,
+                            code: chapter.code,
+                            city: chapter.city,
+                            country: chapter.country,
+                            team: chapter.team,
+                            events: chapter.events,
+                            lastUpdate: chapter.lastUpdate,
+                          });
+                        }}
+                        onEdit={() => {
+                          // Edit logic if any, currently just placeholder in original
+                        }}
+                        onDelete={() => {
+                          setDeleteChapter({
+                            name: chapter.name,
+                            code: chapter.code,
+                            events: chapter.events,
+                          });
+                        }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* View Chapter Panel */}
-    {viewChapter && (
-      <ViewChapterPanel
-        chapter={viewChapter}
-        onClose={() => setViewChapter(null)}
-      />
-    )}
-
-    {/* Delete Chapter Confirmation Modal */}
-    {deleteChapter && (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center">
-        <div
-          className="absolute inset-0 bg-black/40"
-          onClick={() => setDeleteChapter(null)}
+      {/* View Chapter Panel */}
+      {viewChapter && (
+        <ViewChapterPanel
+          chapter={viewChapter}
+          onClose={() => setViewChapter(null)}
         />
-        <div className="relative bg-white border border-[#d5dde2] rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
-          {/* Modal Header */}
-          <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-[#d5dde2]">
-            <div className="flex items-center gap-4">
-              <div className="bg-[#ffe0e1] rounded-md p-2">
-                <AlertCircle className="w-4 h-4 text-[#e53935]" />
+      )}
+
+      {/* Delete Chapter Confirmation Modal */}
+      {deleteChapter && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setDeleteChapter(null)}
+          />
+          <div className="relative bg-white border border-[#d5dde2] rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-[#d5dde2]">
+              <div className="flex items-center gap-4">
+                <div className="bg-[#ffe0e1] rounded-md p-2">
+                  <AlertCircle className="w-4 h-4 text-[#e53935]" />
+                </div>
+                <span className="text-base font-semibold text-[#22292f]">
+                  Delete Chapter
+                </span>
               </div>
-              <span className="text-base font-semibold text-[#22292f]">
-                Delete Chapter
-              </span>
+              <button
+                onClick={() => setDeleteChapter(null)}
+                className="w-7 h-7 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+              >
+                <X className="w-3.5 h-3.5 text-[#516778]" />
+              </button>
             </div>
-            <button
-              onClick={() => setDeleteChapter(null)}
-              className="w-7 h-7 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
-            >
-              <X className="w-3.5 h-3.5 text-[#516778]" />
-            </button>
-          </div>
 
-          {/* Modal Body */}
-          <div className="px-4">
-            <p className="text-sm font-semibold text-[#859bab] leading-[20px]">
-              <span className="font-bold text-[#22292f]">
-                &quot;{deleteChapter.name} Chapter&quot;
-              </span>{" "}
-              has {getEventCount(deleteChapter.events)} linked events. Deleting
-              this chapter will remove the chapter reference from those events.
-              Are you sure you want to continue?
-            </p>
-          </div>
+            {/* Modal Body */}
+            <div className="px-4">
+              <p className="text-sm font-semibold text-[#859bab] leading-[20px]">
+                <span className="font-bold text-[#22292f]">
+                  &quot;{deleteChapter.name} Chapter&quot;
+                </span>{" "}
+                has {getEventCount(deleteChapter.events)} linked events. Deleting
+                this chapter will remove the chapter reference from those events.
+                Are you sure you want to continue?
+              </p>
+            </div>
 
-          {/* Modal Footer */}
-          <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-[#d5dde2]">
-            <button
-              onClick={() => setDeleteChapter(null)}
-              className="flex-1 h-10 px-4 text-sm font-medium text-[#22292f] bg-white border border-[#d5dde2] rounded-lg hover:bg-[#f5f5f5] transition-colors"
-            >
-              Dismiss
-            </button>
-            <button
-              onClick={() => setDeleteChapter(null)}
-              className="flex-1 h-10 px-4 text-sm font-medium text-white bg-[#e53935] rounded-lg hover:bg-[#c62828] transition-colors"
-            >
-              Delete Chapter
-            </button>
+            {/* Modal Footer */}
+            <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-[#d5dde2]">
+              <button
+                onClick={() => setDeleteChapter(null)}
+                className="flex-1 h-10 px-4 text-sm font-medium text-[#22292f] bg-white border border-[#d5dde2] rounded-lg hover:bg-[#f5f5f5] transition-colors"
+              >
+                Dismiss
+              </button>
+              <button
+                onClick={() => setDeleteChapter(null)}
+                className="flex-1 h-10 px-4 text-sm font-medium text-white bg-[#e53935] rounded-lg hover:bg-[#c62828] transition-colors"
+              >
+                Delete Chapter
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
     </>
   );
 }

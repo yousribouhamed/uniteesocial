@@ -4,9 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, Loader2, User } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -61,10 +64,15 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
+    const next = searchParams.get("next") ?? "/admin/users";
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        queryParams: {
+          prompt: "select_account",
+        },
       },
     });
 
