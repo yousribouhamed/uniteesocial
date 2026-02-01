@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export async function getBusinessProfile() {
     const supabase = await createClient();
@@ -44,5 +45,6 @@ export async function updateBusinessProfile(payload: any) {
         throw new Error(error.message);
     }
 
+    revalidatePath("/admin/business-profile");
     return { success: true };
 }
