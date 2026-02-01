@@ -695,6 +695,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const [events, setEvents] = useState<EventItem[]>(mockEvents);
   const [activeTab, setActiveTab] = useState<"all" | "current" | "past">("all");
   const [filterCategory, setFilterCategory] = useState<"all" | "general" | "match">("all");
+  const [filterDate, setFilterDate] = useState<DateValue | null>(null);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
@@ -905,10 +906,9 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 {hasEvents && (
                   <div className="flex items-center gap-2">
                     {/* Select Date */}
-                    <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
-                      <Calendar className="w-4 h-4 text-[#516778]" />
-                      Select Date
-                    </button>
+                    <div className="w-[160px]">
+                      <AriaDatePicker value={filterDate} onChange={setFilterDate} aria-label="Select Date" />
+                    </div>
 
                     {/* General Event dropdown */}
                     <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
