@@ -282,12 +282,14 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
               <div className="flex flex-wrap gap-x-8 gap-y-4">
                 {/* Date Widget */}
                 <div className="flex items-center gap-2">
-                  <div className="w-[38px] h-[40px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
-                    <div className="bg-[#859bab] w-full py-1 flex items-center justify-center">
-                      <span className="text-[8px] font-bold text-[rgba(255,255,255,0.79)] uppercase leading-[12px]">{displayMonth}</span>
-                    </div>
-                    <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[16px] font-medium font-['Instrument_Sans',sans-serif] text-[#859bab] leading-[24px] uppercase">{displayDay}</span>
+                  <div className="border border-[#859bab] rounded-[8px] p-px bg-white shrink-0 overflow-hidden" data-node-id="1818:18141">
+                    <div className="w-[38px] flex flex-col gap-[6px] pb-2 items-center" data-node-id="1818:18142">
+                      <div className="bg-[#859bab] w-full py-1 flex items-center justify-center" data-node-id="1818:18143">
+                        <span className="text-[8px] font-bold text-[rgba(255,255,255,0.79)] uppercase leading-[12px]">{displayMonth}</span>
+                      </div>
+                      <div className="flex items-center justify-center w-full" data-node-id="1818:18145">
+                        <span className="text-[16px] font-medium font-['Instrument_Sans',sans-serif] text-[#859bab] leading-normal uppercase">{displayDay}</span>
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col">
