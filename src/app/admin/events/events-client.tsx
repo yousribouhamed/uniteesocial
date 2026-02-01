@@ -282,12 +282,12 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
               <div className="flex flex-wrap gap-x-8 gap-y-4">
                 {/* Date Widget */}
                 <div className="flex items-center gap-2">
-                  <div className="w-[42px] h-[46px] border border-[#859bab] rounded-xl flex flex-col items-center overflow-hidden bg-white shrink-0 shadow-sm">
-                    <div className="bg-[#859bab] w-full h-[18px] flex items-center justify-center">
-                      <span className="text-[10px] text-white font-bold leading-none tracking-tight">{displayMonth}</span>
+                  <div className="w-[38px] h-[40px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
+                    <div className="bg-[#859bab] w-full py-1 flex items-center justify-center">
+                      <span className="text-[8px] font-bold text-[rgba(255,255,255,0.79)] uppercase leading-[12px]">{displayMonth}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[20px] font-bold text-[#859bab] leading-none mb-0.5">{displayDay}</span>
+                      <span className="text-[16px] font-medium text-[#859bab] leading-[24px] uppercase">{displayDay}</span>
                     </div>
                   </div>
                   <div className="flex flex-col">
