@@ -18,6 +18,8 @@ import {
   Info,
 } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { Suspense } from "react";
 
 // --- Types ---
 interface EventItem {
@@ -645,11 +647,49 @@ function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }
   );
 }
 
-export default function EventsPageClient({ currentUser }: EventsPageClientProps) {
+function EventsPageContent({ currentUser }: EventsPageClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   const [activeTab, setActiveTab] = useState<"all" | "current" | "past">("all");
   const [filterCategory, setFilterCategory] = useState<"all" | "general" | "match">("all");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    const create = searchParams.get("create");
+
+    if (editId) {
+      const event = mockEvents.find((e) => e.id === editId);
+      if (event) {
+        setSelectedEvent(event);
+        setShowCreateEvent(true);
+      } else {
+        setSelectedEvent(null);
+        setShowCreateEvent(false);
+      }
+    } else if (create === "true") {
+      setSelectedEvent(null);
+      setShowCreateEvent(true);
+    } else {
+      setSelectedEvent(null);
+      setShowCreateEvent(false);
+    }
+  }, [searchParams]);
+
+  const handleCreateEvent = () => {
+    router.push(`${pathname}?create=true`);
+  };
+
+  const handleEditEvent = (event: EventItem) => {
+    router.push(`${pathname}?edit=${event.id}`);
+  };
+
+  const handleClose = () => {
+    router.push(pathname);
+  };
 
   // Compute stats from events
   const totalEvents = mockEvents.length;
@@ -699,10 +739,7 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
           {showCreateEvent || selectedEvent ? (
             <CreateEventView
               event={selectedEvent}
-              onClose={() => {
-                setShowCreateEvent(false);
-                setSelectedEvent(null);
-              }}
+              onClose={handleClose}
             />
           ) : (
             <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
@@ -840,7 +877,7 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
 
                     {/* + Create Event */}
                     <button
-                      onClick={() => setShowCreateEvent(true)}
+                      onClick={handleCreateEvent}
                       className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-xs font-normal rounded-lg hover:bg-[#3545e0] transition-colors"
                     >
                       + Create Event
@@ -868,7 +905,7 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
                           <EventCard
                             key={event.id}
                             event={event}
-                            onClick={() => setSelectedEvent(event)}
+                            onClick={() => handleEditEvent(event)}
                           />
                         ))}
                       </div>
@@ -894,7 +931,7 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
                     </p>
                   </div>
                   <button
-                    onClick={() => setShowCreateEvent(true)}
+                    onClick={handleCreateEvent}
                     className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
                   >
                     <Plus className="w-4 h-4" />
@@ -907,5 +944,13 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
         </main>
       </div>
     </div>
+  );
+}
+
+export default function EventsPageClient(props: EventsPageClientProps) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EventsPageContent {...props} />
+    </Suspense>
   );
 }
