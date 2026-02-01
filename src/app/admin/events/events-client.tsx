@@ -203,10 +203,13 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
             {eventTitle}
           </h2>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
+            <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
+              <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+              </svg>
               {chapter}
             </span>
-            <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
+            <span className="inline-flex items-center h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
               {type}
             </span>
           </div>
@@ -269,10 +272,13 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
                   {eventTitle}
                 </h3>
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
+                  <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
+                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                    </svg>
                     {chapter}
                   </span>
-                  <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
+                  <span className="inline-flex items-center h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
                     {type}
                   </span>
                 </div>
