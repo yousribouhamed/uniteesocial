@@ -209,7 +209,7 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
               </svg>
               {chapter}
             </span>
-            <span className="inline-flex items-center h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
+            <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
               {type}
             </span>
           </div>
@@ -278,7 +278,7 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
                     </svg>
                     {chapter}
                   </span>
-                  <span className="inline-flex items-center h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
+                  <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
                     {type}
                   </span>
                 </div>
