@@ -189,11 +189,10 @@ function CreateEventView({ onClose }: { onClose: () => void }) {
           <button
             key={tab}
             onClick={() => setDetailTab(tab)}
-            className={`relative h-9 px-3 py-2 rounded-lg text-base font-medium transition-colors z-10 ${
-              detailTab === tab
+            className={`relative h-9 px-3 py-2 rounded-lg text-base font-medium transition-colors z-10 ${detailTab === tab
                 ? "text-[#3f52ff]"
                 : "text-[#516778] hover:text-[#22292f]"
-            }`}
+              }`}
           >
             {detailTab === tab && (
               <motion.div
@@ -506,9 +505,12 @@ function CreateEventView({ onClose }: { onClose: () => void }) {
 }
 
 // --- Event Card Component ---
-function EventCard({ event }: { event: EventItem }) {
+function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }) {
   return (
-    <div className="bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col flex-1 min-w-0">
+    <div
+      onClick={onClick}
+      className="bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col flex-1 min-w-0 cursor-pointer hover:border-[#3f52ff] transition-all group"
+    >
       <div className="flex flex-col gap-4">
         {/* Cover Image */}
         <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d9d9d9]">
@@ -538,7 +540,7 @@ function EventCard({ event }: { event: EventItem }) {
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-1 h-[22px] px-2 bg-[#22292f] text-white text-xs font-normal rounded">
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 0L6.12 3.88L10 5L6.12 6.12L5 10L3.88 6.12L0 5L3.88 3.88L5 0Z" fill="white"/>
+                  <path d="M5 0L6.12 3.88L10 5L6.12 6.12L5 10L3.88 6.12L0 5L3.88 3.88L5 0Z" fill="white" />
                 </svg>
                 {event.chapter}
               </span>
@@ -627,201 +629,204 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
           {showCreateEvent ? (
             <CreateEventView onClose={() => setShowCreateEvent(false)} />
           ) : (
-          <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
-            {/* Page Header */}
-            <div className="flex flex-col gap-2 pl-4 pt-2">
-              <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
-                Events Management
-              </h1>
-              <p className="text-base font-semibold text-[#859bab] leading-[18px]">
-                This section enables you to manage your app members and Teams
-              </p>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="flex items-stretch border border-[#d5dde2] rounded-lg bg-white">
-              {/* Total Events */}
-              <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2] rounded-l-lg">
-                <div className="flex items-center gap-2">
-                  <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                    <Users className="w-4 h-4 text-[#516778]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
-                      Total Events
-                    </span>
-                    <span className="text-xs font-normal text-[#516778] leading-[18px]">
-                      All Events
-                    </span>
-                  </div>
-                </div>
-                <span className="text-base font-semibold text-[#22292f] leading-[18px]">
-                  {totalEvents}
-                </span>
+            <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
+              {/* Page Header */}
+              <div className="flex flex-col gap-2 pl-4 pt-2">
+                <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+                  Events Management
+                </h1>
+                <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+                  This section enables you to manage your app members and Teams
+                </p>
               </div>
 
-              {/* Match */}
-              <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
-                <div className="flex items-center gap-2">
-                  <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                    <ClipboardPenLine className="w-4 h-4 text-[#516778]" />
+              {/* Stats Cards */}
+              <div className="flex items-stretch border border-[#d5dde2] rounded-lg bg-white">
+                {/* Total Events */}
+                <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2] rounded-l-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                      <Users className="w-4 h-4 text-[#516778]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
+                        Total Events
+                      </span>
+                      <span className="text-xs font-normal text-[#516778] leading-[18px]">
+                        All Events
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
-                      Match
-                    </span>
-                    <span className="text-xs font-normal text-[#516778] leading-[18px]">
-                      {matchPercent}% of total
-                    </span>
-                  </div>
+                  <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+                    {totalEvents}
+                  </span>
                 </div>
-                <span className="text-base font-semibold text-[#22292f] leading-[18px]">
-                  {matchCount}
-                </span>
+
+                {/* Match */}
+                <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                      <ClipboardPenLine className="w-4 h-4 text-[#516778]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
+                        Match
+                      </span>
+                      <span className="text-xs font-normal text-[#516778] leading-[18px]">
+                        {matchPercent}% of total
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+                    {matchCount}
+                  </span>
+                </div>
+
+                {/* General Event */}
+                <div className="flex-1 flex items-center justify-between p-4 rounded-r-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                      <Calendar className="w-4 h-4 text-[#516778]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
+                        General Event
+                      </span>
+                      <span className="text-xs font-normal text-[#516778] leading-[18px]">
+                        {generalPercent}% of total
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+                    {generalCount}
+                  </span>
+                </div>
               </div>
 
-              {/* General Event */}
-              <div className="flex-1 flex items-center justify-between p-4 rounded-r-lg">
-                <div className="flex items-center gap-2">
-                  <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                    <Calendar className="w-4 h-4 text-[#516778]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
+              {/* Tabs + Filters Bar */}
+              <div className="flex items-center justify-between">
+                {/* Left: Event tabs */}
+                <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative">
+                  {(["all", "current", "past"] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
+                          ? "text-[#3f52ff]"
+                          : "text-[#516778] hover:text-[#22292f]"
+                        }`}
+                    >
+                      {activeTab === tab && (
+                        <motion.div
+                          layoutId="eventsTabIndicator"
+                          className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                          initial={false}
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 35,
+                          }}
+                        />
+                      )}
+                      <span className="relative z-10">
+                        {tab === "all" ? "All events" : tab === "current" ? "Current Event" : "Past Events"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right: Filter dropdowns + Create Event */}
+                {hasEvents && (
+                  <div className="flex items-center gap-2">
+                    {/* Select Date */}
+                    <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
+                      <Calendar className="w-4 h-4 text-[#516778]" />
+                      Select Date
+                    </button>
+
+                    {/* General Event dropdown */}
+                    <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
                       General Event
-                    </span>
-                    <span className="text-xs font-normal text-[#516778] leading-[18px]">
-                      {generalPercent}% of total
-                    </span>
+                      <ChevronDown className="w-4 h-4 text-[#516778]" />
+                    </button>
+
+                    {/* All Chapters dropdown */}
+                    <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
+                      All Chapters
+                      <ChevronDown className="w-4 h-4 text-[#516778]" />
+                    </button>
+
+                    {/* All types dropdown */}
+                    <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
+                      All types
+                      <ChevronDown className="w-4 h-4 text-[#516778]" />
+                    </button>
+
+                    {/* + Create Event */}
+                    <button
+                      onClick={() => setShowCreateEvent(true)}
+                      className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-xs font-normal rounded-lg hover:bg-[#3545e0] transition-colors"
+                    >
+                      + Create Event
+                    </button>
                   </div>
+                )}
+              </div>
+
+              {/* Events Content: Empty State or Events List */}
+              {hasEvents ? (
+                <div className="flex flex-col gap-4">
+                  {Object.entries(groupedEvents).map(([dateGroup, events]) => (
+                    <div key={dateGroup} className="flex flex-col gap-4">
+                      {/* Date Group Header */}
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm font-semibold text-[#516778] leading-[18px] whitespace-nowrap">
+                          {dateGroup}
+                        </span>
+                        <div className="flex-1 h-px bg-[#d5dde2]" />
+                      </div>
+
+                      {/* Events Grid - 2 columns */}
+                      <div className="grid grid-cols-2 gap-4">
+                        {events.map((event) => (
+                          <EventCard
+                            key={event.id}
+                            event={event}
+                            onClick={() => setShowCreateEvent(true)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <span className="text-base font-semibold text-[#22292f] leading-[18px]">
-                  {generalCount}
-                </span>
-              </div>
-            </div>
-
-            {/* Tabs + Filters Bar */}
-            <div className="flex items-center justify-between">
-              {/* Left: Event tabs */}
-              <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative">
-                {(["all", "current", "past"] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${
-                      activeTab === tab
-                        ? "text-[#3f52ff]"
-                        : "text-[#516778] hover:text-[#22292f]"
-                    }`}
-                  >
-                    {activeTab === tab && (
-                      <motion.div
-                        layoutId="eventsTabIndicator"
-                        className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
-                        initial={false}
-                        transition={{
-                          type: "spring",
-                          stiffness: 500,
-                          damping: 35,
-                        }}
-                      />
-                    )}
-                    <span className="relative z-10">
-                      {tab === "all" ? "All events" : tab === "current" ? "Current Event" : "Past Events"}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Right: Filter dropdowns + Create Event */}
-              {hasEvents && (
-                <div className="flex items-center gap-2">
-                  {/* Select Date */}
-                  <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
-                    <Calendar className="w-4 h-4 text-[#516778]" />
-                    Select Date
-                  </button>
-
-                  {/* General Event dropdown */}
-                  <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
-                    General Event
-                    <ChevronDown className="w-4 h-4 text-[#516778]" />
-                  </button>
-
-                  {/* All Chapters dropdown */}
-                  <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
-                    All Chapters
-                    <ChevronDown className="w-4 h-4 text-[#516778]" />
-                  </button>
-
-                  {/* All types dropdown */}
-                  <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
-                    All types
-                    <ChevronDown className="w-4 h-4 text-[#516778]" />
-                  </button>
-
-                  {/* + Create Event */}
+              ) : (
+                /* Empty State */
+                <div className="flex flex-col items-center justify-center gap-8 py-8">
+                  <Image
+                    src="/img/events-empty.svg"
+                    alt="No events"
+                    width={165}
+                    height={160}
+                    className="object-contain"
+                  />
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <h2 className="text-2xl font-medium text-[#13151760] leading-[28.8px]">
+                      No upcoming events
+                    </h2>
+                    <p className="text-base font-normal text-[#13151760] leading-6">
+                      You have no upcoming events. Why not organize one?
+                    </p>
+                  </div>
                   <button
                     onClick={() => setShowCreateEvent(true)}
-                    className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-xs font-normal rounded-lg hover:bg-[#3545e0] transition-colors"
+                    className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
                   >
-                    + Create Event
+                    <Plus className="w-4 h-4" />
+                    Create Event
                   </button>
                 </div>
               )}
             </div>
-
-            {/* Events Content: Empty State or Events List */}
-            {hasEvents ? (
-              <div className="flex flex-col gap-4">
-                {Object.entries(groupedEvents).map(([dateGroup, events]) => (
-                  <div key={dateGroup} className="flex flex-col gap-4">
-                    {/* Date Group Header */}
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm font-semibold text-[#516778] leading-[18px] whitespace-nowrap">
-                        {dateGroup}
-                      </span>
-                      <div className="flex-1 h-px bg-[#d5dde2]" />
-                    </div>
-
-                    {/* Events Grid - 2 columns */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {events.map((event) => (
-                        <EventCard key={event.id} event={event} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              /* Empty State */
-              <div className="flex flex-col items-center justify-center gap-8 py-8">
-                <Image
-                  src="/img/events-empty.svg"
-                  alt="No events"
-                  width={165}
-                  height={160}
-                  className="object-contain"
-                />
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <h2 className="text-2xl font-medium text-[#13151760] leading-[28.8px]">
-                    No upcoming events
-                  </h2>
-                  <p className="text-base font-normal text-[#13151760] leading-6">
-                    You have no upcoming events. Why not organize one?
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowCreateEvent(true)}
-                  className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  Create Event
-                </button>
-              </div>
-            )}
-          </div>
           )}
         </main>
       </div>
