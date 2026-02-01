@@ -272,14 +272,22 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
               className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2] group cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
             >
-              <Image
-                key={coverImage}
-                src={coverImage}
-                alt="Event cover"
-                fill
-                className="object-cover transition-opacity group-hover:opacity-80"
-                unoptimized={coverImage?.startsWith("data:")}
-              />
+              {coverImage?.startsWith("data:") ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={coverImage}
+                  alt="Event cover"
+                  className="w-full h-full object-cover transition-opacity group-hover:opacity-80 absolute inset-0"
+                />
+              ) : (
+                <Image
+                  key={coverImage}
+                  src={coverImage}
+                  alt="Event cover"
+                  fill
+                  className="object-cover transition-opacity group-hover:opacity-80"
+                />
+              )}
               {/* Overlay with Larger Camera Icon (Matching Figma/User Photo) */}
               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                 <div className="w-[46px] h-[46px] bg-[#3f52ff] border-2 border-white rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
@@ -602,17 +610,25 @@ function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }
       <div className="flex flex-col gap-4">
         {/* Cover Image */}
         <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d9d9d9]">
-          <Image
-            src={event.coverImage}
-            alt={event.title}
-            fill
-            className="object-cover"
-            unoptimized={event.coverImage?.startsWith("data:")}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-            }}
-          />
+          {event.coverImage?.startsWith("data:") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={event.coverImage}
+              alt={event.title}
+              className="w-full h-full object-cover absolute inset-0"
+            />
+          ) : (
+            <Image
+              src={event.coverImage}
+              alt={event.title}
+              fill
+              className="object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = "none";
+              }}
+            />
+          )}
           {/* 3-dot menu */}
           <button className="absolute top-1.5 right-1.5 w-6 h-6 bg-[#d8e6ff] rounded-full flex items-center justify-center hover:bg-[#c5d8f7] transition-colors">
             <MoreVertical className="w-3.5 h-3.5 text-white" />
