@@ -36,8 +36,24 @@ import {
 } from "lucide-react";
 import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 
+import { getBusinessProfile, updateBusinessProfile } from "./actions";
+
 interface BusinessProfileClientProps {
   currentUser: CurrentUser;
+}
+
+interface ProfileData {
+  id?: string;
+  business_name?: string;
+  poc_email?: string;
+  poc_name?: string;
+  timezone?: string;
+  domain?: string;
+  colors?: any;
+  modules?: any;
+  social_links?: any;
+  terms_url?: string;
+  privacy_url?: string;
 }
 
 const topTabs = ["Tenant Setup", "Social Links", "Legal and T&C", "Chapters"] as const;
@@ -49,6 +65,13 @@ type InnerTab = (typeof innerTabs)[number];
 export default function BusinessProfileClient({ currentUser }: BusinessProfileClientProps) {
   const [activeTopTab, setActiveTopTab] = useState<TopTab>("Tenant Setup");
   const [activeInnerTab, setActiveInnerTab] = useState<InnerTab>("General Setting");
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+
+  useEffect(() => {
+    getBusinessProfile().then((data) => {
+      if (data) setProfile(data);
+    });
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-[#f9fafb] font-[family-name:'Instrument_Sans',sans-serif]">
@@ -80,8 +103,8 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
                   key={tab}
                   onClick={() => setActiveTopTab(tab)}
                   className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTopTab === tab
-                      ? "text-[#3f52ff]"
-                      : "text-[#516778] hover:text-[#22292f]"
+                    ? "text-[#3f52ff]"
+                    : "text-[#516778] hover:text-[#22292f]"
                     }`}
                 >
                   {activeTopTab === tab && (
@@ -122,8 +145,8 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
                         key={tab}
                         onClick={() => setActiveInnerTab(tab)}
                         className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeInnerTab === tab
-                            ? "text-[#3f52ff]"
-                            : "text-[#516778] hover:text-[#22292f]"
+                          ? "text-[#3f52ff]"
+                          : "text-[#516778] hover:text-[#22292f]"
                           }`}
                       >
                         {activeInnerTab === tab && (
@@ -150,19 +173,19 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
                       <div className="flex gap-8">
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-semibold text-[#859bab]">Business Name</span>
-                          <span className="text-sm font-semibold text-[#22292f]">Eventy</span>
+                          <span className="text-sm font-semibold text-[#22292f]">{profile?.business_name || "Eventy"}</span>
                         </div>
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-semibold text-[#859bab]">POC Email</span>
-                          <span className="text-sm font-semibold text-[#22292f]">eventy@gmail.com</span>
+                          <span className="text-sm font-semibold text-[#22292f]">{profile?.poc_email || "eventy@gmail.com"}</span>
                         </div>
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-semibold text-[#859bab]">POC Name</span>
-                          <span className="text-sm font-semibold text-[#22292f]">Eventygo</span>
+                          <span className="text-sm font-semibold text-[#22292f]">{profile?.poc_name || "Eventygo"}</span>
                         </div>
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-semibold text-[#859bab]">Time Zone</span>
-                          <span className="text-sm font-semibold text-[#22292f]">UTC+00:00 — London</span>
+                          <span className="text-sm font-semibold text-[#22292f]">{profile?.timezone || "UTC+00:00 — London"}</span>
                         </div>
                       </div>
 
@@ -180,7 +203,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-semibold text-[#859bab]">Domain</span>
-                          <span className="text-sm font-semibold text-[#22292f]">www.eventy.com</span>
+                          <span className="text-sm font-semibold text-[#22292f]">{profile?.domain || "www.eventy.com"}</span>
                         </div>
                       </div>
                     </div>
@@ -188,23 +211,23 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
                   {/* Content Card - Branding */}
                   {activeInnerTab === "Branding" && (
-                    <BrandingContent />
+                    <BrandingContent initialData={profile?.colors} />
                   )}
 
                   {/* Content Card - Modules */}
                   {activeInnerTab === "Modules" && (
-                    <ModulesContent />
+                    <ModulesContent initialData={profile?.modules} />
                   )}
                 </div>
               </div>
             )}
 
             {activeTopTab === "Social Links" && (
-              <SocialLinksContent />
+              <SocialLinksContent initialData={profile?.social_links} />
             )}
 
             {activeTopTab === "Legal and T&C" && (
-              <LegalAndTCContent />
+              <LegalAndTCContent initialData={profile} />
             )}
 
             {activeTopTab === "Chapters" && (
@@ -494,7 +517,7 @@ function FileUploadArea({ label }: { label: string }) {
 }
 
 // --- Branding Content ---
-function BrandingContent() {
+function BrandingContent({ initialData }: { initialData?: any }) {
   const [colors, setColors] = useState({
     primary: "#1F4E79",
     invert: "#00875A",
@@ -505,6 +528,21 @@ function BrandingContent() {
     headerIcon: "#00875A",
     chatSend: "#22292F",
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setColors((prev) => ({ ...prev, ...initialData }));
+    }
+  }, [initialData]);
+
+  const handleSave = async () => {
+    try {
+      await updateBusinessProfile({ colors });
+      alert("Branding saved successfully!");
+    } catch (e) {
+      alert("Failed to save branding");
+    }
+  };
 
   const updateColor = (key: keyof typeof colors) => (hex: string) => {
     setColors((prev) => ({ ...prev, [key]: hex }));
@@ -567,7 +605,10 @@ function BrandingContent() {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <button className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
+        <button
+          onClick={handleSave}
+          className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+        >
           Save changes
         </button>
       </div>
@@ -614,8 +655,8 @@ function RadioOption({
     >
       <div
         className={`w-4 h-4 rounded-full border flex items-center justify-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] ${selected
-            ? "bg-[#173254] border-[#173254]"
-            : "bg-white border-[#d5dde2]"
+          ? "bg-[#173254] border-[#173254]"
+          : "bg-white border-[#d5dde2]"
           }`}
       >
         {selected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -716,13 +757,28 @@ function SocialLinkInput({
 }
 
 // --- Social Links Content ---
-function SocialLinksContent() {
+function SocialLinksContent({ initialData }: { initialData?: any }) {
   const [links, setLinks] = useState({
     linkedin: "",
     xTwitter: "",
     instagram: "",
     tiktok: "",
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setLinks((prev) => ({ ...prev, ...initialData }));
+    }
+  }, [initialData]);
+
+  const handleSave = async () => {
+    try {
+      await updateBusinessProfile({ social_links: links });
+      alert("Social links saved successfully!");
+    } catch (e) {
+      alert("Failed to save social links");
+    }
+  };
 
   const updateLink = (key: keyof typeof links) => (val: string) => {
     setLinks((prev) => ({ ...prev, [key]: val }));
@@ -776,7 +832,10 @@ function SocialLinksContent() {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <button className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
             Save changes
           </button>
         </div>
@@ -786,9 +845,25 @@ function SocialLinksContent() {
 }
 
 // --- Legal and T&C Content ---
-function LegalAndTCContent() {
+function LegalAndTCContent({ initialData }: { initialData?: any }) {
   const [termsUrl, setTermsUrl] = useState("");
   const [privacyUrl, setPrivacyUrl] = useState("");
+
+  useEffect(() => {
+    if (initialData) {
+      if (initialData.terms_url) setTermsUrl(initialData.terms_url);
+      if (initialData.privacy_url) setPrivacyUrl(initialData.privacy_url);
+    }
+  }, [initialData]);
+
+  const handleSave = async () => {
+    try {
+      await updateBusinessProfile({ terms_url: termsUrl, privacy_url: privacyUrl });
+      alert("Legal documents saved successfully!");
+    } catch (e) {
+      alert("Failed to save legal documents");
+    }
+  };
 
   return (
     <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
@@ -840,7 +915,10 @@ function LegalAndTCContent() {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <button className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
             Save changes
           </button>
         </div>
@@ -850,7 +928,7 @@ function LegalAndTCContent() {
 }
 
 // --- Modules Content ---
-function ModulesContent() {
+function ModulesContent({ initialData }: { initialData?: any }) {
   const [modules, setModules] = useState({
     events: false,
     tickets: false,
@@ -862,6 +940,21 @@ function ModulesContent() {
 
   const [exploreMembersRadio, setExploreMembersRadio] = useState(0);
   const [exploreCompanyRadio, setExploreCompanyRadio] = useState(0);
+
+  useEffect(() => {
+    if (initialData) {
+      setModules((prev) => ({ ...prev, ...initialData }));
+    }
+  }, [initialData]);
+
+  const handleSave = async () => {
+    try {
+      await updateBusinessProfile({ modules });
+      alert("Modules saved successfully!");
+    } catch (e) {
+      alert("Failed to save modules");
+    }
+  };
 
   const toggleModule = (key: keyof typeof modules) => {
     setModules((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -917,7 +1010,10 @@ function ModulesContent() {
 
       {/* Save Button */}
       <div className="flex justify-end w-full">
-        <button className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
+        <button
+          onClick={handleSave}
+          className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+        >
           Save changes
         </button>
       </div>
@@ -1103,8 +1199,8 @@ function TeamTabContent() {
                         setShowRoleDropdown(false);
                       }}
                       className={`w-full text-left px-3 py-2 text-sm hover:bg-[#f5f5f5] transition-colors first:rounded-t-lg last:rounded-b-lg ${selectedRole === role
-                          ? "text-[#3f52ff] font-medium"
-                          : "text-[#22292f]"
+                        ? "text-[#3f52ff] font-medium"
+                        : "text-[#22292f]"
                         }`}
                     >
                       {role}
@@ -1198,8 +1294,8 @@ function TeamMemberCard({
                       setShowDropdown(false);
                     }}
                     className={`w-full text-left px-3 py-2 text-sm hover:bg-[#f5f5f5] transition-colors first:rounded-t-lg last:rounded-b-lg ${member.role === role
-                        ? "text-[#3f52ff] font-medium"
-                        : "text-[#22292f]"
+                      ? "text-[#3f52ff] font-medium"
+                      : "text-[#22292f]"
                       }`}
                   >
                     {role}
@@ -1254,8 +1350,8 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
-                ? "text-[#3f52ff]"
-                : "text-[#516778] hover:text-[#22292f]"
+              ? "text-[#3f52ff]"
+              : "text-[#516778] hover:text-[#22292f]"
               }`}
           >
             {activeTab === tab && (
