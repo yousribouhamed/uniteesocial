@@ -273,10 +273,12 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
               onClick={() => fileInputRef.current?.click()}
             >
               <Image
+                key={coverImage}
                 src={coverImage}
                 alt="Event cover"
                 fill
                 className="object-cover transition-opacity group-hover:opacity-80"
+                unoptimized={coverImage.startsWith("data:")}
               />
               {/* Overlay with Larger Camera Icon (Matching Figma/User Photo) */}
               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -605,6 +607,7 @@ function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }
             alt={event.title}
             fill
             className="object-cover"
+            unoptimized={event.coverImage.startsWith("data:")}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.style.display = "none";
