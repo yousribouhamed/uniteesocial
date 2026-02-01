@@ -282,18 +282,16 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
               <div className="flex flex-wrap gap-x-8 gap-y-4">
                 {/* Date Widget */}
                 <div className="flex items-center gap-2">
-                  <div className="border border-[#859bab] rounded-[8px] p-px bg-white shrink-0 overflow-hidden" data-node-id="1818:18141">
-                    <div className="w-[38px] flex flex-col gap-[6px] pb-2 items-center" data-node-id="1818:18142">
-                      <div className="bg-[#859bab] w-full py-1 flex items-center justify-center" data-node-id="1818:18143">
-                        <span className="text-[8px] font-bold text-[rgba(255,255,255,0.79)] uppercase leading-[12px]">{displayMonth}</span>
-                      </div>
-                      <div className="flex items-center justify-center w-full" data-node-id="1818:18145">
-                        <span className="text-[16px] font-medium font-['Instrument_Sans',sans-serif] text-[#859bab] leading-normal uppercase">{displayDay}</span>
-                      </div>
+                  <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
+                    <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
+                      <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
+                    </div>
+                    <div className="flex-1 flex items-center justify-center w-full">
+                      <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[16px] font-medium font-['Instrument_Sans',sans-serif] text-[#22292f] leading-none">{startDate}</span>
+                    <span className="text-base font-medium text-[#22292f] leading-none">{startDate}</span>
                     <span className="text-sm font-normal text-[#859bab] leading-[21px] mt-1">{startTime} - {endTime} UTC+4</span>
                   </div>
                 </div>
@@ -350,44 +348,68 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
 
           {/* Start / End Date-Time Input */}
           <div className="flex sm:flex-row flex-col gap-2 items-start">
-            <div className="flex-1 bg-white rounded-lg p-1 flex flex-col gap-1 w-full">
+            <div className="flex-1 bg-white rounded-lg p-2.5 flex flex-col gap-4 w-full">
+              {/* Start Row */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 px-1">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#3f52ff]" />
-                  <span className="text-sm font-normal text-[#22292f]">Start</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
+                    <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
+                      <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
+                    </div>
+                    <div className="flex-1 flex items-center justify-center w-full">
+                      <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
+                    </div>
+                  </div>
+                  <span className="text-sm font-semibold text-[#22292f]">Start</span>
                 </div>
-                <div className="flex gap-0.5">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="bg-[#d8e6ff] rounded-l-lg px-3 py-2 text-base font-normal text-[#22292f] w-[136px] outline-none"
+                    className="bg-[#d8e6ff] rounded-lg px-3 py-2 text-base font-normal text-[#22292f] w-[136px] outline-none"
                   />
                   <input
                     type="text"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="bg-[#d8e6ff] rounded-r-lg px-1 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
+                    className="bg-[#d8e6ff] rounded-lg px-2 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
                   />
                 </div>
               </div>
+
+              {/* Divider / Line between */}
+              <div className="ml-5 h-px bg-[#f0f2f4] -my-2" />
+
+              {/* End Row */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 px-1">
-                  <div className="w-2.5 h-2.5 rounded-full border border-[#3f52ff]" />
-                  <span className="text-sm font-normal text-[#22292f]">End</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0 opacity-60">
+                    <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
+                      <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">
+                        {getDayAndMonth(endDate).month}
+                      </span>
+                    </div>
+                    <div className="flex-1 flex items-center justify-center w-full">
+                      <span className="text-[16px] font-medium text-[#859bab] leading-none">
+                        {getDayAndMonth(endDate).day}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-sm font-semibold text-[#22292f]">End</span>
                 </div>
-                <div className="flex gap-0.5">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="bg-[#d8e6ff] rounded-l-lg px-3 py-2 text-base font-normal text-[#22292f] w-[136px] outline-none"
+                    className="bg-[#d8e6ff] rounded-lg px-3 py-2 text-base font-normal text-[#22292f] w-[136px] outline-none"
                   />
                   <input
                     type="text"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="bg-[#d8e6ff] rounded-r-lg px-1 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
+                    className="bg-[#d8e6ff] rounded-lg px-2 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
                   />
                 </div>
               </div>
