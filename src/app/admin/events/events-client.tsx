@@ -165,7 +165,9 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
 
   // Helper to parse day and month from startDate string for the widget
   const getDayAndMonth = (dateStr: string) => {
-    const day = dateStr.match(/\d+/)?.[0] || "25";
+    const dayMatch = dateStr.match(/\d+/);
+    const day = dayMatch ? dayMatch[0] : "25";
+
     const monthPatterns: { [key: string]: string } = {
       jan: "JAN.", feb: "FEB.", mar: "MAR.", apr: "APR.", may: "MAY.", jun: "JUN.",
       jul: "JUL.", aug: "AUG.", sep: "SEP.", oct: "OCT.", nov: "NOV.", dec: "DEC.",
@@ -173,7 +175,6 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
       juil: "JUL.", août: "AUG.", sept: "SEP.", octo: "OCT.", nove: "NOV.", déc: "DEC."
     };
 
-    // Split to find the first month-like word
     const words = dateStr.toLowerCase().split(/[^a-zÀ-ÿ0-9]/);
     let month = "OCT.";
     for (const word of words) {
@@ -191,7 +192,7 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
   const { day: displayDay, month: displayMonth } = getDayAndMonth(startDate);
 
   return (
-    <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
+    <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-3 pb-4 flex flex-col gap-4">
       {/* Header: Title + Badges + Check-In Guests */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
@@ -212,7 +213,7 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
         </button>
       </div>
 
-      {/* Detail Tabs: Overview, Guests, Analytics, Advanced */}
+      {/* Detail Tabs */}
       <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative">
         {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
           <button
@@ -241,9 +242,9 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
       </div>
 
       {/* Two-Column Layout */}
-      <div className="flex gap-4 items-start">
+      <div className="flex lg:flex-row flex-col gap-4 items-start">
         {/* Left: Event Preview Card */}
-        <div className="w-[417px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3">
+        <div className="w-full lg:w-[417px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3">
           <div className="flex flex-col gap-4">
             {/* Cover Image */}
             <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2]">
@@ -253,13 +254,12 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
                 fill
                 className="object-cover"
               />
-              {/* Camera upload button */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 bg-[#3f52ff] border-2 border-white rounded-full flex items-center justify-center">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 bg-[#3f52ff] border-2 border-white rounded-full flex items-center justify-center cursor-pointer">
                 <Camera className="w-4 h-4 text-white" />
               </div>
             </div>
 
-            {/* Event Info */}
+            {/* Event Info Prevew */}
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
@@ -267,24 +267,24 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
                 </h3>
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
-                    Dubai Chapter
+                    {chapter}
                   </span>
                   <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
-                    Onsite
+                    {type}
                   </span>
                 </div>
               </div>
 
-              {/* Date + Location Link */}
-              <div className="flex flex-wrap gap-8">
+              {/* Date + Location Preview */}
+              <div className="flex flex-wrap gap-x-8 gap-y-4">
                 {/* Date Widget */}
                 <div className="flex items-center gap-2">
-                  <div className="w-[38px] h-[40px] border border-[#859bab] rounded-lg flex flex-col items-center overflow-hidden bg-white shrink-0">
+                  <div className="w-[38px] h-[40px] border border-[#859bab] rounded-[10px] flex flex-col items-center overflow-hidden bg-white shrink-0">
                     <div className="bg-[#859bab] w-full h-[18px] flex items-center justify-center">
-                      <span className="text-[10px] text-white/80 font-bold leading-none tracking-tight">{displayMonth}</span>
+                      <span className="text-[10px] text-white font-bold leading-none tracking-tight">{displayMonth}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[16px] font-medium text-[#859bab] leading-none mb-0.5">{displayDay}</span>
+                      <span className="text-[18px] font-medium text-[#859bab] leading-none mb-0.5">{displayDay}</span>
                     </div>
                   </div>
                   <div className="flex flex-col">
@@ -293,40 +293,41 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
                   </div>
                 </div>
 
-                {/* Location Link */}
+                {/* Location Icon Block */}
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 border border-[#859bab] rounded-lg flex items-center justify-center">
                     <Globe className="w-5 h-5 text-[#859bab]" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-base font-medium text-[#22292f] leading-[24px]">Alura</span>
-                    <span className="text-sm font-normal text-[#859bab] leading-[21px]">Dubai, Dubai</span>
+                    <span className="text-base font-medium text-[#22292f] leading-[24px]">Location Preview</span>
+                    <span className="text-sm font-normal text-[#859bab] leading-[21px] truncate w-[150px]">
+                      {locationInput || "Add location below"}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Map Pin + Location */}
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
-                <span className="text-sm font-normal text-[#22292f] leading-[18px]">
-                  {locationInput || "Location not set"}
-                </span>
-              </div>
-
-              {/* Signups */}
-              <div className="flex items-center gap-2">
-                <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
-                <span className="text-sm font-normal text-[#22292f] leading-[18px]">
-                  {event?.signups || 0}/{event?.maxSignups || 300}
-                </span>
+              {/* Bottom Rows: Map Pin + Signups */}
+              <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
+                  <span className="text-sm font-normal text-[#22292f] leading-[18px] truncate">
+                    {locationInput || "Not specificed"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
+                  <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                    {event?.signups || 0}/{event?.maxSignups || 300}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Right: Event Form */}
-        <div className="flex-1 flex flex-col gap-4 py-3">
-          {/* Language Dropdown */}
+        <div className="flex-1 w-full flex flex-col gap-4">
           <div className="flex justify-end">
             <button className="flex items-center gap-1 h-8 px-3 bg-[#edf8ff] text-[#1d2cb6] text-xs font-medium rounded-lg hover:bg-[#dbeefe] transition-colors">
               English
@@ -334,179 +335,99 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
             </button>
           </div>
 
-          {/* Large Title */}
-          <h2 className="text-[40px] font-bold text-[#3f52ff] leading-[46px]">
-            {eventTitle}
-          </h2>
+          <input
+            type="text"
+            value={eventTitle}
+            onChange={(e) => setEventTitle(e.target.value)}
+            className="text-[40px] font-bold text-[#3f52ff] leading-[46px] bg-transparent outline-none w-full"
+            placeholder="Event Title"
+          />
 
-          {/* Start / End Date-Time */}
-          <div className="flex gap-2 items-start">
-            <div className="flex-1 bg-white rounded-lg p-1 flex flex-col gap-1">
-              {/* Start Row */}
+          {/* Start / End Date-Time Input */}
+          <div className="flex sm:flex-row flex-col gap-2 items-start">
+            <div className="flex-1 bg-white rounded-lg p-1 flex flex-col gap-1 w-full">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 px-1">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#3f52ff]" />
-                  <span className="text-sm font-normal text-[#22292f] leading-[24px]">Start</span>
+                  <span className="text-sm font-normal text-[#22292f]">Start</span>
                 </div>
                 <div className="flex gap-0.5">
-                  <div className="bg-[#d8e6ff] rounded-l-lg px-3 py-2 w-[136px]">
-                    <input
-                      type="text"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="bg-transparent text-base font-normal text-[#22292f] w-full outline-none"
-                    />
-                  </div>
-                  <div className="bg-[#d8e6ff] rounded-r-lg px-1 py-2">
-                    <input
-                      type="text"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="bg-transparent text-base font-normal text-[#22292f] w-[50px] text-center outline-none"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="bg-[#d8e6ff] rounded-l-lg px-3 py-2 text-base font-normal text-[#22292f] w-[136px] outline-none"
+                  />
+                  <input
+                    type="text"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="bg-[#d8e6ff] rounded-r-lg px-1 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
+                  />
                 </div>
               </div>
-              {/* End Row */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 px-1">
                   <div className="w-2.5 h-2.5 rounded-full border border-[#3f52ff]" />
-                  <span className="text-sm font-normal text-[#22292f] leading-[24px]">End</span>
+                  <span className="text-sm font-normal text-[#22292f]">End</span>
                 </div>
                 <div className="flex gap-0.5">
-                  <div className="bg-[#d8e6ff] rounded-l-lg px-3 py-2 w-[136px]">
-                    <input
-                      type="text"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="bg-transparent text-base font-normal text-[#22292f] w-full outline-none"
-                    />
-                  </div>
-                  <div className="bg-[#d8e6ff] rounded-r-lg px-1 py-2">
-                    <input
-                      type="text"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="bg-transparent text-base font-normal text-[#22292f] w-[50px] text-center outline-none"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="bg-[#d8e6ff] rounded-l-lg px-3 py-2 text-base font-normal text-[#22292f] w-[136px] outline-none"
+                  />
+                  <input
+                    type="text"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="bg-[#d8e6ff] rounded-r-lg px-1 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
+                  />
                 </div>
               </div>
-              {/* Dashed line between start/end dots */}
             </div>
 
-            {/* Timezone */}
-            <div className="bg-white rounded-lg w-[140px] h-full p-2 flex flex-col gap-1">
+            <div className="bg-white rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
               <Globe className="w-4 h-4 text-[#22292f]" />
-              <span className="text-sm font-medium text-[#22292f] leading-[18px]">GMT+01:00</span>
-              <span className="text-xs font-normal text-[#668091] leading-[21px]">Algiers</span>
+              <span className="text-sm font-medium text-[#22292f]">GMT+01:00</span>
+              <span className="text-xs font-normal text-[#668091]">Algiers</span>
             </div>
           </div>
 
-          {/* Duration */}
           <div className="bg-white rounded-lg px-3 py-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-[#22292f]" />
-              <span className="text-base font-medium text-[#22292f] leading-[16px]">Duration</span>
+              <span className="text-base font-medium text-[#22292f]">Duration</span>
             </div>
-            <span className="text-base font-medium text-[#668091] leading-[24px]">3 hours</span>
+            <span className="text-base font-medium text-[#668091]">3 hours</span>
           </div>
 
-          {/* Event Location Section */}
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">Event Location</span>
-
-            <div className="bg-white rounded-lg p-3 flex flex-col gap-6">
-              {/* Add event location */}
+            <span className="text-sm font-medium text-[#3f52ff]">Event Location</span>
+            <div className="bg-white rounded-lg p-3 flex flex-col gap-4">
               <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-[#22292f] mt-0.5 shrink-0" />
-                <span className="text-base font-medium text-[#22292f] leading-[16px]">Add event location</span>
+                <MapPin className="w-4 h-4 text-[#22292f] mt-0.5" />
+                <span className="text-base font-medium text-[#22292f]">Add event location</span>
               </div>
-
-              {/* Location Input */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-[#22292f]">Label</label>
+                <label className="text-sm font-semibold text-[#22292f]">Location Name</label>
                 <input
                   type="text"
                   placeholder="Enter the location"
                   value={locationInput}
                   onChange={(e) => setLocationInput(e.target.value)}
-                  className="h-9 px-3 py-1 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] transition-colors"
-                />
-                <div className="flex items-center gap-2">
-                  <Info className="w-4 h-4 text-[#859bab]" />
-                  <span className="text-sm font-normal text-[#859bab]">Type to search (Google Typeahead Search integration)</span>
-                </div>
-              </div>
-
-              {/* Map */}
-              <div className="relative w-full h-[120px] rounded-xl overflow-hidden">
-                <Image
-                  src="/img/map-placeholder.jpg"
-                  alt="Map"
-                  fill
-                  className="object-cover"
+                  className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff]"
                 />
               </div>
-
-              {/* Geo-Fence Radius */}
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-medium text-[#22292f] leading-[16px]">Geo-Fence Radius</span>
-                  <span className="text-base font-medium text-[#668091] leading-[24px]">{geoFenceRadius} meters</span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={1000}
-                  value={geoFenceRadius}
-                  onChange={(e) => setGeoFenceRadius(Number(e.target.value))}
-                  className="w-full h-2 bg-[#ececf0] rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-[#3f52ff] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md"
-                  style={{
-                    background: `linear-gradient(to right, #3f52ff ${(geoFenceRadius / 1000) * 100}%, #ececf0 ${(geoFenceRadius / 1000) * 100}%)`,
-                  }}
-                />
-                <span className="text-xs font-semibold text-[#859bab] text-center">
-                  Define the radius for location-based check-in verification
-                </span>
-              </div>
-
-              {/* Location Masking */}
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm font-semibold text-[#22292f]">Location Masking</span>
-                    <span className="text-xs font-semibold text-[#859bab]">Hide real location and show custom name</span>
-                  </div>
-                  <button
-                    onClick={() => setLocationMasking(!locationMasking)}
-                    className={`w-8 h-[18px] rounded-full p-0.5 transition-colors ${locationMasking ? "bg-[#3f52ff]" : "bg-[#394753]"}`}
-                  >
-                    <div className={`w-3.5 h-3.5 rounded-full bg-white transition-transform ${locationMasking ? "translate-x-3.5" : "translate-x-0"}`} />
-                  </button>
-                </div>
-
-                {/* Location Description Textarea */}
-                <div className="border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-2 h-[149px]">
-                  <textarea
-                    value={locationDescription}
-                    onChange={(e) => setLocationDescription(e.target.value)}
-                    maxLength={280}
-                    className="flex-1 text-sm font-normal text-[#22292f] resize-none outline-none"
-                  />
-                  <div className="flex items-center justify-between">
-                    <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">
-                      {locationDescription.length}/280 characters
-                    </span>
-                  </div>
-                </div>
+              <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#eee]">
+                <Image src="/img/map-placeholder.jpg" alt="Map" fill className="object-cover" />
               </div>
             </div>
           </div>
 
-          {/* Event Description */}
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">Event Description</span>
+            <span className="text-sm font-medium text-[#3f52ff]">Description</span>
             <div className="border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-2 h-[149px] bg-white">
               <textarea
                 value={eventDescription}
@@ -514,18 +435,17 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
                 maxLength={280}
                 className="flex-1 text-sm font-normal text-[#22292f] resize-none outline-none"
               />
-              <div className="flex items-center justify-between">
-                <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">
-                  {eventDescription.length}/280 characters
+              <div className="flex justify-end">
+                <span className="text-[#859bab] text-[10px] font-semibold">
+                  {eventDescription.length}/280
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Save Changes Button */}
           <button
             onClick={onClose}
-            className="w-full h-10 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+            className="w-full h-10 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4"
           >
             Save Changes
           </button>
