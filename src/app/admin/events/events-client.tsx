@@ -144,14 +144,14 @@ const mockEvents: EventItem[] = [
 ];
 
 // --- Create Event View ---
-function CreateEventView({ onClose }: { onClose: () => void }) {
+function CreateEventView({ event, onClose }: { event: EventItem | null; onClose: () => void }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
-  const [eventTitle, setEventTitle] = useState("Innovate & Elevate: Tech Conference 2024");
+  const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
   const [startDate, setStartDate] = useState("lun. 24 nov.");
   const [startTime, setStartTime] = useState("00:00");
   const [endDate, setEndDate] = useState("lun. 24 nov.");
   const [endTime, setEndTime] = useState("02:00");
-  const [locationInput, setLocationInput] = useState("");
+  const [locationInput, setLocationInput] = useState(event?.location || "");
   const [geoFenceRadius, setGeoFenceRadius] = useState(650);
   const [locationMasking, setLocationMasking] = useState(false);
   const [locationDescription, setLocationDescription] = useState(
@@ -190,8 +190,8 @@ function CreateEventView({ onClose }: { onClose: () => void }) {
             key={tab}
             onClick={() => setDetailTab(tab)}
             className={`relative h-9 px-3 py-2 rounded-lg text-base font-medium transition-colors z-10 ${detailTab === tab
-                ? "text-[#3f52ff]"
-                : "text-[#516778] hover:text-[#22292f]"
+              ? "text-[#3f52ff]"
+              : "text-[#516778] hover:text-[#22292f]"
               }`}
           >
             {detailTab === tab && (
@@ -219,7 +219,7 @@ function CreateEventView({ onClose }: { onClose: () => void }) {
             {/* Cover Image */}
             <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2]">
               <Image
-                src="/img/event-cover-2.jpg"
+                src={event?.coverImage || "/img/event-cover-placeholder.jpg"}
                 alt="Event cover"
                 fill
                 className="object-cover"
@@ -286,7 +286,7 @@ function CreateEventView({ onClose }: { onClose: () => void }) {
               <div className="flex items-center gap-2">
                 <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
                 <span className="text-sm font-normal text-[#22292f] leading-[18px]">
-                  88/300
+                  {event?.signups || 0}/{event?.maxSignups || 300}
                 </span>
               </div>
             </div>
@@ -580,6 +580,7 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
   const [activeTab, setActiveTab] = useState<"all" | "current" | "past">("all");
   const [filterCategory, setFilterCategory] = useState<"all" | "general" | "match">("all");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
   // Compute stats from events
   const totalEvents = mockEvents.length;
@@ -626,8 +627,14 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto px-8 py-8">
-          {showCreateEvent ? (
-            <CreateEventView onClose={() => setShowCreateEvent(false)} />
+          {showCreateEvent || selectedEvent ? (
+            <CreateEventView
+              event={selectedEvent}
+              onClose={() => {
+                setShowCreateEvent(false);
+                setSelectedEvent(null);
+              }}
+            />
           ) : (
             <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
               {/* Page Header */}
@@ -712,8 +719,8 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
-                          ? "text-[#3f52ff]"
-                          : "text-[#516778] hover:text-[#22292f]"
+                        ? "text-[#3f52ff]"
+                        : "text-[#516778] hover:text-[#22292f]"
                         }`}
                     >
                       {activeTab === tab && (
@@ -792,7 +799,7 @@ export default function EventsPageClient({ currentUser }: EventsPageClientProps)
                           <EventCard
                             key={event.id}
                             event={event}
-                            onClick={() => setShowCreateEvent(true)}
+                            onClick={() => setSelectedEvent(event)}
                           />
                         ))}
                       </div>
