@@ -148,7 +148,7 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
   const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
   const [chapter, setChapter] = useState(event?.chapter || "Dubai Chapter");
-  const [type, setType] = useState(event?.type || "Onsite");
+  const [type, setType] = useState<"Onsite" | "Online" | "Hybrid">(event?.type || "Onsite");
   const [startDate, setStartDate] = useState(event?.dateGroup || "lun. 24 nov.");
   const [startTime, setStartTime] = useState("00:00");
   const [endDate, setEndDate] = useState("lun. 24 nov.");
@@ -169,16 +169,19 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
     const day = dayMatch ? dayMatch[0] : "25";
 
     const monthPatterns: { [key: string]: string } = {
-      jan: "JAN.", feb: "FEB.", mar: "MAR.", apr: "APR.", may: "MAY.", jun: "JUN.",
-      jul: "JUL.", aug: "AUG.", sep: "SEP.", oct: "OCT.", nov: "NOV.", dec: "DEC.",
-      janv: "JAN.", févr: "FEB.", mars: "MAR.", avr: "APR.", mai: "MAY.", juin: "JUN.",
-      juil: "JUL.", août: "AUG.", sept: "SEP.", octo: "OCT.", nove: "NOV.", déc: "DEC."
+      jan: "JAN.", feb: "FEV.", mar: "MAR.", apr: "AVR.", may: "MAI.", jun: "JUI.",
+      jul: "JUL.", aug: "AOU.", sep: "SEP.", oct: "OCT.", nov: "NOV.", dec: "DEC.",
+      janv: "JAN.", févr: "FEV.", mars: "MAR.", avr: "AVR.", mai: "MAI.", juin: "JUI.",
+      juil: "JUI.", août: "AOU.", sept: "SEP.", octo: "OCT.", nove: "NOV.", déc: "DEC.",
+      january: "JAN.", february: "FEV.", march: "MAR.", april: "AVR.", june: "JUI.",
+      july: "JUL.", august: "AOU.", september: "SEP.", october: "OCT.", november: "NOV.", december: "DEC."
     };
 
     const words = dateStr.toLowerCase().split(/[^a-zÀ-ÿ0-9]/);
     let month = "OCT.";
     for (const word of words) {
       if (word.length < 2) continue;
+      // Check for exact matches or prefix matches
       for (const [key, value] of Object.entries(monthPatterns)) {
         if (word.startsWith(key)) {
           month = value;
@@ -279,17 +282,17 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
               <div className="flex flex-wrap gap-x-8 gap-y-4">
                 {/* Date Widget */}
                 <div className="flex items-center gap-2">
-                  <div className="w-[38px] h-[40px] border border-[#859bab] rounded-[10px] flex flex-col items-center overflow-hidden bg-white shrink-0">
+                  <div className="w-[42px] h-[46px] border border-[#859bab] rounded-xl flex flex-col items-center overflow-hidden bg-white shrink-0 shadow-sm">
                     <div className="bg-[#859bab] w-full h-[18px] flex items-center justify-center">
                       <span className="text-[10px] text-white font-bold leading-none tracking-tight">{displayMonth}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[18px] font-medium text-[#859bab] leading-none mb-0.5">{displayDay}</span>
+                      <span className="text-[20px] font-bold text-[#859bab] leading-none mb-0.5">{displayDay}</span>
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-base font-medium text-[#22292f] leading-[24px]">{startDate}</span>
-                    <span className="text-sm font-normal text-[#859bab] leading-[21px]">{startTime} - {endTime} UTC+4</span>
+                    <span className="text-base font-medium text-[#22292f] leading-none">{startDate}</span>
+                    <span className="text-sm font-normal text-[#859bab] leading-[21px] mt-1">{startTime} - {endTime} UTC+4</span>
                   </div>
                 </div>
 
@@ -403,6 +406,35 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
             <span className="text-base font-medium text-[#668091]">3 hours</span>
           </div>
 
+          {/* Chapter / Type Selection */}
+          <div className="flex gap-2">
+            <div className="flex-1 flex flex-col gap-1">
+              <span className="text-xs font-semibold text-[#859bab]">Chapter</span>
+              <select
+                value={chapter}
+                onChange={(e) => setChapter(e.target.value)}
+                className="h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none"
+              >
+                <option>Dubai Chapter</option>
+                <option>London Chapter</option>
+                <option>Paris Chapter</option>
+              </select>
+            </div>
+            <div className="flex-1 flex flex-col gap-1">
+              <span className="text-xs font-semibold text-[#859bab]">Event Type</span>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value as "Onsite" | "Online" | "Hybrid")}
+                className="h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none"
+              >
+                <option>Onsite</option>
+                <option>Online</option>
+                <option>Hybrid</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Event Location Section */}
           <div className="flex flex-col gap-2">
             <span className="text-sm font-medium text-[#3f52ff]">Event Location</span>
             <div className="bg-white rounded-lg p-3 flex flex-col gap-4">
@@ -422,6 +454,36 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
               </div>
               <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#eee]">
                 <Image src="/img/map-placeholder.jpg" alt="Map" fill className="object-cover" />
+              </div>
+
+              {/* Geo-Fence Radius */}
+              <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-[#22292f]">Geo-Fence Radius</span>
+                  <span className="text-sm font-medium text-[#668091]">{geoFenceRadius} meters</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={1000}
+                  value={geoFenceRadius}
+                  onChange={(e) => setGeoFenceRadius(Number(e.target.value))}
+                  className="w-full h-1.5 bg-[#eceff2] rounded-full appearance-none accent-[#3f52ff] cursor-pointer"
+                />
+              </div>
+
+              {/* Location Masking */}
+              <div className="flex items-center justify-between pt-2 border-t border-[#f0f2f4]">
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-[#22292f]">Location Masking</span>
+                  <span className="text-xs text-[#859bab]">Hide real location and show custom name</span>
+                </div>
+                <button
+                  onClick={() => setLocationMasking(!locationMasking)}
+                  className={`w-10 h-5 rounded-full relative transition-colors ${locationMasking ? "bg-[#3f52ff]" : "bg-[#d5dde2]"}`}
+                >
+                  <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${locationMasking ? "translate-x-5" : "translate-x-0"}`} />
+                </button>
               </div>
             </div>
           </div>
@@ -445,7 +507,7 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
 
           <button
             onClick={onClose}
-            className="w-full h-10 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4"
+            className="w-full min-h-[40px] bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4"
           >
             Save Changes
           </button>
