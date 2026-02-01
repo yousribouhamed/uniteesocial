@@ -41,6 +41,8 @@ import {
   Users, // Added for ModuleItem
 } from "lucide-react";
 import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
+import { toastQueue } from "@/components/ui/aria-toast";
+import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
 import { getBusinessProfile, updateBusinessProfile } from "./actions";
 
@@ -493,9 +495,17 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
   const handleSave = async () => {
     try {
       await updateBusinessProfile(formData);
-      alert("General settings saved successfully!");
+      toastQueue.add({
+        title: "General Settings Saved",
+        description: "Your general business settings have been updated.",
+        variant: "success",
+      }, { timeout: 3000 });
     } catch (e) {
-      alert("Failed to save settings");
+      toastQueue.add({
+        title: "Save Failed",
+        description: "Failed to save general settings.",
+        variant: "error",
+      }, { timeout: 4000 });
     }
   };
 
@@ -820,9 +830,17 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ social_links: links });
-      alert("Social links saved successfully!");
+      toastQueue.add({
+        title: "Social Links Saved",
+        description: "Your social media links have been updated.",
+        variant: "success",
+      }, { timeout: 3000 });
     } catch (e) {
-      alert("Failed to save social links");
+      toastQueue.add({
+        title: "Save Failed",
+        description: "Failed to save social links.",
+        variant: "error",
+      }, { timeout: 4000 });
     }
   };
 
@@ -905,9 +923,17 @@ function LegalAndTCContent({ initialData }: { initialData?: any }) {
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ terms_url: termsUrl, privacy_url: privacyUrl });
-      alert("Legal documents saved successfully!");
+      toastQueue.add({
+        title: "Legal Documents Saved",
+        description: "Your legal URLs have been updated.",
+        variant: "success",
+      }, { timeout: 3000 });
     } catch (e) {
-      alert("Failed to save legal documents");
+      toastQueue.add({
+        title: "Save Failed",
+        description: "Failed to save legal documents.",
+        variant: "error",
+      }, { timeout: 4000 });
     }
   };
 
@@ -996,9 +1022,17 @@ function ModulesContent({ initialData }: { initialData?: any }) {
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ modules });
-      alert("Modules saved successfully!");
+      toastQueue.add({
+        title: "Modules Saved",
+        description: "Your module settings have been updated.",
+        variant: "success",
+      }, { timeout: 3000 });
     } catch (e) {
-      alert("Failed to save modules");
+      toastQueue.add({
+        title: "Save Failed",
+        description: "Failed to save modules settings.",
+        variant: "error",
+      }, { timeout: 4000 });
     }
   };
 
@@ -1918,80 +1952,7 @@ function ChaptersContent() {
     lastUpdate: string;
   } | null>(null);
 
-  const chaptersData = [
-    {
-      name: "Dubai",
-      code: "CH001",
-      city: "Dubai",
-      country: "UAE",
-      team: 2,
-      events: "1 Events",
-      visible: false,
-      status: "Active" as const,
-      lastUpdate: "09/01/2023",
-      updatedBy: "by Admin User",
-    },
-    {
-      name: "Yeraven",
-      code: "CH002",
-      city: "Yeraven",
-      country: "Armennia",
-      team: 10,
-      events: "2 Events",
-      visible: true,
-      status: "Active" as const,
-      lastUpdate: "03/03/2024",
-      updatedBy: "",
-    },
-    {
-      name: "Amman",
-      code: "CH003",
-      city: "Amman",
-      country: "Jordan",
-      team: 7,
-      events: "13 Events",
-      visible: false,
-      status: "Active" as const,
-      lastUpdate: "02/14/2024",
-      updatedBy: "",
-    },
-    {
-      name: "New York",
-      code: "CH004",
-      city: "New York",
-      country: "USA",
-      team: 42,
-      events: "3 Events",
-      visible: false,
-      status: "Active" as const,
-      lastUpdate: "07/22/2023",
-      updatedBy: "",
-    },
-    {
-      name: "Tokyo",
-      code: "CH005",
-      city: "Tokyo",
-      country: "Japan",
-      team: 13,
-      events: "12 Events",
-      visible: true,
-      status: "Active" as const,
-      lastUpdate: "04/28/2024",
-      updatedBy: "",
-    },
-    {
-      name: "London",
-      code: "CH006",
-      city: "London",
-      country: "United Kingdom",
-      team: 21,
-      events: "10 Events",
-      visible: true,
-      status: "Active" as const,
-      lastUpdate: "11/05/2023",
-      updatedBy: "",
-    },
-  ];
+  const chaptersData = DEFAULT_CHAPTERS;
 
   const [visibleStates, setVisibleStates] = useState<Record<string, boolean>>(
     () => Object.fromEntries(chaptersData.map((c) => [c.code, c.visible]))

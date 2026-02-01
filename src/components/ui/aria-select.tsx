@@ -1,0 +1,67 @@
+"use client";
+
+import React from "react";
+import {
+    Button,
+    Label,
+    ListBox,
+    ListBoxItem,
+    Popover,
+    Select,
+    SelectValue,
+    SelectProps,
+    ValidationResult,
+    ListBoxItemProps
+} from "react-aria-components";
+import { ChevronDown, Check } from "lucide-react";
+
+interface AriaSelectProps<T extends object> extends Omit<SelectProps<T>, "children"> {
+    label?: string;
+    description?: string;
+    errorMessage?: string | ((validation: ValidationResult) => string);
+    items?: Iterable<T>;
+    children: React.ReactNode | ((item: T) => React.ReactNode);
+    className?: string;
+}
+
+export function AriaSelect<T extends object>({
+    label,
+    description,
+    errorMessage,
+    children,
+    items,
+    className,
+    ...props
+}: AriaSelectProps<T>) {
+    return (
+        <Select {...props} className={`flex flex-col gap-1 w-full ${className}`}>
+            {label && <Label className="text-sm font-semibold text-[#859bab]">{label}</Label>}
+            <Button className="flex items-center justify-between w-full h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] transition-colors data-[pressed]:bg-gray-50 cursor-pointer">
+                <SelectValue className="flex-1 text-left truncate placeholder-shown:text-[#859bab]" />
+                <ChevronDown className="w-4 h-4 text-[#516778] shrink-0 ml-2" />
+            </Button>
+            {description && <span className="text-xs text-gray-500">{description}</span>}
+            <Popover className="min-w-[--trigger-width] bg-white border border-[#d5dde2] rounded-lg shadow-lg overflow-auto p-1 max-h-60 z-50 transform origin-top transition duration-200 ease-out data-[entering]:scale-95 data-[entering]:opacity-0 data-[exiting]:scale-95 data-[exiting]:opacity-0">
+                <ListBox items={items} className="outline-none flex flex-col gap-0.5 w-full">
+                    {children}
+                </ListBox>
+            </Popover>
+        </Select>
+    );
+}
+
+export function AriaSelectItem(props: ListBoxItemProps) {
+    return (
+        <ListBoxItem
+            {...props}
+            className={`group flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-[#22292f] outline-none cursor-pointer data-[focused]:bg-[#edf8ff] data-[focused]:text-[#1d2cb6] data-[selected]:font-semibold data-[selected]:bg-[#edf8ff] data-[selected]:text-[#1d2cb6]`}
+        >
+            {({ isSelected }) => (
+                <>
+                    <span className="flex-1 truncate">{typeof props.children === 'string' ? props.children : props.textValue}</span>
+                    {isSelected && <Check className="w-4 h-4 text-[#1d2cb6]" />}
+                </>
+            )}
+        </ListBoxItem>
+    );
+}

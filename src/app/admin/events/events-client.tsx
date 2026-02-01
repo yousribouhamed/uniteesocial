@@ -21,7 +21,10 @@ import AdminSidebar from "@/components/admin-sidebar";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Suspense } from "react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
+import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
+import { toastQueue } from "@/components/ui/aria-toast";
+import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
 // --- Types ---
 interface EventItem {
@@ -32,6 +35,7 @@ interface EventItem {
   type: "Onsite" | "Online" | "Hybrid";
   eventCategory: "general" | "match";
   date?: string;
+  dateIso?: string; // Added for filtering
   location: string;
   signups: number;
   maxSignups: number;
@@ -56,6 +60,7 @@ const mockEvents: EventItem[] = [
     type: "Onsite",
     eventCategory: "match",
     date: "Sunday, April 17 - 17, 2024",
+    dateIso: "2024-04-17",
     location: "Al Maktoum Airport, Jebel Ali",
     signups: 18,
     maxSignups: 300,
@@ -69,6 +74,7 @@ const mockEvents: EventItem[] = [
     type: "Onsite",
     eventCategory: "match",
     location: "Dubai World Trade Center, DWC",
+    dateIso: "2024-10-25",
     signups: 88,
     maxSignups: 300,
     dateGroup: "25 Oct. Saturday",
@@ -81,6 +87,7 @@ const mockEvents: EventItem[] = [
     type: "Onsite",
     eventCategory: "match",
     location: "Dubai Creek Harbour, Ras Al Khor",
+    dateIso: "2024-10-24",
     signups: 12,
     maxSignups: 300,
     dateGroup: "24 Oct. Saturday",
@@ -93,6 +100,7 @@ const mockEvents: EventItem[] = [
     type: "Onsite",
     eventCategory: "match",
     location: "Dubai Design District, D3",
+    dateIso: "2024-10-24",
     signups: 99,
     maxSignups: 300,
     dateGroup: "24 Oct. Saturday",
@@ -105,6 +113,7 @@ const mockEvents: EventItem[] = [
     type: "Onsite",
     eventCategory: "match",
     location: "Dubai Marina Mall, Dubai",
+    dateIso: "2024-10-24",
     signups: 44,
     maxSignups: 300,
     dateGroup: "24 Oct. Saturday",
@@ -117,6 +126,7 @@ const mockEvents: EventItem[] = [
     type: "Onsite",
     eventCategory: "general",
     location: "Burj Khalifa, Downtown Dubai",
+    dateIso: "2024-10-24",
     signups: 72,
     maxSignups: 300,
     dateGroup: "24 Oct. Saturday",
@@ -129,6 +139,7 @@ const mockEvents: EventItem[] = [
     type: "Onsite",
     eventCategory: "match",
     location: "Emirates Towers, Trade Centre",
+    dateIso: "2024-10-24",
     signups: 28,
     maxSignups: 300,
     dateGroup: "24 Oct. Saturday",
@@ -141,6 +152,7 @@ const mockEvents: EventItem[] = [
     type: "Onsite",
     eventCategory: "match",
     location: "City Walk, Al Safa",
+    dateIso: "2024-10-24",
     signups: 65,
     maxSignups: 300,
     dateGroup: "24 Oct. Saturday",
@@ -388,10 +400,13 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
         {/* Right: Event Form */}
         <div className="flex-1 w-full flex flex-col gap-4">
           <div className="flex justify-end">
-            <button className="flex items-center gap-1 h-8 px-3 bg-[#edf8ff] text-[#1d2cb6] text-xs font-medium rounded-lg hover:bg-[#dbeefe] transition-colors">
-              English
-              <ChevronDown className="w-4 h-4" />
-            </button>
+            <div className="w-[120px]">
+              <AriaSelect aria-label="Language" defaultSelectedKey="English">
+                <AriaSelectItem id="English" textValue="English">English</AriaSelectItem>
+                <AriaSelectItem id="French" textValue="French">French</AriaSelectItem>
+                <AriaSelectItem id="Arabic" textValue="Arabic">Arabic</AriaSelectItem>
+              </AriaSelect>
+            </div>
           </div>
 
           <input
@@ -483,28 +498,26 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
           {/* Chapter / Type Selection */}
           <div className="flex gap-2">
             <div className="flex-1 flex flex-col gap-1">
-              <span className="text-xs font-semibold text-[#859bab]">Chapter</span>
-              <select
-                value={chapter}
-                onChange={(e) => setChapter(e.target.value)}
-                className="h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none"
+              <AriaSelect
+                label="Chapter"
+                selectedKey={chapter}
+                onSelectionChange={(k) => setChapter(k as string)}
               >
-                <option>Dubai Chapter</option>
-                <option>London Chapter</option>
-                <option>Paris Chapter</option>
-              </select>
+                <AriaSelectItem id="Dubai Chapter" textValue="Dubai Chapter">Dubai Chapter</AriaSelectItem>
+                <AriaSelectItem id="London Chapter" textValue="London Chapter">London Chapter</AriaSelectItem>
+                <AriaSelectItem id="Paris Chapter" textValue="Paris Chapter">Paris Chapter</AriaSelectItem>
+              </AriaSelect>
             </div>
             <div className="flex-1 flex flex-col gap-1">
-              <span className="text-xs font-semibold text-[#859bab]">Event Type</span>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as "Onsite" | "Online" | "Hybrid")}
-                className="h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none"
+              <AriaSelect
+                label="Event Type"
+                selectedKey={type}
+                onSelectionChange={(k) => setType(k as "Onsite" | "Online" | "Hybrid")}
               >
-                <option>Onsite</option>
-                <option>Online</option>
-                <option>Hybrid</option>
-              </select>
+                <AriaSelectItem id="Onsite" textValue="Onsite">Onsite</AriaSelectItem>
+                <AriaSelectItem id="Online" textValue="Online">Online</AriaSelectItem>
+                <AriaSelectItem id="Hybrid" textValue="Hybrid">Hybrid</AriaSelectItem>
+              </AriaSelect>
             </div>
           </div>
 
@@ -695,10 +708,49 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const [events, setEvents] = useState<EventItem[]>(mockEvents);
   const [activeTab, setActiveTab] = useState<"all" | "current" | "past">("all");
   const [filterCategory, setFilterCategory] = useState<"all" | "general" | "match">("all");
+  const [filterChapter, setFilterChapter] = useState<string>("all");
+  const [filterType, setFilterType] = useState<string>("all");
   const [filterDate, setFilterDate] = useState<DateValue | null>(null);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
+  // Filter Logic
+  const filteredEvents = events.filter((e) => {
+    // 1. Tab Filter
+    // (Existing tab logic assumes "current" vs "past" based on date but mock data is hardcoded)
+    // We'll keep tab logic placeholders or simple if activeTab is used elsewhere.
+
+    // 2. Category Filter
+    if (filterCategory !== "all" && e.eventCategory !== filterCategory) return false;
+
+    // 3. Chapter Filter
+    if (filterChapter !== "all") {
+      // Match by chapter name
+      if (e.chapter !== filterChapter) return false;
+    }
+
+    // 4. Type Filter
+    if (filterType !== "all" && e.type.toLowerCase() !== filterType.toLowerCase()) return false;
+
+    // 5. Date Filter
+    if (filterDate) {
+      if (e.dateIso !== filterDate.toString()) return false;
+    }
+
+    return true;
+  });
+
+  const hasEvents = events.length > 0;
+  const hasFilteredEvents = filteredEvents.length > 0;
+
+  // Group events by dateGroup
+  const groupedEvents: Record<string, EventItem[]> = {};
+  filteredEvents.forEach((ev) => {
+    if (!groupedEvents[ev.dateGroup]) {
+      groupedEvents[ev.dateGroup] = [];
+    }
+    groupedEvents[ev.dateGroup].push(ev);
+  });
   useEffect(() => {
     const editId = searchParams.get("edit");
     const create = searchParams.get("create");
@@ -729,6 +781,11 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
       // Create new
       setEvents((prev) => [savedEvent, ...prev]);
     }
+    toastQueue.add({
+      title: selectedEvent ? "Event Updated" : "Event Created",
+      description: `"${savedEvent.title}" has been successfully saved.`,
+      variant: "success",
+    }, { timeout: 3000 });
     handleClose();
   };
 
@@ -751,23 +808,6 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const matchPercent = totalEvents > 0 ? ((matchCount / totalEvents) * 100).toFixed(1) : "0";
   const generalPercent = totalEvents > 0 ? ((generalCount / totalEvents) * 100).toFixed(1) : "0";
 
-  const hasEvents = events.length > 0;
-
-  // Filter events by category
-  const filteredEvents = events.filter((e) => {
-    if (filterCategory === "general") return e.eventCategory === "general";
-    if (filterCategory === "match") return e.eventCategory === "match";
-    return true;
-  });
-
-  // Group events by date
-  const groupedEvents: Record<string, EventItem[]> = {};
-  filteredEvents.forEach((event) => {
-    if (!groupedEvents[event.dateGroup]) {
-      groupedEvents[event.dateGroup] = [];
-    }
-    groupedEvents[event.dateGroup].push(event);
-  });
 
   return (
     <div className="flex min-h-screen bg-[#f9fafb] font-[family-name:'Instrument_Sans',sans-serif]">
@@ -910,23 +950,47 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                       <AriaDatePicker value={filterDate} onChange={setFilterDate} aria-label="Select Date" />
                     </div>
 
-                    {/* General Event dropdown */}
-                    <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
-                      General Event
-                      <ChevronDown className="w-4 h-4 text-[#516778]" />
-                    </button>
+
+                    {/* General Event dropdown - mapped to filterCategory */}
+                    <div className="w-[150px]">
+                      <AriaSelect
+                        aria-label="Filter Category"
+                        selectedKey={filterCategory}
+                        onSelectionChange={(k) => setFilterCategory(k as any)}
+                      >
+                        <AriaSelectItem id="all" textValue="All Events">All Events</AriaSelectItem>
+                        <AriaSelectItem id="general" textValue="General Event">General Event</AriaSelectItem>
+                        <AriaSelectItem id="match" textValue="Match">Match</AriaSelectItem>
+                      </AriaSelect>
+                    </div>
 
                     {/* All Chapters dropdown */}
-                    <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
-                      All Chapters
-                      <ChevronDown className="w-4 h-4 text-[#516778]" />
-                    </button>
+                    <div className="w-[150px]">
+                      <AriaSelect
+                        aria-label="Filter Chapter"
+                        selectedKey={filterChapter}
+                        onSelectionChange={(k) => setFilterChapter(k as string)}
+                      >
+                        <AriaSelectItem id="all" textValue="All Chapters">All Chapters</AriaSelectItem>
+                        {DEFAULT_CHAPTERS.map(c => (
+                          <AriaSelectItem key={c.code} id={c.name} textValue={c.name}>{c.name}</AriaSelectItem>
+                        ))}
+                      </AriaSelect>
+                    </div>
 
                     {/* All types dropdown */}
-                    <button className="flex items-center gap-1.5 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f9fafb] transition-colors">
-                      All types
-                      <ChevronDown className="w-4 h-4 text-[#516778]" />
-                    </button>
+                    <div className="w-[140px]">
+                      <AriaSelect
+                        aria-label="Filter Type"
+                        selectedKey={filterType}
+                        onSelectionChange={(k) => setFilterType(k as string)}
+                      >
+                        <AriaSelectItem id="all" textValue="All types">All types</AriaSelectItem>
+                        <AriaSelectItem id="onsite" textValue="Onsite">Onsite</AriaSelectItem>
+                        <AriaSelectItem id="online" textValue="Online">Online</AriaSelectItem>
+                        <AriaSelectItem id="hybrid" textValue="Hybrid">Hybrid</AriaSelectItem>
+                      </AriaSelect>
+                    </div>
 
                     {/* + Create Event */}
                     <button
@@ -941,57 +1005,57 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
               {/* Events Content: Empty State or Events List */}
               {hasEvents ? (
-                <div className="flex flex-col gap-4">
-                  {Object.entries(groupedEvents).map(([dateGroup, events]) => (
-                    <div key={dateGroup} className="flex flex-col gap-4">
-                      {/* Date Group Header */}
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm font-semibold text-[#516778] leading-[18px] whitespace-nowrap">
-                          {dateGroup}
-                        </span>
-                        <div className="flex-1 h-px bg-[#d5dde2]" />
-                      </div>
+                hasFilteredEvents ? (
+                  <div className="flex flex-col gap-4">
+                    {Object.entries(groupedEvents).map(([dateGroup, events]) => (
+                      <div key={dateGroup} className="flex flex-col gap-4">
+                        {/* Date Group Header */}
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm font-semibold text-[#516778] leading-[18px] whitespace-nowrap">
+                            {dateGroup}
+                          </span>
+                          <div className="flex-1 h-px bg-[#d5dde2]" />
+                        </div>
 
-                      {/* Events Grid - 2 columns */}
-                      <div className="grid grid-cols-2 gap-4">
-                        {events.map((event) => (
-                          <EventCard
-                            key={event.id}
-                            event={event}
-                            onClick={() => handleEditEvent(event)}
-                          />
-                        ))}
+                        {/* Events Grid - 2 columns */}
+                        <div className="grid grid-cols-2 gap-4">
+                          {events.map((event) => (
+                            <EventCard
+                              key={event.id}
+                              event={event}
+                              onClick={() => handleEditEvent(event)}
+                            />
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                /* Empty State */
-                <div className="flex flex-col items-center justify-center gap-8 py-8">
-                  <Image
-                    src="/img/events-empty.svg"
-                    alt="No events"
-                    width={165}
-                    height={160}
-                    className="object-contain"
-                  />
-                  <div className="flex flex-col items-center gap-3 text-center">
-                    <h2 className="text-2xl font-medium text-[#13151760] leading-[28.8px]">
-                      No upcoming events
-                    </h2>
-                    <p className="text-base font-normal text-[#13151760] leading-6">
-                      You have no upcoming events. Why not organize one?
-                    </p>
+                    ))}
                   </div>
-                  <button
-                    onClick={handleCreateEvent}
-                    className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Create Event
-                  </button>
-                </div>
-              )}
+                ) : (
+                  /* No Results State (Filter Active) */
+                  <div className="flex flex-col items-center justify-center gap-4 py-16 bg-white border border-[#d5dde2] rounded-xl">
+                    <div className="w-16 h-16 bg-[#edf8ff] rounded-full flex items-center justify-center">
+                      <Calendar className="w-8 h-8 text-[#3f52ff]" />
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <h3 className="text-lg font-semibold text-[#22292f]">No events found</h3>
+                      <p className="text-sm text-[#859bab] text-center max-w-xs">
+                        No events scheduled for the selected filters. <br /> Try adjusting your dates or categories.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setFilterDate(null);
+                        setFilterCategory("all");
+                        setFilterChapter("all");
+                        setFilterType("all");
+                      }}
+                      className="text-sm font-medium text-[#3f52ff] hover:underline"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                )}
+          ) : null}
             </div>
           )}
         </main>
