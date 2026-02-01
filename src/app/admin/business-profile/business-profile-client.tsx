@@ -168,45 +168,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
                   {/* Content Card - General Setting */}
                   {activeInnerTab === "General Setting" && (
-                    <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
-                      {/* Business Info Row */}
-                      <div className="flex gap-8">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-semibold text-[#859bab]">Business Name</span>
-                          <span className="text-sm font-semibold text-[#22292f]">{profile?.business_name || "Eventy"}</span>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-semibold text-[#859bab]">POC Email</span>
-                          <span className="text-sm font-semibold text-[#22292f]">{profile?.poc_email || "eventy@gmail.com"}</span>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-semibold text-[#859bab]">POC Name</span>
-                          <span className="text-sm font-semibold text-[#22292f]">{profile?.poc_name || "Eventygo"}</span>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-semibold text-[#859bab]">Time Zone</span>
-                          <span className="text-sm font-semibold text-[#22292f]">{profile?.timezone || "UTC+00:00 — London"}</span>
-                        </div>
-                      </div>
-
-                      {/* Divider */}
-                      <div className="h-px bg-[#d5dde2] w-full" />
-
-                      {/* Domains Section */}
-                      <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Domains</span>
-                          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
-                            Add and verify custom domains for your platform
-                          </span>
-                        </div>
-
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-semibold text-[#859bab]">Domain</span>
-                          <span className="text-sm font-semibold text-[#22292f]">{profile?.domain || "www.eventy.com"}</span>
-                        </div>
-                      </div>
-                    </div>
+                    <GeneralSettingContent initialData={profile} />
                   )}
 
                   {/* Content Card - Branding */}
@@ -499,6 +461,121 @@ function ColorInput({
     </div>
   );
 }
+
+// --- General Setting Content ---
+function GeneralSettingContent({ initialData }: { initialData?: ProfileData | null }) {
+  const [formData, setFormData] = useState({
+    business_name: "",
+    poc_email: "",
+    poc_name: "",
+    timezone: "",
+    domain: "",
+  });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        business_name: initialData.business_name || "",
+        poc_email: initialData.poc_email || "",
+        poc_name: initialData.poc_name || "",
+        timezone: initialData.timezone || "",
+        domain: initialData.domain || "",
+      });
+    }
+  }, [initialData]);
+
+  const handleSave = async () => {
+    try {
+      await updateBusinessProfile(formData);
+      alert("General settings saved successfully!");
+    } catch (e) {
+      alert("Failed to save settings");
+    }
+  };
+
+  return (
+    <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      {/* Business Info Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold text-[#859bab]">Business Name</label>
+          <input
+            type="text"
+            value={formData.business_name}
+            onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
+            placeholder="Eventy"
+            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff]"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold text-[#859bab]">POC Email</label>
+          <input
+            type="email"
+            value={formData.poc_email}
+            onChange={(e) => setFormData({ ...formData, poc_email: e.target.value })}
+            placeholder="eventy@gmail.com"
+            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff]"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold text-[#859bab]">POC Name</label>
+          <input
+            type="text"
+            value={formData.poc_name}
+            onChange={(e) => setFormData({ ...formData, poc_name: e.target.value })}
+            placeholder="Eventygo"
+            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff]"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold text-[#859bab]">Time Zone</label>
+          <input
+            type="text"
+            value={formData.timezone}
+            onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+            placeholder="UTC+00:00 — London"
+            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff]"
+          />
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-[#d5dde2] w-full" />
+
+      {/* Domains Section */}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Domains</span>
+          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+            Add and verify custom domains for your platform
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold text-[#859bab]">Domain</label>
+          <input
+            type="text"
+            value={formData.domain}
+            onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+            placeholder="www.eventy.com"
+            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] w-full max-w-md"
+          />
+        </div>
+      </div>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleSave}
+          className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+        >
+          Save changes
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 // --- File Upload Component ---
 function FileUploadArea({ label }: { label: string }) {
