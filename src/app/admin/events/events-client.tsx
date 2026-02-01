@@ -164,7 +164,7 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
   const [eventDescription, setEventDescription] = useState(
     "Lorem ipsum dolor sit amet consectetur. Et at quam phasellus accumsan neque tempus tincidunt tellus nulla. At consectetur sollicitudin at fames. Tristique molestie enim facilisi egestas."
   );
-  const [coverImage, setCoverImage] = useState(event?.coverImage || "/img/event-cover-placeholder.jpg");
+  const [coverImage, setCoverImage] = useState(event?.coverImage || "/img/event-cover-1.jpg");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
