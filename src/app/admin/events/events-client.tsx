@@ -147,7 +147,9 @@ const mockEvents: EventItem[] = [
 function CreateEventView({ event, onClose }: { event: EventItem | null; onClose: () => void }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
   const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
-  const [startDate, setStartDate] = useState("lun. 24 nov.");
+  const [chapter, setChapter] = useState(event?.chapter || "Dubai Chapter");
+  const [type, setType] = useState(event?.type || "Onsite");
+  const [startDate, setStartDate] = useState(event?.dateGroup || "lun. 24 nov.");
   const [startTime, setStartTime] = useState("00:00");
   const [endDate, setEndDate] = useState("lun. 24 nov.");
   const [endTime, setEndTime] = useState("02:00");
@@ -164,17 +166,23 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
   // Helper to parse day and month from startDate string for the widget
   const getDayAndMonth = (dateStr: string) => {
     const day = dateStr.match(/\d+/)?.[0] || "25";
-    const monthPatterns = [
-      "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec",
-      "janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "octo", "nov", "déc"
-    ];
-    const words = dateStr.toLowerCase().split(/\s+/);
+    const monthPatterns: { [key: string]: string } = {
+      jan: "JAN.", feb: "FEB.", mar: "MAR.", apr: "APR.", may: "MAY.", jun: "JUN.",
+      jul: "JUL.", aug: "AUG.", sep: "SEP.", oct: "OCT.", nov: "NOV.", dec: "DEC.",
+      janv: "JAN.", févr: "FEB.", mars: "MAR.", avr: "APR.", mai: "MAY.", juin: "JUN.",
+      juil: "JUL.", août: "AUG.", sept: "SEP.", octo: "OCT.", nove: "NOV.", déc: "DEC."
+    };
+
+    // Split to find the first month-like word
+    const words = dateStr.toLowerCase().split(/[^a-zÀ-ÿ0-9]/);
     let month = "OCT.";
     for (const word of words) {
-      const clean = word.replace(/[^a-z]/g, "");
-      if (monthPatterns.some((p) => clean.startsWith(p))) {
-        month = clean.substring(0, 3).toUpperCase() + ".";
-        break;
+      if (word.length < 2) continue;
+      for (const [key, value] of Object.entries(monthPatterns)) {
+        if (word.startsWith(key)) {
+          month = value;
+          break;
+        }
       }
     }
     return { day, month };
@@ -192,10 +200,10 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
           </h2>
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
-              Dubai Chapter
+              {chapter}
             </span>
             <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-normal rounded leading-[12px]">
-              Onsite
+              {type}
             </span>
           </div>
         </div>
@@ -272,11 +280,11 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
                 {/* Date Widget */}
                 <div className="flex items-center gap-2">
                   <div className="w-[38px] h-[40px] border border-[#859bab] rounded-lg flex flex-col items-center overflow-hidden bg-white shrink-0">
-                    <div className="bg-[#859bab] w-full h-[22px] flex items-center justify-center">
-                      <span className="text-[10px] text-white font-bold leading-none tracking-tight">{displayMonth}</span>
+                    <div className="bg-[#859bab] w-full h-[18px] flex items-center justify-center">
+                      <span className="text-[10px] text-white/80 font-bold leading-none tracking-tight">{displayMonth}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
+                      <span className="text-[16px] font-medium text-[#859bab] leading-none mb-0.5">{displayDay}</span>
                     </div>
                   </div>
                   <div className="flex flex-col">
@@ -301,7 +309,7 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
                 <span className="text-sm font-normal text-[#22292f] leading-[18px]">
-                  Dubai World Trade Center, DWC
+                  {locationInput || "Location not set"}
                 </span>
               </div>
 
