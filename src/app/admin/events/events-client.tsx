@@ -161,6 +161,27 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
     "Lorem ipsum dolor sit amet consectetur. Et at quam phasellus accumsan neque tempus tincidunt tellus nulla. At consectetur sollicitudin at fames. Tristique molestie enim facilisi egestas."
   );
 
+  // Helper to parse day and month from startDate string for the widget
+  const getDayAndMonth = (dateStr: string) => {
+    const day = dateStr.match(/\d+/)?.[0] || "25";
+    const monthPatterns = [
+      "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec",
+      "janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "octo", "nov", "déc"
+    ];
+    const words = dateStr.toLowerCase().split(/\s+/);
+    let month = "OCT.";
+    for (const word of words) {
+      const clean = word.replace(/[^a-z]/g, "");
+      if (monthPatterns.some((p) => clean.startsWith(p))) {
+        month = clean.substring(0, 3).toUpperCase() + ".";
+        break;
+      }
+    }
+    return { day, month };
+  };
+
+  const { day: displayDay, month: displayMonth } = getDayAndMonth(startDate);
+
   return (
     <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
       {/* Header: Title + Badges + Check-In Guests */}
@@ -250,17 +271,17 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
               <div className="flex flex-wrap gap-8">
                 {/* Date Widget */}
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-11 border border-[#859bab] rounded-lg flex flex-col items-center overflow-hidden bg-white">
-                    <div className="bg-[#859bab] w-full text-center py-0.5">
-                      <span className="text-[8px] text-white/80 uppercase font-bold leading-[12px]">oct.</span>
+                  <div className="w-[38px] h-[40px] border border-[#859bab] rounded-lg flex flex-col items-center overflow-hidden bg-white shrink-0">
+                    <div className="bg-[#859bab] w-full h-[22px] flex items-center justify-center">
+                      <span className="text-[10px] text-white font-bold leading-none tracking-tight">{displayMonth}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-base font-medium text-[#859bab] leading-[24px]">25</span>
+                      <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-base font-medium text-[#22292f] leading-[24px]">samedi 25 octobre</span>
-                    <span className="text-sm font-normal text-[#859bab] leading-[21px]">12:00 - 14:00 UTC+4</span>
+                    <span className="text-base font-medium text-[#22292f] leading-[24px]">{startDate}</span>
+                    <span className="text-sm font-normal text-[#859bab] leading-[21px]">{startTime} - {endTime} UTC+4</span>
                   </div>
                 </div>
 
