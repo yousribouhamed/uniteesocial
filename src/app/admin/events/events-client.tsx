@@ -146,7 +146,7 @@ const mockEvents: EventItem[] = [
 ];
 
 // --- Create Event View ---
-function CreateEventView({ event, onClose }: { event: EventItem | null; onClose: () => void }) {
+function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
   const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
   const [chapter, setChapter] = useState(event?.chapter || "Dubai Chapter");
@@ -564,7 +564,22 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
           </div>
 
           <button
-            onClick={onClose}
+            onClick={() => {
+              const savedEvent: EventItem = {
+                id: event?.id || crypto.randomUUID(),
+                title: eventTitle,
+                coverImage,
+                chapter,
+                type: type,
+                eventCategory: event?.eventCategory || "general",
+                location: locationInput,
+                signups: event?.signups || 0,
+                maxSignups: event?.maxSignups || 300,
+                dateGroup: startDate, // Using start date as date group for now
+                date: startDate,
+              };
+              onSave(savedEvent);
+            }}
             className="w-full min-h-[40px] bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4"
           >
             Save Changes
@@ -652,6 +667,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  const [events, setEvents] = useState<EventItem[]>(mockEvents);
   const [activeTab, setActiveTab] = useState<"all" | "current" | "past">("all");
   const [filterCategory, setFilterCategory] = useState<"all" | "general" | "match">("all");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
@@ -662,7 +678,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
     const create = searchParams.get("create");
 
     if (editId) {
-      const event = mockEvents.find((e) => e.id === editId);
+      const event = events.find((e) => e.id === editId);
       if (event) {
         setSelectedEvent(event);
         setShowCreateEvent(true);
@@ -677,7 +693,18 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
       setSelectedEvent(null);
       setShowCreateEvent(false);
     }
-  }, [searchParams]);
+  }, [searchParams, events]);
+
+  const handleSaveEvent = (savedEvent: EventItem) => {
+    if (selectedEvent) {
+      // Update existing
+      setEvents((prev) => prev.map((e) => (e.id === savedEvent.id ? savedEvent : e)));
+    } else {
+      // Create new
+      setEvents((prev) => [savedEvent, ...prev]);
+    }
+    handleClose();
+  };
 
   const handleCreateEvent = () => {
     router.push(`${pathname}?create=true`);
@@ -692,16 +719,16 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   };
 
   // Compute stats from events
-  const totalEvents = mockEvents.length;
-  const matchCount = mockEvents.filter((e) => e.eventCategory === "match").length;
-  const generalCount = mockEvents.filter((e) => e.eventCategory === "general").length;
+  const totalEvents = events.length;
+  const matchCount = events.filter((e) => e.eventCategory === "match").length;
+  const generalCount = events.filter((e) => e.eventCategory === "general").length;
   const matchPercent = totalEvents > 0 ? ((matchCount / totalEvents) * 100).toFixed(1) : "0";
   const generalPercent = totalEvents > 0 ? ((generalCount / totalEvents) * 100).toFixed(1) : "0";
 
-  const hasEvents = mockEvents.length > 0;
+  const hasEvents = events.length > 0;
 
   // Filter events by category
-  const filteredEvents = mockEvents.filter((e) => {
+  const filteredEvents = events.filter((e) => {
     if (filterCategory === "general") return e.eventCategory === "general";
     if (filterCategory === "match") return e.eventCategory === "match";
     return true;
@@ -740,6 +767,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
             <CreateEventView
               event={selectedEvent}
               onClose={handleClose}
+              onSave={handleSaveEvent}
             />
           ) : (
             <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
