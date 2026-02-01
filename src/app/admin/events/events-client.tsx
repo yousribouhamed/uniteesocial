@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Bell,
@@ -162,6 +162,19 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
   const [eventDescription, setEventDescription] = useState(
     "Lorem ipsum dolor sit amet consectetur. Et at quam phasellus accumsan neque tempus tincidunt tellus nulla. At consectetur sollicitudin at fames. Tristique molestie enim facilisi egestas."
   );
+  const [coverImage, setCoverImage] = useState(event?.coverImage || "/img/event-cover-placeholder.jpg");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Helper to parse day and month from startDate string for the widget
   const getDayAndMonth = (dateStr: string) => {
@@ -252,17 +265,30 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
         {/* Left: Event Preview Card */}
         <div className="w-full lg:w-[417px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3">
           <div className="flex flex-col gap-4">
-            {/* Cover Image */}
-            <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2]">
+            {/* Cover Image Upload Area */}
+            <div
+              className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2] group cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
               <Image
-                src={event?.coverImage || "/img/event-cover-placeholder.jpg"}
+                src={coverImage}
                 alt="Event cover"
                 fill
-                className="object-cover"
+                className="object-cover transition-opacity group-hover:opacity-80"
               />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 bg-[#3f52ff] border-2 border-white rounded-full flex items-center justify-center cursor-pointer">
-                <Camera className="w-4 h-4 text-white" />
+              {/* Overlay with Larger Camera Icon (Matching Figma/User Photo) */}
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                <div className="w-[46px] h-[46px] bg-[#3f52ff] border-2 border-white rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
+                  <Camera className="w-5 h-5 text-white" />
+                </div>
               </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
             </div>
 
             {/* Event Info Prevew */}
