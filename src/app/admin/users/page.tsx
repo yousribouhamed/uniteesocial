@@ -34,7 +34,7 @@ export default async function UsersAccountManagement() {
     return {
       id: authUser.id,
       full_name: (meta.full_name as string) || null,
-      avatar_url: (meta.avatar_url as string) || null,
+      avatar_url: (meta.avatar_url as string) || (meta.picture as string) || null,
       role: (meta.role as string) || "Member",
       status: (statusValue === "Active" || statusValue === "Inactive" ? statusValue : "Active") as "Active" | "Inactive",
       profile_status: (["Verified", "Not Verified", "Completed", "Active"].includes(profileStatusValue) ? profileStatusValue : "Verified") as "Verified" | "Not Verified" | "Completed" | "Active",
@@ -62,7 +62,7 @@ export default async function UsersAccountManagement() {
       currentUser={{
         email: user.email,
         full_name: (currentUserMeta.full_name as string) ?? null,
-        avatar_url: (currentUserMeta.avatar_url as string) ?? null,
+        avatar_url: (currentUserMeta.avatar_url as string) || (currentUserMeta.picture as string) || null,
       }}
     />
   );
