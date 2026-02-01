@@ -287,11 +287,11 @@ function CreateEventView({ event, onClose }: { event: EventItem | null; onClose:
                       <span className="text-[8px] font-bold text-[rgba(255,255,255,0.79)] uppercase leading-[12px]">{displayMonth}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[16px] font-medium text-[#859bab] leading-[24px] uppercase">{displayDay}</span>
+                      <span className="text-[16px] font-medium font-['Instrument_Sans',sans-serif] text-[#859bab] leading-[24px] uppercase">{displayDay}</span>
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-base font-medium text-[#22292f] leading-none">{startDate}</span>
+                    <span className="text-[16px] font-medium font-['Instrument_Sans',sans-serif] text-[#22292f] leading-none">{startDate}</span>
                     <span className="text-sm font-normal text-[#859bab] leading-[21px] mt-1">{startTime} - {endTime} UTC+4</span>
                   </div>
                 </div>
