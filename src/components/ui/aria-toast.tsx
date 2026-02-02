@@ -13,12 +13,15 @@ export const toastQueue = new ToastQueue({
 function AriaToast({ toast, state, ...props }: any) {
     let ref = React.useRef(null);
     let { toastProps, titleProps, descriptionProps, closeButtonProps } = useToast(props, state, ref);
-    let { title, description, variant = "success" } = toast.content;
+    let { title, description, variant, type } = toast.content;
+    // Support both 'variant' and 'type' for backward compatibility
+    let toastVariant = variant || type || "success";
 
     // Icon based on variant
     let icon = <CheckCircle2 className="w-5 h-5 text-[#22892e]" />; // Default success
-    if (variant === "error") icon = <AlertCircle className="w-5 h-5 text-[#e22023]" />;
-    if (variant === "info") icon = <Info className="w-5 h-5 text-[#3f52ff]" />;
+    if (toastVariant === "error") icon = <AlertCircle className="w-5 h-5 text-[#e22023]" />;
+    if (toastVariant === "info") icon = <Info className="w-5 h-5 text-[#3f52ff]" />;
+
 
     return (
         <div
