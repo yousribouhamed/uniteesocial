@@ -41,7 +41,7 @@ export function AriaSelect<T extends object>({
                 <ChevronDown className="w-4 h-4 text-[#516778] shrink-0 ml-2" />
             </Button>
             {description && <span className="text-xs text-gray-500">{description}</span>}
-            <Popover className="min-w-[--trigger-width] bg-white border border-[#d5dde2] rounded-lg shadow-lg overflow-auto p-1 max-h-60 z-50 transform origin-top transition duration-200 ease-out data-[entering]:scale-95 data-[entering]:opacity-0 data-[exiting]:scale-95 data-[exiting]:opacity-0">
+            <Popover className="w-[--trigger-width] bg-white border border-[#d5dde2] rounded-lg shadow-lg overflow-auto p-1 max-h-60 z-50 transform origin-top transition duration-200 ease-out data-[entering]:scale-95 data-[entering]:opacity-0 data-[exiting]:scale-95 data-[exiting]:opacity-0">
                 <ListBox items={items} className="outline-none flex flex-col gap-0.5 w-full">
                     {children}
                 </ListBox>
