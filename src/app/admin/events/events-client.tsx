@@ -799,17 +799,63 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
               />
               <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
             </div>
-            <AriaSelect
-              selectedKey={guestStatusFilter}
-              onSelectionChange={(key) => setGuestStatusFilter(key as string)}
-              className="w-[160px]"
-            >
-              <AriaSelectItem id="all" textValue="All Guests">All Guests</AriaSelectItem>
-              <AriaSelectItem id="checked-in" textValue="Checked In">Checked In</AriaSelectItem>
-              <AriaSelectItem id="not-checked-in" textValue="Not Checked In">Not Checked In</AriaSelectItem>
-              <AriaSelectItem id="booked" textValue="Booked">Booked</AriaSelectItem>
-              <AriaSelectItem id="cancelled" textValue="Cancelled">Cancelled</AriaSelectItem>
-            </AriaSelect>
+            <Menu>
+              <MenuButton className="h-8 px-3 bg-[#eceff2] rounded-lg flex items-center gap-2 text-sm font-medium text-[#22292f] hover:bg-[#d5dde2] transition-colors">
+                {guestStatusFilter === "all" ? "All Guests" :
+                  guestStatusFilter === "checked-in" ? "Checked In" :
+                    guestStatusFilter === "not-checked-in" ? "Not Checked In" :
+                      guestStatusFilter === "booked" ? "Booked" : "Cancelled"}
+                <ChevronDown className="w-4 h-4 text-[#516778]" />
+              </MenuButton>
+              <Portal>
+                <MenuItems
+                  anchor="bottom end"
+                  transition
+                  className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                >
+                  <MenuItem>
+                    <button
+                      onClick={() => setGuestStatusFilter("all")}
+                      className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                    >
+                      All Guests
+                    </button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={() => setGuestStatusFilter("checked-in")}
+                      className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                    >
+                      Checked In
+                    </button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={() => setGuestStatusFilter("not-checked-in")}
+                      className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                    >
+                      Not Checked In
+                    </button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={() => setGuestStatusFilter("booked")}
+                      className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                    >
+                      Booked
+                    </button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={() => setGuestStatusFilter("cancelled")}
+                      className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                    >
+                      Cancelled
+                    </button>
+                  </MenuItem>
+                </MenuItems>
+              </Portal>
+            </Menu>
           </div>
 
           {/* Guest Table */}
