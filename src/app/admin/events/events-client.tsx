@@ -32,6 +32,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Suspense } from "react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
 import { AriaCheckbox } from "@/components/ui/aria-checkbox";
+import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
 import { toastQueue } from "@/components/ui/aria-toast";
@@ -975,29 +976,6 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
   );
 }
 
-// --- Toggle Switch (local) ---
-function ToggleSwitch({
-  enabled,
-  onToggle,
-}: {
-  enabled: boolean;
-  onToggle: (val: boolean) => void;
-}) {
-  return (
-    <button
-      onClick={() => onToggle(!enabled)}
-      type="button"
-      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${enabled ? "bg-[#3f52ff]" : "bg-[#d5dde2]"
-        }`}
-    >
-      <span
-        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ${enabled ? "translate-x-[18px] ml-0.5" : "translate-x-0 ml-0.5"
-          }`}
-      />
-    </button>
-  );
-}
-
 interface CancelModalProps {
   onClose: () => void;
   eventTitle: string;
@@ -1062,13 +1040,16 @@ function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps)
           </p>
 
           {/* Toggle Section */}
-          <div className="flex items-center justify-between">
+          <AriaSwitch
+            isSelected={customiseNotification}
+            onChange={setCustomiseNotification}
+            className="flex-row-reverse justify-between w-full"
+          >
             <div className="flex flex-col gap-0.5">
               <span className="text-sm font-semibold text-[#22292f]">Customise Notification</span>
               <span className="text-xs text-[#859bab]">Send a custom message to guests</span>
             </div>
-            <ToggleSwitch enabled={customiseNotification} onToggle={setCustomiseNotification} />
-          </div>
+          </AriaSwitch>
 
           {customiseNotification && (
             <div className="flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200">
