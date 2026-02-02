@@ -1054,8 +1054,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                       Clear Filters
                     </button>
                   </div>
-                )}
-          ) : null}
+                )
+              ) : null}
             </div>
           )}
         </main>
