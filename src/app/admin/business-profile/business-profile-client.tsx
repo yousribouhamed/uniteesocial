@@ -797,24 +797,35 @@ function SocialLinkInput({
   icon,
   value,
   onChange,
+  readOnly = false,
 }: {
   label: string;
   icon: React.ReactNode;
   value: string;
   onChange: (val: string) => void;
+  readOnly?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2 flex-1">
       <label className="text-sm font-semibold text-[#22292f]">{label}</label>
-      <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg focus-within:border-[#3f52ff] transition-colors">
+      <div className={`flex items-center gap-2 h-9 px-3 border rounded-lg transition-colors ${readOnly
+        ? "bg-[#f9fafb] border-[#d5dde2]"
+        : "bg-white border-[#b0bfc9] focus-within:border-[#3f52ff]"
+        }`}>
         <span className="shrink-0 text-[#859bab]">{icon}</span>
-        <input
-          type="url"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Paste URL"
-          className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] outline-none bg-transparent"
-        />
+        {readOnly ? (
+          <span className="flex-1 text-sm text-[#22292f] truncate">
+            {value || <span className="text-[#668091]">Not set</span>}
+          </span>
+        ) : (
+          <input
+            type="url"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Paste URL"
+            className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] outline-none bg-transparent"
+          />
+        )}
       </div>
     </div>
   );
@@ -828,16 +839,21 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
     instagram: "",
     tiktok: "",
   });
+  const [savedLinks, setSavedLinks] = useState(links);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       setLinks((prev) => ({ ...prev, ...initialData }));
+      setSavedLinks((prev) => ({ ...prev, ...initialData }));
     }
   }, [initialData]);
 
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ social_links: links });
+      setSavedLinks(links);
+      setIsEditing(false);
       toastQueue.add({
         title: "Social Links Saved",
         description: "Your social media links have been updated.",
@@ -852,6 +868,11 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
     }
   };
 
+  const handleCancel = () => {
+    setLinks(savedLinks);
+    setIsEditing(false);
+  };
+
   const updateLink = (key: keyof typeof links) => (val: string) => {
     setLinks((prev) => ({ ...prev, [key]: val }));
   };
@@ -859,13 +880,23 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
   return (
     <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
-      <div className="flex flex-col gap-2 px-2">
-        <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
-          Social Links
-        </h1>
-        <p className="text-base font-semibold text-[#859bab] leading-[18px]">
-          Manage your social media links and online presence
-        </p>
+      <div className="flex items-center justify-between px-2">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+            Social Links
+          </h1>
+          <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+            Manage your social media links and online presence
+          </p>
+        </div>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
+            Edit
+          </button>
+        )}
       </div>
 
       {/* White Card */}
@@ -877,12 +908,14 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
             icon={<Linkedin className="w-4 h-4" />}
             value={links.linkedin}
             onChange={updateLink("linkedin")}
+            readOnly={!isEditing}
           />
           <SocialLinkInput
             label="X / Twitter"
             icon={<XTwitterIcon className="w-4 h-4" />}
             value={links.xTwitter}
             onChange={updateLink("xTwitter")}
+            readOnly={!isEditing}
           />
         </div>
 
@@ -893,24 +926,34 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
             icon={<Instagram className="w-4 h-4" />}
             value={links.instagram}
             onChange={updateLink("instagram")}
+            readOnly={!isEditing}
           />
           <SocialLinkInput
             label="TikTok"
             icon={<TikTokIcon className="w-4 h-4" />}
             value={links.tiktok}
             onChange={updateLink("tiktok")}
+            readOnly={!isEditing}
           />
         </div>
 
-        {/* Save Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
-          >
-            Save changes
-          </button>
-        </div>
+        {/* Save/Cancel Buttons - only shown when editing */}
+        {isEditing && (
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={handleCancel}
+              className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+            >
+              Save changes
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
