@@ -601,7 +601,7 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                   <AriaSelectItem id="Paris Chapter" textValue="Paris Chapter">Paris Chapter</AriaSelectItem>
                 </AriaSelect>
               </div>
-              <div className="flex-1 flex flex-col gap-1">
+              <div className="w-[140px] flex flex-col gap-1">
                 <AriaSelect
                   label="Event Type"
                   selectedKey={type}
@@ -1543,7 +1543,6 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const pathname = usePathname();
 
   const [events, setEvents] = useState<EventItem[]>(mockEvents);
-  const [eventSearchQuery, setEventSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "current" | "past">("all");
   const [filterCategory, setFilterCategory] = useState<"all" | "general" | "match">("all");
   const [filterChapter, setFilterChapter] = useState<string>("all");
@@ -1573,16 +1572,6 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
     // 5. Date Filter
     if (filterDate) {
       if (e.dateIso !== filterDate.toString()) return false;
-    }
-
-    // 6. Search Filter
-    if (eventSearchQuery) {
-      const query = eventSearchQuery.toLowerCase();
-      return (
-        e.title.toLowerCase().includes(query) ||
-        e.chapter.toLowerCase().includes(query) ||
-        e.location.toLowerCase().includes(query)
-      );
     }
 
     return true;
@@ -1790,21 +1779,6 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                   ))}
                 </div>
 
-                {/* Search Bar */}
-                <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg focus-within:border-[#3f52ff] transition-colors max-w-sm flex-1 mx-4">
-                  <Search className="w-4 h-4 text-[#859bab] shrink-0" />
-                  <input
-                    type="text"
-                    value={eventSearchQuery}
-                    onChange={(e) => setEventSearchQuery(e.target.value)}
-                    placeholder="Search by event title, location or chapter"
-                    className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
-                  />
-                  <kbd className="text-xs text-[#859bab] bg-[#eceff2] px-1.5 py-0.5 rounded border border-[#d5dde2]">
-                    ⌘K
-                  </kbd>
-                </div>
-
                 {/* Right: Filter dropdowns + Create Event */}
                 {hasEvents && (
                   <div className="flex items-center gap-2">
@@ -1842,7 +1816,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                     </div>
 
                     {/* All types dropdown */}
-                    <div className="w-[140px]">
+                    <div className="w-[110px]">
                       <AriaSelect
                         aria-label="Filter Type"
                         selectedKey={filterType}

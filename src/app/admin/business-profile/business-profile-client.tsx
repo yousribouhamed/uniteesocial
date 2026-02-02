@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { AriaSwitch } from "@/components/ui/aria-switch";
+import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { motion } from "framer-motion";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import {
@@ -598,30 +599,18 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-[#859bab]">Time Zone</label>
           {isEditing ? (
-            <Menu>
-              <MenuButton className={inputEditClass + " flex items-center justify-between"}>
-                <span className="truncate">{formData.timezone || "Select Time Zone"}</span>
-                <ChevronDown className="w-4 h-4 text-[#516778] shrink-0" />
-              </MenuButton>
-              <Portal>
-                <MenuItems
-                  anchor="bottom start"
-                  transition
-                  className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[var(--button-width)] max-h-[300px] overflow-y-auto transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
-                >
-                  {TIMEZONES.map((tz) => (
-                    <MenuItem key={tz}>
-                      <button
-                        onClick={() => setFormData({ ...formData, timezone: tz })}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
-                      >
-                        {tz}
-                      </button>
-                    </MenuItem>
-                  ))}
-                </MenuItems>
-              </Portal>
-            </Menu>
+            <AriaSelect
+              aria-label="Select Time Zone"
+              selectedKey={formData.timezone}
+              onSelectionChange={(k) => setFormData({ ...formData, timezone: k as string })}
+              className="w-full"
+            >
+              {TIMEZONES.map((tz) => (
+                <AriaSelectItem key={tz} id={tz} textValue={tz}>
+                  {tz}
+                </AriaSelectItem>
+              ))}
+            </AriaSelect>
           ) : (
             <div className={inputReadOnlyClass + " flex items-center"}>
               {formData.timezone || <span className="text-[#668091]">Not set</span>}
