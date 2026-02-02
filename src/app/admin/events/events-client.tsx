@@ -200,6 +200,7 @@ const mockGuests: GuestItem[] = [
 function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showSlidoModal, setShowSlidoModal] = useState(false);
   const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
   const [chapter, setChapter] = useState(event?.chapter || "Dubai Chapter");
   const [type, setType] = useState<"Onsite" | "Online" | "Hybrid">(event?.type || "Onsite");
@@ -355,9 +356,10 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
               </MenuItem>
               <MenuItem>
                 <button
-                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f0f2f5] transition-colors group focus:outline-none"
+                  onClick={() => setShowSlidoModal(true)}
+                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-[#d8e6ff] hover:bg-[#d8e6ff] transition-colors text-[#22292f] focus:outline-none"
                 >
-                  <Code className="w-4 h-4 text-[#516778]" />
+                  <Code className="w-4 h-4" />
                   Add Slido Embed
                 </button>
               </MenuItem>
@@ -983,6 +985,101 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
           guestCount={342}
         />
       )}
+      {showSlidoModal && (
+        <SlidoEmbedModal
+          onClose={() => setShowSlidoModal(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function SlidoEmbedModal({ onClose }: { onClose: () => void }) {
+  const [embedCode, setEmbedCode] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      onClose();
+      toastQueue.add({
+        title: "Slido Embed Saved",
+        description: "Your Slido interactive poll has been added to the event.",
+        type: "success"
+      });
+    }, 1200);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        className="relative bg-white border border-[#d5dde2] rounded-xl w-full max-w-[560px] flex flex-col shadow-xl overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-4 border-b border-[#d5dde2]">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-lg p-3 flex items-center justify-center">
+              <Code className="w-4 h-4 text-[#3f52ff]" />
+            </div>
+            <div className="flex flex-col">
+              <h2 className="text-base font-semibold text-[#22292f]">Slido Embed</h2>
+              <p className="text-xs text-[#859bab]">Add interactive polls and Q&A to your event with Slido</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+          >
+            <X className="w-4 h-4 text-[#516778]" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-4 flex flex-col gap-4">
+          <div className="relative">
+            <textarea
+              value={embedCode}
+              onChange={(e) => setEmbedCode(e.target.value)}
+              placeholder='<iframe src="...."></iframe>'
+              className="w-full min-h-[180px] p-4 bg-white border border-[#d5dde2] rounded-xl text-sm text-[#22292f] focus:border-[#3f52ff] outline-none transition-colors resize-none placeholder:text-[#859bab] font-mono"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Info className="w-4 h-4 text-[#859bab]" />
+            <span className="text-sm text-[#859bab]">Copy the embed code from Slido and paste it here</span>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-[#d5dde2]">
+          <button
+            onClick={onClose}
+            className="h-10 px-6 text-sm font-semibold text-[#3f52ff] bg-[#d8e6ff]/50 rounded-lg hover:bg-[#d8e6ff] transition-colors"
+          >
+            Dismiss
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={loading || !embedCode.trim()}
+            className="h-10 px-6 text-sm font-semibold text-white bg-[#3f52ff] rounded-lg hover:bg-[#3545e0] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            Save Embed Code
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 }
