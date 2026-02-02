@@ -18,7 +18,11 @@ import {
   Info,
   ChevronsUpDown,
   MoreHorizontal,
+  Copy,
+  Code,
+  XCircle,
 } from "lucide-react";
+import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import AdminSidebar from "@/components/admin-sidebar";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Suspense } from "react";
@@ -321,9 +325,43 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
         </div>
 
         {/* Top Right Action Button */}
-        <button className="w-8 h-8 bg-[#22292f] rounded-lg flex items-center justify-center hover:bg-[#3a4249] transition-colors">
-          <MoreHorizontal className="w-5 h-5 text-white" />
-        </button>
+        <Menu>
+          <MenuButton className="w-8 h-8 bg-[#22292f] rounded-lg flex items-center justify-center hover:bg-[#3a4249] transition-colors focus:outline-none data-[open]:bg-[#3a4249]">
+            <MoreHorizontal className="w-5 h-5 text-white" />
+          </MenuButton>
+          <Portal>
+            <MenuItems
+              anchor="bottom end"
+              transition
+              className="z-[100] mt-1.5 w-[180px] bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg focus:outline-none transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+            >
+              <MenuItem>
+                <button
+                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f0f2f5] transition-colors group focus:outline-none"
+                >
+                  <Copy className="w-4 h-4 text-[#516778]" />
+                  Clone Event
+                </button>
+              </MenuItem>
+              <MenuItem>
+                <button
+                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f0f2f5] transition-colors group focus:outline-none"
+                >
+                  <Code className="w-4 h-4 text-[#516778]" />
+                  Add Slido Embed
+                </button>
+              </MenuItem>
+              <MenuItem>
+                <button
+                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-[#e53935] hover:bg-[#fff0f0] transition-colors group focus:outline-none"
+                >
+                  <XCircle className="w-4 h-4 text-[#e53935]" />
+                  Cancel Event
+                </button>
+              </MenuItem>
+            </MenuItems>
+          </Portal>
+        </Menu>
       </div>
 
       {/* Tab Content */}
