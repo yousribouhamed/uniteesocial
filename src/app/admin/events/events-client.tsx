@@ -17,6 +17,7 @@ import {
   Globe,
   Info,
   ChevronsUpDown,
+  MoreHorizontal,
 } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -289,32 +290,40 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
         </button>
       </div>
 
-      {/* Detail Tabs */}
-      <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative">
-        {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setDetailTab(tab)}
-            className={`relative h-9 px-3 py-2 rounded-lg text-base font-medium transition-colors z-10 ${detailTab === tab
-              ? "text-[#3f52ff]"
-              : "text-[#516778] hover:text-[#22292f]"
-              }`}
-          >
-            {detailTab === tab && (
-              <motion.div
-                layoutId="eventDetailTabIndicator"
-                className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
-                initial={false}
-                transition={{
-                  type: "spring",
-                  stiffness: 500,
-                  damping: 35,
-                }}
-              />
-            )}
-            <span className="relative z-10 capitalize">{tab}</span>
-          </button>
-        ))}
+      {/* Tabs Row */}
+      <div className="flex items-center justify-between">
+        {/* Tabs */}
+        <div className="flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg w-fit">
+          {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setDetailTab(tab)}
+              className={`relative h-7 px-3 text-sm font-medium rounded-md transition-colors z-10 ${detailTab === tab
+                ? "text-[#22292f]"
+                : "text-[#516778] hover:text-[#22292f]"
+                }`}
+            >
+              {detailTab === tab && (
+                <motion.div
+                  layoutId="eventDetailTabIndicator"
+                  className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                  initial={false}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 35,
+                  }}
+                />
+              )}
+              <span className="relative z-10 capitalize">{tab}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Top Right Action Button */}
+        <button className="w-8 h-8 bg-[#22292f] rounded-lg flex items-center justify-center hover:bg-[#3a4249] transition-colors">
+          <MoreHorizontal className="w-5 h-5 text-white" />
+        </button>
       </div>
 
       {/* Tab Content */}
