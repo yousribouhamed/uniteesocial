@@ -16,6 +16,7 @@ import {
   Clock,
   Globe,
   Info,
+  ChevronsUpDown,
 } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -752,93 +753,142 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
 
           {/* Guest Table */}
           <div className="bg-white border border-[#d5dde2] rounded-xl overflow-hidden">
-            {/* Table Header */}
-            <div className="grid grid-cols-[40px_1.5fr_1.5fr_1fr_1fr_1fr_1fr] gap-2 px-4 py-3 bg-[#f9fafb] border-b border-[#d5dde2]">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={selectedGuests.size === guests.length && guests.length > 0}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedGuests(new Set(guests.map(g => g.id)));
-                    } else {
-                      setSelectedGuests(new Set());
-                    }
-                  }}
-                  className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff]"
-                />
-              </div>
-              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Name <ChevronDown className="w-3 h-3" /></div>
-              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Email <ChevronDown className="w-3 h-3" /></div>
-              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Registration Time <ChevronDown className="w-3 h-3" /></div>
-              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Ticket ID <ChevronDown className="w-3 h-3" /></div>
-              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Ticket QR <ChevronDown className="w-3 h-3" /></div>
-              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Status</div>
+            <div className="w-full overflow-x-auto">
+              <table className="w-full table-fixed">
+                <colgroup>
+                  <col className="w-[40px]" />
+                  <col className="w-[16%]" />
+                  <col className="w-[20%]" />
+                  <col className="w-[16%]" />
+                  <col className="w-[12%]" />
+                  <col className="w-[12%]" />
+                  <col className="w-[15%]" />
+                </colgroup>
+                <thead>
+                  <tr className="[&>th]:bg-[#eceff2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
+                    {/* Checkbox */}
+                    <th className="h-9 px-4 py-2 text-left">
+                      <input
+                        type="checkbox"
+                        checked={selectedGuests.size === guests.length && guests.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedGuests(new Set(guests.map(g => g.id)));
+                          } else {
+                            setSelectedGuests(new Set());
+                          }
+                        }}
+                        className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff]"
+                      />
+                    </th>
+                    {/* Headers */}
+                    {[
+                      { label: "Name", key: "name" },
+                      { label: "Email", key: "email" },
+                      { label: "Registration Time", key: "registrationTime" },
+                      { label: "Ticket ID", key: "ticketId" },
+                      { label: "Ticket QR", key: "ticketQr" },
+                      { label: "Status", key: "status" }
+                    ].map((header) => (
+                      <th
+                        key={header.key}
+                        className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]"
+                      >
+                        <div className="flex items-center gap-1">
+                          {header.label}
+                          {header.key !== "ticketQr" && header.key !== "status" && (
+                            <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
+                          )}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {guests
+                    .filter(g => {
+                      if (guestStatusFilter !== "all" && g.status !== guestStatusFilter) return false;
+                      if (guestSearchQuery && !g.name.toLowerCase().includes(guestSearchQuery.toLowerCase()) && !g.email.toLowerCase().includes(guestSearchQuery.toLowerCase())) return false;
+                      return true;
+                    })
+                    .slice((guestPage - 1) * guestsPerPage, guestPage * guestsPerPage)
+                    .map((guest) => (
+                      <tr
+                        key={guest.id}
+                        className="border-b border-[#eceff2] last:border-b-0 hover:bg-[#f9fafb] transition-colors"
+                      >
+                        {/* Checkbox */}
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedGuests.has(guest.id)}
+                            onChange={(e) => {
+                              const newSet = new Set(selectedGuests);
+                              if (e.target.checked) {
+                                newSet.add(guest.id);
+                              } else {
+                                newSet.delete(guest.id);
+                              }
+                              setSelectedGuests(newSet);
+                            }}
+                            className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff]"
+                          />
+                        </td>
+                        {/* Name */}
+                        <td className="px-3 py-3">
+                          <span className="text-sm font-medium text-[#22292f] block truncate">{guest.name}</span>
+                        </td>
+                        {/* Email */}
+                        <td className="px-3 py-3">
+                          <span className="text-sm text-[#516778] block truncate">{guest.email}</span>
+                        </td>
+                        {/* Registration Time */}
+                        <td className="px-3 py-3">
+                          <span className="text-sm text-[#516778] block truncate">{guest.registrationTime}</span>
+                        </td>
+                        {/* Ticket ID */}
+                        <td className="px-3 py-3">
+                          <span className="text-sm font-medium text-[#22292f] block truncate">{guest.ticketId}</span>
+                        </td>
+                        {/* Ticket QR */}
+                        <td className="px-3 py-3">
+                          <button className="flex items-center gap-1 h-7 px-2 bg-white border border-[#d5dde2] rounded text-xs font-medium text-[#516778] hover:bg-[#f9fafb] transition-colors">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1" stroke="#516778" strokeWidth="1" /><rect x="3" y="3" width="2" height="2" fill="#516778" /><rect x="7" y="3" width="2" height="2" fill="#516778" /><rect x="3" y="7" width="2" height="2" fill="#516778" /><rect x="7" y="7" width="2" height="2" fill="#516778" /></svg>
+                            View QR
+                          </button>
+                        </td>
+                        {/* Status */}
+                        <td className="px-3 py-3">
+                          {guest.status === "checked-in" && (
+                            <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#22892e" /><path d="M4 6L5.5 7.5L8 4.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              Checked-In
+                            </span>
+                          )}
+                          {guest.status === "not-checked-in" && (
+                            <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fff4e5] text-[#d97706] text-xs font-medium rounded-full">
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L11 10H1L6 1Z" fill="#d97706" /><path d="M6 4.5V6.5M6 8V8.01" stroke="white" strokeWidth="1" strokeLinecap="round" /></svg>
+                              Not Checked-In
+                            </span>
+                          )}
+                          {guest.status === "booked" && (
+                            <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#22892e" /><path d="M4 6L5.5 7.5L8 4.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              Booked
+                            </span>
+                          )}
+                          {guest.status === "cancelled" && (
+                            <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fee2e2] text-[#dc2626] text-xs font-medium rounded-full">
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#dc2626" /><path d="M4 4L8 8M8 4L4 8" stroke="white" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                              Cancelled
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
-            {/* Table Rows */}
-            {guests
-              .filter(g => {
-                if (guestStatusFilter !== "all" && g.status !== guestStatusFilter) return false;
-                if (guestSearchQuery && !g.name.toLowerCase().includes(guestSearchQuery.toLowerCase()) && !g.email.toLowerCase().includes(guestSearchQuery.toLowerCase())) return false;
-                return true;
-              })
-              .slice((guestPage - 1) * guestsPerPage, guestPage * guestsPerPage)
-              .map((guest) => (
-                <div key={guest.id} className="grid grid-cols-[40px_1.5fr_1.5fr_1fr_1fr_1fr_1fr] gap-2 px-4 py-3 border-b border-[#eceff2] hover:bg-[#f9fafb] transition-colors">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedGuests.has(guest.id)}
-                      onChange={(e) => {
-                        const newSet = new Set(selectedGuests);
-                        if (e.target.checked) {
-                          newSet.add(guest.id);
-                        } else {
-                          newSet.delete(guest.id);
-                        }
-                        setSelectedGuests(newSet);
-                      }}
-                      className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff]"
-                    />
-                  </div>
-                  <div className="text-sm font-medium text-[#22292f]">{guest.name}</div>
-                  <div className="text-sm text-[#516778]">{guest.email}</div>
-                  <div className="text-sm text-[#516778]">{guest.registrationTime}</div>
-                  <div className="text-sm font-medium text-[#22292f]">{guest.ticketId}</div>
-                  <div>
-                    <button className="flex items-center gap-1 h-7 px-2 bg-white border border-[#d5dde2] rounded text-xs font-medium text-[#516778] hover:bg-[#f9fafb] transition-colors">
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1" stroke="#516778" strokeWidth="1" /><rect x="3" y="3" width="2" height="2" fill="#516778" /><rect x="7" y="3" width="2" height="2" fill="#516778" /><rect x="3" y="7" width="2" height="2" fill="#516778" /><rect x="7" y="7" width="2" height="2" fill="#516778" /></svg>
-                      View QR
-                    </button>
-                  </div>
-                  <div>
-                    {guest.status === "checked-in" && (
-                      <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#22892e" /><path d="M4 6L5.5 7.5L8 4.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        Checked-In
-                      </span>
-                    )}
-                    {guest.status === "not-checked-in" && (
-                      <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fff4e5] text-[#d97706] text-xs font-medium rounded-full">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L11 10H1L6 1Z" fill="#d97706" /><path d="M6 4.5V6.5M6 8V8.01" stroke="white" strokeWidth="1" strokeLinecap="round" /></svg>
-                        Not Checked-In
-                      </span>
-                    )}
-                    {guest.status === "booked" && (
-                      <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#22892e" /><path d="M4 6L5.5 7.5L8 4.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        Booked
-                      </span>
-                    )}
-                    {guest.status === "cancelled" && (
-                      <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fee2e2] text-[#dc2626] text-xs font-medium rounded-full">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#dc2626" /><path d="M4 4L8 8M8 4L4 8" stroke="white" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                        Cancelled
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
           </div>
 
           {/* Pagination */}
