@@ -1033,9 +1033,13 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 ) : (
                   /* No Results State (Filter Active) */
                   <div className="flex flex-col items-center justify-center gap-4 py-16 bg-white border border-[#d5dde2] rounded-xl">
-                    <div className="w-16 h-16 bg-[#edf8ff] rounded-full flex items-center justify-center">
-                      <Calendar className="w-8 h-8 text-[#3f52ff]" />
-                    </div>
+                    <Image
+                      src="/img/events-empty.svg"
+                      alt="No events found"
+                      width={165}
+                      height={160}
+                      className="object-contain"
+                    />
                     <div className="flex flex-col items-center gap-1">
                       <h3 className="text-lg font-semibold text-[#22292f]">No events found</h3>
                       <p className="text-sm text-[#859bab] text-center max-w-xs">
