@@ -21,6 +21,10 @@ import {
   Copy,
   Code,
   XCircle,
+  AlertCircle,
+  X,
+  ArrowUp,
+  Loader2,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import AdminSidebar from "@/components/admin-sidebar";
@@ -190,6 +194,7 @@ const mockGuests: GuestItem[] = [
 // --- Create Event View ---
 function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
   const [chapter, setChapter] = useState(event?.chapter || "Dubai Chapter");
   const [type, setType] = useState<"Onsite" | "Online" | "Hybrid">(event?.type || "Onsite");
@@ -353,6 +358,7 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
               </MenuItem>
               <MenuItem>
                 <button
+                  onClick={() => setShowCancelModal(true)}
                   className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-[#e53935] hover:bg-[#fff0f0] transition-colors group focus:outline-none"
                 >
                   <XCircle className="w-4 h-4 text-[#e53935]" />
@@ -958,6 +964,172 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
           </div>
         </div>
       )}
+      {showCancelModal && (
+        <CancelEventModal
+          onClose={() => setShowCancelModal(false)}
+          eventTitle={eventTitle}
+          guestCount={342}
+        />
+      )}
+    </div>
+  );
+}
+
+// --- Toggle Switch (local) ---
+function ToggleSwitch({
+  enabled,
+  onToggle,
+}: {
+  enabled: boolean;
+  onToggle: (val: boolean) => void;
+}) {
+  return (
+    <button
+      onClick={() => onToggle(!enabled)}
+      type="button"
+      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${enabled ? "bg-[#3f52ff]" : "bg-[#d5dde2]"
+        }`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ${enabled ? "translate-x-[18px] ml-0.5" : "translate-x-0 ml-0.5"
+          }`}
+      />
+    </button>
+  );
+}
+
+interface CancelModalProps {
+  onClose: () => void;
+  eventTitle: string;
+  guestCount: number;
+}
+
+function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps) {
+  const [customiseNotification, setCustomiseNotification] = useState(false);
+  const [subject, setSubject] = useState(`${eventTitle} Cancelled`);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleCancelEvent = () => {
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false);
+      onClose();
+      toastQueue.add({
+        title: "Event Cancelled",
+        description: `"${eventTitle}" has been successfully cancelled.`,
+        type: "success"
+      });
+    }, 1500);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        className="relative bg-white border border-[#d5dde2] rounded-xl w-full max-w-[480px] flex flex-col shadow-xl overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-4 border-b border-[#d5dde2]">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#ffe1e1] rounded-lg p-2 flex items-center justify-center">
+              <AlertCircle className="w-4 h-4 text-[#e53935]" />
+            </div>
+            <h2 className="text-base font-semibold text-[#22292f]">Cancel Event</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+          >
+            <X className="w-4 h-4 text-[#516778]" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-4 flex flex-col gap-6 max-h-[70vh] overflow-y-auto">
+          <p className="text-sm font-medium text-[#859bab] leading-relaxed">
+            If you aren&apos;t able to host your event, you can cancel and we&apos;ll notify your guests. This event will be permanently deleted.
+          </p>
+
+          {/* Toggle Section */}
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-semibold text-[#22292f]">Customise Notification</span>
+              <span className="text-xs text-[#859bab]">Send a custom message to guests</span>
+            </div>
+            <ToggleSwitch enabled={customiseNotification} onToggle={setCustomiseNotification} />
+          </div>
+
+          {customiseNotification && (
+            <div className="flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-[#22292f]">Notification Subject</label>
+                <input
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="h-10 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] focus:border-[#3f52ff] outline-none transition-colors"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value.slice(0, 280))}
+                    placeholder="Custom Message"
+                    className="w-full min-h-[120px] p-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] focus:border-[#3f52ff] outline-none transition-colors resize-none placeholder:text-[#859bab]"
+                  />
+                  <div className="absolute bottom-3 left-3 px-2 py-1 bg-[#eceff2] rounded text-[10px] font-medium text-[#859bab]">
+                    {message.length}/280 characters
+                  </div>
+                  <div className="absolute bottom-3 right-3 w-7 h-7 bg-[#eceff2] rounded flex items-center justify-center">
+                    <ArrowUp className="w-3.5 h-3.5 text-[#859bab]" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Warning Banner */}
+          <div className="bg-[#fff3dc] border border-[#ffedc2] rounded-lg p-3 flex gap-3">
+            <AlertCircle className="w-5 h-5 text-[#f59e0b] shrink-0 mt-0.5" />
+            <p className="text-sm text-[#22292f] leading-relaxed">
+              This action cannot be undone. <span className="font-bold">{guestCount} registered guests will be notified.</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center gap-3 p-4 border-t border-[#d5dde2]">
+          <button
+            onClick={onClose}
+            className="flex-1 h-11 px-4 text-sm font-semibold text-[#22292f] bg-white border border-[#d5dde2] rounded-xl hover:bg-[#f5f5f5] transition-colors"
+          >
+            Dismiss
+          </button>
+          <button
+            onClick={handleCancelEvent}
+            disabled={loading}
+            className="flex-1 h-11 px-4 text-sm font-semibold text-white bg-[#e53935] rounded-xl hover:bg-[#c62828] transition-colors flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : null}
+            Cancel Event
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 }
