@@ -25,6 +25,10 @@ import {
   X,
   ArrowUp,
   Loader2,
+  LogIn,
+  LogOut,
+  ShieldCheck,
+  TrendingUp,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import AdminSidebar from "@/components/admin-sidebar";
@@ -965,6 +969,13 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
           </div>
         </div>
       )}
+
+      {/* Analytics Tab Content */}
+      {detailTab === "analytics" && (
+        <div className="p-4">
+          <AnalyticsView />
+        </div>
+      )}
       {showCancelModal && (
         <CancelEventModal
           onClose={() => setShowCancelModal(false)}
@@ -1111,6 +1122,184 @@ function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps)
           </button>
         </div>
       </motion.div>
+    </div>
+  );
+}
+
+// --- Analytics Tab Components ---
+
+function SummaryCard({
+  icon: Icon,
+  title,
+  subtitle,
+  value,
+  iconBg = "bg-white"
+}: {
+  icon: React.ElementType;
+  title: string;
+  subtitle?: string;
+  value: string | number;
+  iconBg?: string;
+}) {
+  return (
+    <div className="flex-1 min-w-[200px] bg-white border border-[#d5dde2] rounded-xl p-4 flex items-center justify-between shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 ${iconBg} border border-[#d5dde2] rounded-lg flex items-center justify-center`}>
+          <Icon className="w-5 h-5 text-[#22292f]" />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-sm font-semibold text-[#3f52ff] leading-none mb-1">{title}</span>
+          <span className="text-xs text-[#859bab]">{subtitle}</span>
+        </div>
+      </div>
+      <span className="text-2xl font-bold text-[#22292f]">{value}</span>
+    </div>
+  );
+}
+
+function RegistrationsChart() {
+  return (
+    <div className="bg-white border border-[#d5dde2] rounded-xl p-6 shadow-sm flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col">
+          <h3 className="text-base font-semibold text-[#22292f]">Registrations Over Time</h3>
+          <span className="text-xs text-[#859bab]">Track how registrations grew over time</span>
+        </div>
+        <AriaSelect
+          label=""
+          placeholder="Last 24 Hours"
+          selectedKey="24h"
+          className="w-[140px]"
+        >
+          <AriaSelectItem id="24h">Last 24 Hours</AriaSelectItem>
+          <AriaSelectItem id="7d">Last 7 days</AriaSelectItem>
+          <AriaSelectItem id="30d">Last 30 days</AriaSelectItem>
+        </AriaSelect>
+      </div>
+
+      <div className="relative h-[250px] w-full mt-4">
+        {/* Y-axis labels */}
+        <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-[10px] text-[#859bab] pr-4">
+          {[100, 90, 80, 70, 60, 50, 40, 30, 20, 10].map(val => <span key={val}>{val}</span>)}
+        </div>
+
+        {/* Chart Area */}
+        <div className="absolute left-8 right-4 top-0 bottom-8 border-l border-b border-[#eceff2]">
+          <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 800 120">
+            {/* Grid lines */}
+            {[0, 25, 50, 75, 100].map(p => (
+              <line key={p} x1="0" y1={p} x2="800" y2={p} stroke="#f0f2f5" strokeWidth="1" />
+            ))}
+
+            {/* The Line */}
+            <path
+              d="M 0 110 L 40 100 L 80 105 L 120 70 L 160 65 L 200 65 L 240 80 L 280 75 L 320 78 L 360 78 L 400 65 L 440 30 L 480 20 L 520 40 L 560 38 L 600 55 L 640 50 L 680 50 L 720 40 L 760 110 L 800 110"
+              fill="none"
+              stroke="#3f52ff"
+              strokeWidth="2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+
+            {/* Gradient Fill */}
+            <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3f52ff" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="#3f52ff" stopOpacity="0" />
+            </linearGradient>
+            <path
+              d="M 0 110 L 40 100 L 80 105 L 120 70 L 160 65 L 200 65 L 240 80 L 280 75 L 320 78 L 360 78 L 400 65 L 440 30 L 480 20 L 520 40 L 560 38 L 600 55 L 640 50 L 680 50 L 720 40 L 760 110 L 800 110 L 800 120 L 0 120 Z"
+              fill="url(#chartGradient)"
+            />
+          </svg>
+        </div>
+
+        {/* X-axis labels */}
+        <div className="absolute left-8 right-4 bottom-0 flex justify-between text-[10px] text-[#859bab]">
+          {["0h", "1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h", "13h", "14h", "15h", "16h", "17h", "18h", "19h", "20h", "21h", "22h", "23h", "24h"].map(h => (
+            <span key={h}>{h}</span>
+          ))}
+        </div>
+      </div>
+      <div className="text-center">
+        <span className="text-[10px] text-[#859bab]">Registrations in the last 24 hours</span>
+      </div>
+    </div>
+  );
+}
+
+function DetailBox({ title, data }: { title: string, data: { label: string, value: string | number }[] }) {
+  return (
+    <div className="flex-1 bg-white border border-[#d5dde2] rounded-xl overflow-hidden shadow-sm">
+      <div className="px-4 py-3 border-b border-[#d5dde2] bg-white">
+        <h4 className="text-sm font-semibold text-[#516778]">{title}</h4>
+      </div>
+      <div className="p-4 flex flex-col gap-3">
+        {data.map((item, idx) => (
+          <div key={idx} className="flex items-center justify-between">
+            <span className="text-sm font-medium text-[#22292f]">{item.label}</span>
+            <span className="text-sm font-semibold text-[#859bab]">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsView() {
+  return (
+    <div className="flex flex-col gap-4 animate-in fade-in duration-300">
+      {/* Top Cards */}
+      <div className="flex gap-4 flex-wrap">
+        <SummaryCard
+          icon={Users}
+          title="Total Registrations"
+          subtitle="68% of capacity"
+          value="342"
+        />
+        <SummaryCard
+          icon={LogIn}
+          title="Checked In Users"
+          subtitle="0% attendance rate"
+          value="0"
+        />
+        <SummaryCard
+          icon={LogOut}
+          title="Checked Out Users"
+          subtitle="0% of checked in"
+          value="0"
+        />
+        <SummaryCard
+          icon={ShieldCheck}
+          title="Booked Users"
+          subtitle="Checked-in"
+          value="2"
+        />
+      </div>
+
+      {/* Chart */}
+      <RegistrationsChart />
+
+      {/* Tables Row */}
+      <div className="flex gap-4 flex-wrap">
+        <DetailBox
+          title="Check-In Summary"
+          data={[
+            { label: "Total Registered", value: 342 },
+            { label: "Checked In", value: 0 },
+            { label: "Checked Out", value: 0 },
+            { label: "Still Inside", value: 0 },
+          ]}
+        />
+        <DetailBox
+          title="Event Information"
+          data={[
+            { label: "Event Type", value: "General Event" },
+            { label: "Mode", value: "On Site" },
+            { label: "Language", value: "English" },
+            { label: "Capacity", value: 500 },
+          ]}
+        />
+      </div>
     </div>
   );
 }
