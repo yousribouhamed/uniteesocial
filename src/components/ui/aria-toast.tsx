@@ -10,9 +10,15 @@ export const toastQueue = new ToastQueue({
     maxVisibleToasts: 5,
 });
 
-function AriaToast({ toast, state, ...props }: any) {
+function AriaToast({ toast, state }: { toast: any; state: any }) {
     let ref = React.useRef(null);
-    let { toastProps, titleProps, descriptionProps, closeButtonProps } = useToast(props, state, ref);
+    let { toastProps, titleProps, descriptionProps, closeButtonProps } = useToast({ toast }, state, ref);
+
+    // Safety check for toast content
+    if (!toast || !toast.content) {
+        return null;
+    }
+
     let { title, description, variant, type } = toast.content;
     // Support both 'variant' and 'type' for backward compatibility
     let toastVariant = variant || type || "success";
@@ -21,7 +27,6 @@ function AriaToast({ toast, state, ...props }: any) {
     let icon = <CheckCircle2 className="w-5 h-5 text-[#22892e]" />; // Default success
     if (toastVariant === "error") icon = <AlertCircle className="w-5 h-5 text-[#e22023]" />;
     if (toastVariant === "info") icon = <Info className="w-5 h-5 text-[#3f52ff]" />;
-
 
     return (
         <div
