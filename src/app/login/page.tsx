@@ -6,6 +6,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { AriaCheckbox } from "@/components/ui/aria-checkbox";
 
 function LoginForm() {
   const router = useRouter();
@@ -167,18 +168,14 @@ function LoginForm() {
           </div>
 
           {/* Remember me + Forget password */}
+          {/* Remember me + Forget password */}
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-[#d5dde2] bg-white shadow-sm accent-[#3f52ff]"
-              />
-              <span className="text-[#22292f] text-sm font-medium leading-4">
-                Remember me
-              </span>
-            </label>
+            <AriaCheckbox
+              isSelected={rememberMe}
+              onChange={setRememberMe}
+            >
+              <span className="font-medium leading-4">Remember me</span>
+            </AriaCheckbox>
             <Link
               href="/forgot-password"
               className="text-[#1e21ff] text-sm font-semibold leading-normal hover:underline"

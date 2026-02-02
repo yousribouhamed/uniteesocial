@@ -22,6 +22,7 @@ import AdminSidebar from "@/components/admin-sidebar";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Suspense } from "react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
+import { AriaCheckbox } from "@/components/ui/aria-checkbox";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
 import { toastQueue } from "@/components/ui/aria-toast";
@@ -768,17 +769,16 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                   <tr className="[&>th]:bg-[#eceff2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
                     {/* Checkbox */}
                     <th className="h-9 px-4 py-2 text-left">
-                      <input
-                        type="checkbox"
-                        checked={selectedGuests.size === guests.length && guests.length > 0}
-                        onChange={(e) => {
-                          if (e.target.checked) {
+                      <AriaCheckbox
+                        isSelected={selectedGuests.size === guests.length && guests.length > 0}
+                        isIndeterminate={selectedGuests.size > 0 && selectedGuests.size < guests.length}
+                        onChange={(isSelected) => {
+                          if (isSelected) {
                             setSelectedGuests(new Set(guests.map(g => g.id)));
                           } else {
                             setSelectedGuests(new Set());
                           }
                         }}
-                        className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff]"
                       />
                     </th>
                     {/* Headers */}
@@ -819,19 +819,17 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                       >
                         {/* Checkbox */}
                         <td className="px-4 py-3">
-                          <input
-                            type="checkbox"
-                            checked={selectedGuests.has(guest.id)}
-                            onChange={(e) => {
+                          <AriaCheckbox
+                            isSelected={selectedGuests.has(guest.id)}
+                            onChange={(isSelected) => {
                               const newSet = new Set(selectedGuests);
-                              if (e.target.checked) {
+                              if (isSelected) {
                                 newSet.add(guest.id);
                               } else {
                                 newSet.delete(guest.id);
                               }
                               setSelectedGuests(newSet);
                             }}
-                            className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff]"
                           />
                         </td>
                         {/* Name */}

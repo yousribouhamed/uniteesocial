@@ -33,6 +33,7 @@ import {
   XCircle,
   FileSpreadsheet,
 } from "lucide-react";
+import { AriaCheckbox } from "@/components/ui/aria-checkbox";
 import AdminSidebar from "@/components/admin-sidebar";
 
 // --- Types ---
@@ -643,15 +644,13 @@ function EditUserView({
           {profileVisible && (
             <div className="bg-[#eceff2] rounded-lg p-2 flex flex-col gap-2">
               {directoryFields.map((field) => (
-                <label key={field} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={checkedFields[field]}
-                    onChange={() => toggleField(field)}
-                    className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff] cursor-pointer"
-                  />
-                  <span className="text-sm font-medium text-[#22292f]">{field}</span>
-                </label>
+                <AriaCheckbox
+                  key={field}
+                  isSelected={checkedFields[field]}
+                  onChange={() => toggleField(field)}
+                >
+                  <span className="font-medium text-[#22292f]">{field}</span>
+                </AriaCheckbox>
               ))}
             </div>
           )}
@@ -1514,11 +1513,10 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                       <thead>
                         <tr className="[&>th]:bg-[#eceff2]">
                           <th className="h-9 px-3 py-2 text-left rounded-l-lg">
-                            <input
-                              type="checkbox"
-                              checked={filteredUsers.length > 0 && selectedUserIds.size === filteredUsers.length}
-                              onChange={toggleSelectAll}
-                              className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff] cursor-pointer"
+                            <AriaCheckbox
+                              isSelected={filteredUsers.length > 0 && selectedUserIds.size === filteredUsers.length}
+                              isIndeterminate={selectedUserIds.size > 0 && selectedUserIds.size < filteredUsers.length}
+                              onChange={() => toggleSelectAll()}
                             />
                           </th>
                           {["Full Name", "Role", "Registration Date", "Status", "Profile Status", "Action"].map((h, i, arr) => (
@@ -1552,11 +1550,9 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                                 }`}
                             >
                               <td className="h-[46px] px-3 py-2">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedUserIds.has(user.id)}
+                                <AriaCheckbox
+                                  isSelected={selectedUserIds.has(user.id)}
                                   onChange={() => toggleUserSelection(user.id)}
-                                  className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff] cursor-pointer"
                                 />
                               </td>
                               <td className="h-[46px] px-3 py-2">
