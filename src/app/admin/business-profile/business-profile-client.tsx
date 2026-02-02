@@ -45,6 +45,7 @@ import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
 import { getBusinessProfile, updateBusinessProfile } from "./actions";
+import { TIMEZONES } from "@/data/timezones";
 
 interface BusinessProfileClientProps {
   currentUser: CurrentUser;
@@ -597,13 +598,30 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-[#859bab]">Time Zone</label>
           {isEditing ? (
-            <input
-              type="text"
-              value={formData.timezone}
-              onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-              placeholder="UTC+00:00 — London"
-              className={inputEditClass}
-            />
+            <Menu>
+              <MenuButton className={inputEditClass + " flex items-center justify-between"}>
+                <span className="truncate">{formData.timezone || "Select Time Zone"}</span>
+                <ChevronDown className="w-4 h-4 text-[#516778] shrink-0" />
+              </MenuButton>
+              <Portal>
+                <MenuItems
+                  anchor="bottom start"
+                  transition
+                  className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[var(--button-width)] max-h-[300px] overflow-y-auto transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                >
+                  {TIMEZONES.map((tz) => (
+                    <MenuItem key={tz}>
+                      <button
+                        onClick={() => setFormData({ ...formData, timezone: tz })}
+                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                      >
+                        {tz}
+                      </button>
+                    </MenuItem>
+                  ))}
+                </MenuItems>
+              </Portal>
+            </Menu>
           ) : (
             <div className={inputReadOnlyClass + " flex items-center"}>
               {formData.timezone || <span className="text-[#668091]">Not set</span>}
@@ -1829,6 +1847,15 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                     type="text"
                     value={searchPlace}
                     onChange={(e) => setSearchPlace(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && searchPlace) {
+                        toastQueue.add({
+                          title: "Location Found",
+                          description: `Mapped location to ${searchPlace}`,
+                          variant: "success",
+                        }, { timeout: 3000 });
+                      }
+                    }}
                     placeholder="Search Places (eg. Central Park, NY)"
                     className="h-9 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                   />
@@ -2342,96 +2369,106 @@ function ChaptersContent() {
                 </tr>
               </thead>
               <tbody>
-                {chaptersData.map((chapter) => (
-                  <tr
-                    key={chapter.code}
-                    className="border-b border-[#eceff2] last:border-b-0"
-                  >
-                    {/* Chapter */}
-                    <td className="px-3 py-3">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-[#22292f]">
-                          {chapter.name}
-                        </span>
-                        <span className="text-xs text-[#859bab]">
-                          {chapter.code}
-                        </span>
-                      </div>
-                    </td>
-                    {/* Location */}
-                    <td className="px-3 py-3">
-                      <div className="flex flex-col">
-                        <span className="text-sm text-[#22292f]">
-                          {chapter.city}
-                        </span>
-                        <span className="text-xs text-[#859bab]">
-                          {chapter.country}
-                        </span>
-                      </div>
-                    </td>
-                    {/* Team */}
-                    <td className="px-3 py-3 text-sm text-[#22292f]">
-                      {chapter.team}
-                    </td>
-                    {/* Events */}
-                    <td className="px-3 py-3 text-sm text-[#22292f]">
-                      {chapter.events}
-                    </td>
-                    {/* Visible Toggle */}
-                    <td className="px-3 py-3">
-                      <AriaSwitch
-                        isSelected={visibleStates[chapter.code]}
-                        onChange={() => toggleVisible(chapter.code)}
-                      />
-                    </td>
-                    {/* Status */}
-                    <td className="px-3 py-3">
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#22892e] bg-[#e8f5e9] px-2 py-0.5 rounded-full">
-                        <CheckCircle2 className="w-3 h-3" />
-                        {chapter.status}
-                      </span>
-                    </td>
-                    {/* Last Update */}
-                    <td className="px-3 py-3">
-                      <div className="flex flex-col">
-                        <span className="text-sm text-[#22292f]">
-                          {chapter.lastUpdate}
-                        </span>
-                        {chapter.updatedBy && (
-                          <span className="text-xs text-[#859bab]">
-                            {chapter.updatedBy}
+                {chaptersData
+                  .filter(chapter => {
+                    const query = searchQuery.toLowerCase();
+                    return (
+                      chapter.name.toLowerCase().includes(query) ||
+                      chapter.city.toLowerCase().includes(query) ||
+                      chapter.country.toLowerCase().includes(query) ||
+                      chapter.code.toLowerCase().includes(query)
+                    );
+                  })
+                  .map((chapter) => (
+                    <tr
+                      key={chapter.code}
+                      className="border-b border-[#eceff2] last:border-b-0"
+                    >
+                      {/* Chapter */}
+                      <td className="px-3 py-3">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-[#22292f]">
+                            {chapter.name}
                           </span>
-                        )}
-                      </div>
-                    </td>
-                    {/* Action */}
-                    <td className="px-3 py-3">
-                      <ChapterActionMenu
-                        onView={() => {
-                          setViewChapter({
-                            name: chapter.name,
-                            code: chapter.code,
-                            city: chapter.city,
-                            country: chapter.country,
-                            team: chapter.team,
-                            events: chapter.events,
-                            lastUpdate: chapter.lastUpdate,
-                          });
-                        }}
-                        onEdit={() => {
-                          // Edit logic if any, currently just placeholder in original
-                        }}
-                        onDelete={() => {
-                          setDeleteChapter({
-                            name: chapter.name,
-                            code: chapter.code,
-                            events: chapter.events,
-                          });
-                        }}
-                      />
-                    </td>
-                  </tr>
-                ))}
+                          <span className="text-xs text-[#859bab]">
+                            {chapter.code}
+                          </span>
+                        </div>
+                      </td>
+                      {/* Location */}
+                      <td className="px-3 py-3">
+                        <div className="flex flex-col">
+                          <span className="text-sm text-[#22292f]">
+                            {chapter.city}
+                          </span>
+                          <span className="text-xs text-[#859bab]">
+                            {chapter.country}
+                          </span>
+                        </div>
+                      </td>
+                      {/* Team */}
+                      <td className="px-3 py-3 text-sm text-[#22292f]">
+                        {chapter.team}
+                      </td>
+                      {/* Events */}
+                      <td className="px-3 py-3 text-sm text-[#22292f]">
+                        {chapter.events}
+                      </td>
+                      {/* Visible Toggle */}
+                      <td className="px-3 py-3">
+                        <AriaSwitch
+                          isSelected={visibleStates[chapter.code]}
+                          onChange={() => toggleVisible(chapter.code)}
+                        />
+                      </td>
+                      {/* Status */}
+                      <td className="px-3 py-3">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-[#22892e] bg-[#e8f5e9] px-2 py-0.5 rounded-full">
+                          <CheckCircle2 className="w-3 h-3" />
+                          {chapter.status}
+                        </span>
+                      </td>
+                      {/* Last Update */}
+                      <td className="px-3 py-3">
+                        <div className="flex flex-col">
+                          <span className="text-sm text-[#22292f]">
+                            {chapter.lastUpdate}
+                          </span>
+                          {chapter.updatedBy && (
+                            <span className="text-xs text-[#859bab]">
+                              {chapter.updatedBy}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      {/* Action */}
+                      <td className="px-3 py-3">
+                        <ChapterActionMenu
+                          onView={() => {
+                            setViewChapter({
+                              name: chapter.name,
+                              code: chapter.code,
+                              city: chapter.city,
+                              country: chapter.country,
+                              team: chapter.team,
+                              events: chapter.events,
+                              lastUpdate: chapter.lastUpdate,
+                            });
+                          }}
+                          onEdit={() => {
+                            // Edit logic if any, currently just placeholder in original
+                          }}
+                          onDelete={() => {
+                            setDeleteChapter({
+                              name: chapter.name,
+                              code: chapter.code,
+                              events: chapter.events,
+                            });
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

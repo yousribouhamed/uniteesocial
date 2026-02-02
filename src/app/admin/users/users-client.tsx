@@ -1312,7 +1312,14 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
   const filteredUsers = users.filter((u) => {
     if (activeTab === "active" && u.status !== "Active") return false;
     if (activeTab === "inactive" && u.status !== "Inactive") return false;
-    if (searchQuery && !u.full_name?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      if (
+        !u.full_name?.toLowerCase().includes(query) &&
+        !u.email?.toLowerCase().includes(query) &&
+        !u.role?.toLowerCase().includes(query)
+      ) return false;
+    }
     return true;
   });
 
