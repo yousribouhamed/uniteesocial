@@ -159,6 +159,27 @@ const mockEvents: EventItem[] = [
   },
 ];
 
+// --- Guest Types & Mock Data ---
+interface GuestItem {
+  id: string;
+  name: string;
+  email: string;
+  registrationTime: string;
+  ticketId: string;
+  status: "checked-in" | "not-checked-in" | "booked" | "cancelled";
+}
+
+const mockGuests: GuestItem[] = [
+  { id: "g1", name: "Kenton J. Booker", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "234567", status: "booked" },
+  { id: "g2", name: "Antonietta O'Connell", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "789123", status: "checked-in" },
+  { id: "g3", name: "Brigid Jerde", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "21654", status: "booked" },
+  { id: "g4", name: "Doug Steuber", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "654987", status: "not-checked-in" },
+  { id: "g5", name: "Eusebio Crona", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "987456", status: "not-checked-in" },
+  { id: "g6", name: "Elenora Kuhlman", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "123789", status: "not-checked-in" },
+  { id: "g7", name: "Mafalda Windler", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "456789", status: "cancelled" },
+  { id: "g8", name: "Crysta Crist", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "789456", status: "checked-in" },
+];
+
 // --- Create Event View ---
 function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
@@ -180,6 +201,14 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
   );
   const [coverImage, setCoverImage] = useState(event?.coverImage || "/img/event-cover-1.jpg");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Guest tab state
+  const [guests] = useState<GuestItem[]>(mockGuests);
+  const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set());
+  const [guestSearchQuery, setGuestSearchQuery] = useState("");
+  const [guestStatusFilter, setGuestStatusFilter] = useState<string>("all");
+  const [guestPage, setGuestPage] = useState(1);
+  const guestsPerPage = 8;
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -286,335 +315,554 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
         ))}
       </div>
 
-      {/* Two-Column Layout */}
-      <div className="flex lg:flex-row flex-col gap-4 items-start">
-        {/* Left: Event Preview Card */}
-        <div className="w-full lg:w-[417px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3">
-          <div className="flex flex-col gap-4">
-            {/* Cover Image Upload Area */}
-            <div
-              className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2] group cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {coverImage?.startsWith("data:") ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={coverImage}
-                  alt="Event cover"
-                  className="w-full h-full object-cover transition-opacity group-hover:opacity-80 absolute inset-0"
-                />
-              ) : (
-                <Image
-                  key={coverImage}
-                  src={coverImage}
-                  alt="Event cover"
-                  fill
-                  className="object-cover transition-opacity group-hover:opacity-80"
-                />
-              )}
-              {/* Overlay with Larger Camera Icon (Matching Figma/User Photo) */}
-              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                <div className="w-[46px] h-[46px] bg-[#3f52ff] border-2 border-white rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
-                  <Camera className="w-5 h-5 text-white" />
-                </div>
-              </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-            </div>
-
-            {/* Event Info Prevew */}
+      {/* Tab Content */}
+      {detailTab === "overview" && (
+        <div className="flex lg:flex-row flex-col gap-4 items-start">
+          {/* Left: Event Preview Card */}
+          <div className="w-full lg:w-[417px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3">
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
-                  {eventTitle}
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
-                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
-                    </svg>
-                    {chapter}
-                  </span>
-                  <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
-                    {type}
-                  </span>
+              {/* Cover Image Upload Area */}
+              <div
+                className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2] group cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {coverImage?.startsWith("data:") ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={coverImage}
+                    alt="Event cover"
+                    className="w-full h-full object-cover transition-opacity group-hover:opacity-80 absolute inset-0"
+                  />
+                ) : (
+                  <Image
+                    key={coverImage}
+                    src={coverImage}
+                    alt="Event cover"
+                    fill
+                    className="object-cover transition-opacity group-hover:opacity-80"
+                  />
+                )}
+                {/* Overlay with Larger Camera Icon (Matching Figma/User Photo) */}
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                  <div className="w-[46px] h-[46px] bg-[#3f52ff] border-2 border-white rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
+                    <Camera className="w-5 h-5 text-white" />
+                  </div>
                 </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
               </div>
 
-              {/* Date + Location Preview */}
-              <div className="flex flex-wrap gap-x-8 gap-y-4">
-                {/* Date Widget */}
-                <div className="flex items-center gap-2">
-                  <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
-                    <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
-                      <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
-                    </div>
-                    <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-base font-medium text-[#22292f] leading-none">{startDate?.toString()}</span>
-                    <span className="text-sm font-normal text-[#859bab] leading-[21px] mt-1">{startTime} - {endTime} UTC+4</span>
+              {/* Event Info Prevew */}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
+                    {eventTitle}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
+                      <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                      </svg>
+                      {chapter}
+                    </span>
+                    <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
+                      {type}
+                    </span>
                   </div>
                 </div>
 
-                {/* Location Icon Block */}
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 border border-[#859bab] rounded-lg flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-[#859bab]" />
+                {/* Date + Location Preview */}
+                <div className="flex flex-wrap gap-x-8 gap-y-4">
+                  {/* Date Widget */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
+                      <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
+                        <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
+                      </div>
+                      <div className="flex-1 flex items-center justify-center w-full">
+                        <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-base font-medium text-[#22292f] leading-none">{startDate?.toString()}</span>
+                      <span className="text-sm font-normal text-[#859bab] leading-[21px] mt-1">{startTime} - {endTime} UTC+4</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-base font-medium text-[#22292f] leading-[24px]">Location Preview</span>
-                    <span className="text-sm font-normal text-[#859bab] leading-[21px] truncate w-[150px]">
-                      {locationInput || "Add location below"}
+
+                  {/* Location Icon Block */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 border border-[#859bab] rounded-lg flex items-center justify-center">
+                      <Globe className="w-5 h-5 text-[#859bab]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-base font-medium text-[#22292f] leading-[24px]">Location Preview</span>
+                      <span className="text-sm font-normal text-[#859bab] leading-[21px] truncate w-[150px]">
+                        {locationInput || "Add location below"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Rows: Map Pin + Signups */}
+                <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
+                    <span className="text-sm font-normal text-[#22292f] leading-[18px] truncate">
+                      {locationInput || "Not specificed"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
+                    <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                      {event?.signups || 0}/{event?.maxSignups || 300}
                     </span>
                   </div>
                 </div>
               </div>
-
-              {/* Bottom Rows: Map Pin + Signups */}
-              <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
-                  <span className="text-sm font-normal text-[#22292f] leading-[18px] truncate">
-                    {locationInput || "Not specificed"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
-                  <span className="text-sm font-normal text-[#22292f] leading-[18px]">
-                    {event?.signups || 0}/{event?.maxSignups || 300}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Event Form */}
-        <div className="flex-1 w-full flex flex-col gap-4">
-          <div className="flex justify-end">
-            <div className="w-[120px]">
-              <AriaSelect aria-label="Language" defaultSelectedKey="English">
-                <AriaSelectItem id="English" textValue="English">English</AriaSelectItem>
-                <AriaSelectItem id="French" textValue="French">French</AriaSelectItem>
-                <AriaSelectItem id="Arabic" textValue="Arabic">Arabic</AriaSelectItem>
-              </AriaSelect>
             </div>
           </div>
 
-          <input
-            type="text"
-            value={eventTitle}
-            onChange={(e) => setEventTitle(e.target.value)}
-            className="text-[40px] font-bold text-[#3f52ff] leading-[46px] bg-transparent outline-none w-full"
-            placeholder="Event Title"
-          />
-
-          {/* Start / End Date-Time Input */}
-          <div className="flex sm:flex-row flex-col gap-2 items-start">
-            <div className="flex-1 bg-white rounded-lg p-2.5 flex flex-col gap-4 w-full">
-              {/* Start Row */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
-                    <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
-                      <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
-                    </div>
-                    <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
-                    </div>
-                  </div>
-                  <span className="text-sm font-semibold text-[#22292f]">Start</span>
-                </div>
-                <div className="flex gap-1 items-center">
-                  <div className="w-[136px]">
-                    <AriaDatePicker value={startDate} onChange={setStartDate} />
-                  </div>
-                  <input
-                    type="text"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="bg-[#d8e6ff] rounded-lg px-2 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Divider / Line between */}
-              <div className="ml-5 h-px bg-[#f0f2f4] -my-2" />
-
-              {/* End Row */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0 opacity-60">
-                    <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
-                      <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">
-                        {getDayAndMonth(endDate).month}
-                      </span>
-                    </div>
-                    <div className="flex-1 flex items-center justify-center w-full">
-                      <span className="text-[16px] font-medium text-[#859bab] leading-none">
-                        {getDayAndMonth(endDate).day}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-sm font-semibold text-[#22292f]">End</span>
-                </div>
-                <div className="flex gap-1 items-center">
-                  <div className="w-[136px]">
-                    <AriaDatePicker value={endDate} onChange={setEndDate} />
-                  </div>
-                  <input
-                    type="text"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="bg-[#d8e6ff] rounded-lg px-2 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
-                  />
-                </div>
+          {/* Right: Event Form */}
+          <div className="flex-1 w-full flex flex-col gap-4">
+            <div className="flex justify-end">
+              <div className="w-[120px]">
+                <AriaSelect aria-label="Language" defaultSelectedKey="English">
+                  <AriaSelectItem id="English" textValue="English">English</AriaSelectItem>
+                  <AriaSelectItem id="French" textValue="French">French</AriaSelectItem>
+                  <AriaSelectItem id="Arabic" textValue="Arabic">Arabic</AriaSelectItem>
+                </AriaSelect>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
-              <Globe className="w-4 h-4 text-[#22292f]" />
-              <span className="text-sm font-medium text-[#22292f]">GMT+01:00</span>
-              <span className="text-xs font-normal text-[#668091]">Algiers</span>
-            </div>
-          </div>
+            <input
+              type="text"
+              value={eventTitle}
+              onChange={(e) => setEventTitle(e.target.value)}
+              className="text-[40px] font-bold text-[#3f52ff] leading-[46px] bg-transparent outline-none w-full"
+              placeholder="Event Title"
+            />
 
-          <div className="bg-white rounded-lg px-3 py-2 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[#22292f]" />
-              <span className="text-base font-medium text-[#22292f]">Duration</span>
-            </div>
-            <span className="text-base font-medium text-[#668091]">3 hours</span>
-          </div>
-
-          {/* Chapter / Type Selection */}
-          <div className="flex gap-2">
-            <div className="flex-1 flex flex-col gap-1">
-              <AriaSelect
-                label="Chapter"
-                selectedKey={chapter}
-                onSelectionChange={(k) => setChapter(k as string)}
-              >
-                <AriaSelectItem id="Dubai Chapter" textValue="Dubai Chapter">Dubai Chapter</AriaSelectItem>
-                <AriaSelectItem id="London Chapter" textValue="London Chapter">London Chapter</AriaSelectItem>
-                <AriaSelectItem id="Paris Chapter" textValue="Paris Chapter">Paris Chapter</AriaSelectItem>
-              </AriaSelect>
-            </div>
-            <div className="flex-1 flex flex-col gap-1">
-              <AriaSelect
-                label="Event Type"
-                selectedKey={type}
-                onSelectionChange={(k) => setType(k as "Onsite" | "Online" | "Hybrid")}
-              >
-                <AriaSelectItem id="Onsite" textValue="Onsite">Onsite</AriaSelectItem>
-                <AriaSelectItem id="Online" textValue="Online">Online</AriaSelectItem>
-                <AriaSelectItem id="Hybrid" textValue="Hybrid">Hybrid</AriaSelectItem>
-              </AriaSelect>
-            </div>
-          </div>
-
-          {/* Event Location Section */}
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff]">Event Location</span>
-            <div className="bg-white rounded-lg p-3 flex flex-col gap-4">
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-[#22292f] mt-0.5" />
-                <span className="text-base font-medium text-[#22292f]">Add event location</span>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-[#22292f]">Location Name</label>
-                <input
-                  type="text"
-                  placeholder="Enter the location"
-                  value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
-                  className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff]"
-                />
-              </div>
-              <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#eee]">
-                <Image src="/img/map-placeholder.jpg" alt="Map" fill className="object-cover" />
-              </div>
-
-              {/* Geo-Fence Radius */}
-              <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
+            {/* Start / End Date-Time Input */}
+            <div className="flex sm:flex-row flex-col gap-2 items-start">
+              <div className="flex-1 bg-white rounded-lg p-2.5 flex flex-col gap-4 w-full">
+                {/* Start Row */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-[#22292f]">Geo-Fence Radius</span>
-                  <span className="text-sm font-medium text-[#668091]">{geoFenceRadius} meters</span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
+                      <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
+                        <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
+                      </div>
+                      <div className="flex-1 flex items-center justify-center w-full">
+                        <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-[#22292f]">Start</span>
+                  </div>
+                  <div className="flex gap-1 items-center">
+                    <div className="w-[136px]">
+                      <AriaDatePicker value={startDate} onChange={setStartDate} />
+                    </div>
+                    <input
+                      type="text"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      className="bg-[#d8e6ff] rounded-lg px-2 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
+                    />
+                  </div>
                 </div>
+
+                {/* Divider / Line between */}
+                <div className="ml-5 h-px bg-[#f0f2f4] -my-2" />
+
+                {/* End Row */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0 opacity-60">
+                      <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
+                        <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">
+                          {getDayAndMonth(endDate).month}
+                        </span>
+                      </div>
+                      <div className="flex-1 flex items-center justify-center w-full">
+                        <span className="text-[16px] font-medium text-[#859bab] leading-none">
+                          {getDayAndMonth(endDate).day}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-[#22292f]">End</span>
+                  </div>
+                  <div className="flex gap-1 items-center">
+                    <div className="w-[136px]">
+                      <AriaDatePicker value={endDate} onChange={setEndDate} />
+                    </div>
+                    <input
+                      type="text"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      className="bg-[#d8e6ff] rounded-lg px-2 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                <Globe className="w-4 h-4 text-[#22292f]" />
+                <span className="text-sm font-medium text-[#22292f]">GMT+01:00</span>
+                <span className="text-xs font-normal text-[#668091]">Algiers</span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg px-3 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#22292f]" />
+                <span className="text-base font-medium text-[#22292f]">Duration</span>
+              </div>
+              <span className="text-base font-medium text-[#668091]">3 hours</span>
+            </div>
+
+            {/* Chapter / Type Selection */}
+            <div className="flex gap-2">
+              <div className="flex-1 flex flex-col gap-1">
+                <AriaSelect
+                  label="Chapter"
+                  selectedKey={chapter}
+                  onSelectionChange={(k) => setChapter(k as string)}
+                >
+                  <AriaSelectItem id="Dubai Chapter" textValue="Dubai Chapter">Dubai Chapter</AriaSelectItem>
+                  <AriaSelectItem id="London Chapter" textValue="London Chapter">London Chapter</AriaSelectItem>
+                  <AriaSelectItem id="Paris Chapter" textValue="Paris Chapter">Paris Chapter</AriaSelectItem>
+                </AriaSelect>
+              </div>
+              <div className="flex-1 flex flex-col gap-1">
+                <AriaSelect
+                  label="Event Type"
+                  selectedKey={type}
+                  onSelectionChange={(k) => setType(k as "Onsite" | "Online" | "Hybrid")}
+                >
+                  <AriaSelectItem id="Onsite" textValue="Onsite">Onsite</AriaSelectItem>
+                  <AriaSelectItem id="Online" textValue="Online">Online</AriaSelectItem>
+                  <AriaSelectItem id="Hybrid" textValue="Hybrid">Hybrid</AriaSelectItem>
+                </AriaSelect>
+              </div>
+            </div>
+
+            {/* Event Location Section */}
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-[#3f52ff]">Event Location</span>
+              <div className="bg-white rounded-lg p-3 flex flex-col gap-4">
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-[#22292f] mt-0.5" />
+                  <span className="text-base font-medium text-[#22292f]">Add event location</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-semibold text-[#22292f]">Location Name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter the location"
+                    value={locationInput}
+                    onChange={(e) => setLocationInput(e.target.value)}
+                    className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff]"
+                  />
+                </div>
+                <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#eee]">
+                  <Image src="/img/map-placeholder.jpg" alt="Map" fill className="object-cover" />
+                </div>
+
+                {/* Geo-Fence Radius */}
+                <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-[#22292f]">Geo-Fence Radius</span>
+                    <span className="text-sm font-medium text-[#668091]">{geoFenceRadius} meters</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1000}
+                    value={geoFenceRadius}
+                    onChange={(e) => setGeoFenceRadius(Number(e.target.value))}
+                    className="w-full h-1.5 bg-[#eceff2] rounded-full appearance-none accent-[#3f52ff] cursor-pointer"
+                  />
+                </div>
+
+                {/* Location Masking */}
+                <div className="flex items-center justify-between pt-2 border-t border-[#f0f2f4]">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-[#22292f]">Location Masking</span>
+                    <span className="text-xs text-[#859bab]">Hide real location and show custom name</span>
+                  </div>
+                  <button
+                    onClick={() => setLocationMasking(!locationMasking)}
+                    className={`w-10 h-5 rounded-full relative transition-colors ${locationMasking ? "bg-[#3f52ff]" : "bg-[#d5dde2]"}`}
+                  >
+                    <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${locationMasking ? "translate-x-5" : "translate-x-0"}`} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-[#3f52ff]">Description</span>
+              <div className="border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-2 h-[149px] bg-white">
+                <textarea
+                  value={eventDescription}
+                  onChange={(e) => setEventDescription(e.target.value)}
+                  maxLength={280}
+                  className="flex-1 text-sm font-normal text-[#22292f] resize-none outline-none"
+                />
+                <div className="flex justify-end">
+                  <span className="text-[#859bab] text-[10px] font-semibold">
+                    {eventDescription.length}/280
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                const savedEvent: EventItem = {
+                  id: event?.id || crypto.randomUUID(),
+                  title: eventTitle,
+                  coverImage,
+                  chapter,
+                  type: type,
+                  eventCategory: event?.eventCategory || "general",
+                  location: locationInput,
+                  signups: event?.signups || 0,
+                  maxSignups: event?.maxSignups || 300,
+                  dateGroup: startDate?.toString() || "", // Using start date as date group for now
+                  date: startDate?.toString(),
+                };
+                onSave(savedEvent);
+              }}
+              className="w-full min-h-[40px] bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4"
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Guests Tab Content */}
+      {detailTab === "guests" && (
+        <div className="flex flex-col gap-4">
+          {/* Stats Row */}
+          <div className="flex items-stretch border border-[#d5dde2] rounded-lg bg-white">
+            {/* Registered Guests */}
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+              <div className="flex items-center gap-2">
+                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <Users className="w-4 h-4 text-[#516778]" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Registered Guests</span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">Capacity limit</span>
+                </div>
+              </div>
+              <span className="text-base font-semibold text-[#22292f] leading-[18px]">42 / 50</span>
+            </div>
+            {/* Checked In */}
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+              <div className="flex items-center gap-2">
+                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10.667 2H13.333C13.687 2 14 2.313 14 2.667V13.333C14 13.687 13.687 14 13.333 14H10.667" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /><path d="M6.667 11.333L10 8L6.667 4.667M2 8H10" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In</span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of registered</span>
+                </div>
+              </div>
+              <span className="text-base font-semibold text-[#22292f] leading-[18px]">0</span>
+            </div>
+            {/* Checked Out */}
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+              <div className="flex items-center gap-2">
+                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10.667 2H13.333C13.687 2 14 2.313 14 2.667V13.333C14 13.687 13.687 14 13.333 14H10.667" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /><path d="M10 11.333L13.333 8L10 4.667M2 8H13.333" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out</span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of checked in</span>
+                </div>
+              </div>
+              <span className="text-base font-semibold text-[#22292f] leading-[18px]">0</span>
+            </div>
+            {/* Booked */}
+            <div className="flex-1 flex items-center justify-between p-4">
+              <div className="flex items-center gap-2">
+                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#516778" strokeWidth="1.33" /><path d="M8 5V8L10 10" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" /></svg>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Booked</span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">Checked-in</span>
+                </div>
+              </div>
+              <span className="text-base font-semibold text-[#22292f] leading-[18px]">0</span>
+            </div>
+          </div>
+
+          {/* Guest List Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-lg font-semibold text-[#22292f]">Guest List</h3>
+              <span className="text-sm text-[#859bab]">All registered guests for this event</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="flex items-center gap-2 h-8 px-3 bg-[#22292f] text-white text-xs font-medium rounded-lg hover:bg-[#3a4249] transition-colors">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12.25 8.75V11.0833C12.25 11.3928 12.1271 11.6895 11.9083 11.9083C11.6895 12.1271 11.3928 12.25 11.0833 12.25H2.91667C2.60725 12.25 2.3105 12.1271 2.09171 11.9083C1.87292 11.6895 1.75 11.3928 1.75 11.0833V8.75" stroke="white" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" /><path d="M4.66699 5.83301L7.00033 8.16634L9.33366 5.83301" stroke="white" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" /><path d="M7 8.16634V1.74967" stroke="white" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                Export CSV
+                <span className="bg-white/20 text-white text-[10px] font-medium px-1.5 py-0.5 rounded">2</span>
+              </button>
+              <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
+                Add User
+              </button>
+            </div>
+          </div>
+
+          {/* Search + Filter Row */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg flex-1 max-w-[320px]">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7.333" cy="7.333" r="4.667" stroke="#668091" strokeWidth="1.33" /><path d="M14 14L10.667 10.667" stroke="#668091" strokeWidth="1.33" strokeLinecap="round" /></svg>
+              <input
+                type="text"
+                placeholder="Search Name, Email"
+                value={guestSearchQuery}
+                onChange={(e) => setGuestSearchQuery(e.target.value)}
+                className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] outline-none bg-transparent"
+              />
+              <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
+            </div>
+            <AriaSelect
+              selectedKey={guestStatusFilter}
+              onSelectionChange={(key) => setGuestStatusFilter(key as string)}
+              className="w-[160px]"
+            >
+              <AriaSelectItem id="all" textValue="All Guests">All Guests</AriaSelectItem>
+              <AriaSelectItem id="checked-in" textValue="Checked In">Checked In</AriaSelectItem>
+              <AriaSelectItem id="not-checked-in" textValue="Not Checked In">Not Checked In</AriaSelectItem>
+              <AriaSelectItem id="booked" textValue="Booked">Booked</AriaSelectItem>
+              <AriaSelectItem id="cancelled" textValue="Cancelled">Cancelled</AriaSelectItem>
+            </AriaSelect>
+          </div>
+
+          {/* Guest Table */}
+          <div className="bg-white border border-[#d5dde2] rounded-xl overflow-hidden">
+            {/* Table Header */}
+            <div className="grid grid-cols-[40px_1.5fr_1.5fr_1fr_1fr_1fr_1fr] gap-2 px-4 py-3 bg-[#f9fafb] border-b border-[#d5dde2]">
+              <div className="flex items-center">
                 <input
-                  type="range"
-                  min={0}
-                  max={1000}
-                  value={geoFenceRadius}
-                  onChange={(e) => setGeoFenceRadius(Number(e.target.value))}
-                  className="w-full h-1.5 bg-[#eceff2] rounded-full appearance-none accent-[#3f52ff] cursor-pointer"
+                  type="checkbox"
+                  checked={selectedGuests.size === guests.length && guests.length > 0}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedGuests(new Set(guests.map(g => g.id)));
+                    } else {
+                      setSelectedGuests(new Set());
+                    }
+                  }}
+                  className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff]"
                 />
               </div>
-
-              {/* Location Masking */}
-              <div className="flex items-center justify-between pt-2 border-t border-[#f0f2f4]">
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#22292f]">Location Masking</span>
-                  <span className="text-xs text-[#859bab]">Hide real location and show custom name</span>
+              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Name <ChevronDown className="w-3 h-3" /></div>
+              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Email <ChevronDown className="w-3 h-3" /></div>
+              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Registration Time <ChevronDown className="w-3 h-3" /></div>
+              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Ticket ID <ChevronDown className="w-3 h-3" /></div>
+              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Ticket QR <ChevronDown className="w-3 h-3" /></div>
+              <div className="flex items-center gap-1 text-sm font-medium text-[#516778]">Status</div>
+            </div>
+            {/* Table Rows */}
+            {guests
+              .filter(g => {
+                if (guestStatusFilter !== "all" && g.status !== guestStatusFilter) return false;
+                if (guestSearchQuery && !g.name.toLowerCase().includes(guestSearchQuery.toLowerCase()) && !g.email.toLowerCase().includes(guestSearchQuery.toLowerCase())) return false;
+                return true;
+              })
+              .slice((guestPage - 1) * guestsPerPage, guestPage * guestsPerPage)
+              .map((guest) => (
+                <div key={guest.id} className="grid grid-cols-[40px_1.5fr_1.5fr_1fr_1fr_1fr_1fr] gap-2 px-4 py-3 border-b border-[#eceff2] hover:bg-[#f9fafb] transition-colors">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedGuests.has(guest.id)}
+                      onChange={(e) => {
+                        const newSet = new Set(selectedGuests);
+                        if (e.target.checked) {
+                          newSet.add(guest.id);
+                        } else {
+                          newSet.delete(guest.id);
+                        }
+                        setSelectedGuests(newSet);
+                      }}
+                      className="w-4 h-4 rounded border-[#d5dde2] accent-[#3f52ff]"
+                    />
+                  </div>
+                  <div className="text-sm font-medium text-[#22292f]">{guest.name}</div>
+                  <div className="text-sm text-[#516778]">{guest.email}</div>
+                  <div className="text-sm text-[#516778]">{guest.registrationTime}</div>
+                  <div className="text-sm font-medium text-[#22292f]">{guest.ticketId}</div>
+                  <div>
+                    <button className="flex items-center gap-1 h-7 px-2 bg-white border border-[#d5dde2] rounded text-xs font-medium text-[#516778] hover:bg-[#f9fafb] transition-colors">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1" stroke="#516778" strokeWidth="1" /><rect x="3" y="3" width="2" height="2" fill="#516778" /><rect x="7" y="3" width="2" height="2" fill="#516778" /><rect x="3" y="7" width="2" height="2" fill="#516778" /><rect x="7" y="7" width="2" height="2" fill="#516778" /></svg>
+                      View QR
+                    </button>
+                  </div>
+                  <div>
+                    {guest.status === "checked-in" && (
+                      <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#22892e" /><path d="M4 6L5.5 7.5L8 4.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        Checked-In
+                      </span>
+                    )}
+                    {guest.status === "not-checked-in" && (
+                      <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fff4e5] text-[#d97706] text-xs font-medium rounded-full">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L11 10H1L6 1Z" fill="#d97706" /><path d="M6 4.5V6.5M6 8V8.01" stroke="white" strokeWidth="1" strokeLinecap="round" /></svg>
+                        Not Checked-In
+                      </span>
+                    )}
+                    {guest.status === "booked" && (
+                      <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#22892e" /><path d="M4 6L5.5 7.5L8 4.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        Booked
+                      </span>
+                    )}
+                    {guest.status === "cancelled" && (
+                      <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fee2e2] text-[#dc2626] text-xs font-medium rounded-full">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#dc2626" /><path d="M4 4L8 8M8 4L4 8" stroke="white" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                        Cancelled
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <button
-                  onClick={() => setLocationMasking(!locationMasking)}
-                  className={`w-10 h-5 rounded-full relative transition-colors ${locationMasking ? "bg-[#3f52ff]" : "bg-[#d5dde2]"}`}
-                >
-                  <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${locationMasking ? "translate-x-5" : "translate-x-0"}`} />
-                </button>
-              </div>
-            </div>
+              ))}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff]">Description</span>
-            <div className="border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-2 h-[149px] bg-white">
-              <textarea
-                value={eventDescription}
-                onChange={(e) => setEventDescription(e.target.value)}
-                maxLength={280}
-                className="flex-1 text-sm font-normal text-[#22292f] resize-none outline-none"
-              />
-              <div className="flex justify-end">
-                <span className="text-[#859bab] text-[10px] font-semibold">
-                  {eventDescription.length}/280
-                </span>
-              </div>
-            </div>
+          {/* Pagination */}
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setGuestPage(p => Math.max(1, p - 1))}
+              disabled={guestPage === 1}
+              className="w-8 h-8 flex items-center justify-center border border-[#d5dde2] rounded-lg bg-white text-[#516778] hover:bg-[#f9fafb] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <span className="text-sm text-[#516778]">
+              Page <span className="font-semibold text-[#22292f]">{guestPage}</span> of <span className="font-semibold text-[#22292f]">{Math.ceil(guests.filter(g => (guestStatusFilter === "all" || g.status === guestStatusFilter) && (!guestSearchQuery || g.name.toLowerCase().includes(guestSearchQuery.toLowerCase()) || g.email.toLowerCase().includes(guestSearchQuery.toLowerCase()))).length / guestsPerPage) || 1}</span>
+            </span>
+            <button
+              onClick={() => setGuestPage(p => p + 1)}
+              disabled={guestPage >= Math.ceil(guests.filter(g => (guestStatusFilter === "all" || g.status === guestStatusFilter) && (!guestSearchQuery || g.name.toLowerCase().includes(guestSearchQuery.toLowerCase()) || g.email.toLowerCase().includes(guestSearchQuery.toLowerCase()))).length / guestsPerPage)}
+              className="w-8 h-8 flex items-center justify-center border border-[#d5dde2] rounded-lg bg-white text-[#516778] hover:bg-[#f9fafb] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
           </div>
-
-          <button
-            onClick={() => {
-              const savedEvent: EventItem = {
-                id: event?.id || crypto.randomUUID(),
-                title: eventTitle,
-                coverImage,
-                chapter,
-                type: type,
-                eventCategory: event?.eventCategory || "general",
-                location: locationInput,
-                signups: event?.signups || 0,
-                maxSignups: event?.maxSignups || 300,
-                dateGroup: startDate?.toString() || "", // Using start date as date group for now
-                date: startDate?.toString(),
-              };
-              onSave(savedEvent);
-            }}
-            className="w-full min-h-[40px] bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4"
-          >
-            Save Changes
-          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 }
