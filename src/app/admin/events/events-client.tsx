@@ -1851,8 +1851,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                           <div className="flex-1 h-px bg-[#d5dde2]" />
                         </div>
 
-                        {/* Events Grid - 2 columns */}
-                        <div className="grid grid-cols-2 gap-4">
+                        {/* Events Grid - 3 columns */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                           {events.map((event) => (
                             <EventCard
                               key={event.id}
