@@ -1294,17 +1294,40 @@ function AnalyticsView() {
             <h3 className="text-base font-semibold text-[#22292f]">Registrations Over Time</h3>
             <span className="text-xs text-[#3f52ff]">Track how registrations grew over time</span>
           </div>
-          <AriaSelect
-            label=""
-            placeholder="Last 24 Hours"
-            selectedKey="24h"
-            className="w-[140px]"
-          >
-            <AriaSelectItem id="24h">Last 24 Hours</AriaSelectItem>
-            <AriaSelectItem id="7d">Last 7 days</AriaSelectItem>
-            <AriaSelectItem id="30d">Last 30 days</AriaSelectItem>
-            <AriaSelectItem id="60d">Last 60 days</AriaSelectItem>
-          </AriaSelect>
+          <Menu>
+            <MenuButton className="h-8 px-3 bg-[#eceff2] rounded-lg flex items-center gap-2 text-sm font-medium text-[#22292f] hover:bg-[#d5dde2] transition-colors">
+              Last 24 Hours
+              <ChevronDown className="w-4 h-4 text-[#516778]" />
+            </MenuButton>
+            <Portal>
+              <MenuItems
+                anchor="bottom end"
+                transition
+                className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[140px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+              >
+                <MenuItem>
+                  <button className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none">
+                    Last 24 Hours
+                  </button>
+                </MenuItem>
+                <MenuItem>
+                  <button className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none">
+                    Last 7 days
+                  </button>
+                </MenuItem>
+                <MenuItem>
+                  <button className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none">
+                    Last 30 days
+                  </button>
+                </MenuItem>
+                <MenuItem>
+                  <button className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none">
+                    Last 60 days
+                  </button>
+                </MenuItem>
+              </MenuItems>
+            </Portal>
+          </Menu>
         </div>
 
         <div className="relative h-[300px] w-full">
