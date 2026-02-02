@@ -479,22 +479,28 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
     timezone: "",
     domain: "",
   });
+  const [savedData, setSavedData] = useState(formData);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      setFormData({
+      const data = {
         business_name: initialData.business_name || "",
         poc_email: initialData.poc_email || "",
         poc_name: initialData.poc_name || "",
         timezone: initialData.timezone || "",
         domain: initialData.domain || "",
-      });
+      };
+      setFormData(data);
+      setSavedData(data);
     }
   }, [initialData]);
 
   const handleSave = async () => {
     try {
       await updateBusinessProfile(formData);
+      setSavedData(formData);
+      setIsEditing(false);
       toastQueue.add({
         title: "General Settings Saved",
         description: "Your general business settings have been updated.",
@@ -509,49 +515,100 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
     }
   };
 
+  const handleCancel = () => {
+    setFormData(savedData);
+    setIsEditing(false);
+  };
+
+  const inputBaseClass = "h-9 px-3 text-sm text-[#22292f] border rounded-lg outline-none transition-colors";
+  const inputEditClass = `${inputBaseClass} border-[#b0bfc9] bg-white focus:border-[#3f52ff]`;
+  const inputReadOnlyClass = `${inputBaseClass} border-[#d5dde2] bg-[#f9fafb]`;
+
   return (
     <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      {/* Header with Edit Button */}
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">General Settings</span>
+          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+            Manage your business profile information
+          </span>
+        </div>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
+            Edit
+          </button>
+        )}
+      </div>
+
       {/* Business Info Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-[#859bab]">Business Name</label>
-          <input
-            type="text"
-            value={formData.business_name}
-            onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-            placeholder="Eventy"
-            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff]"
-          />
+          {isEditing ? (
+            <input
+              type="text"
+              value={formData.business_name}
+              onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
+              placeholder="Eventy"
+              className={inputEditClass}
+            />
+          ) : (
+            <div className={inputReadOnlyClass + " flex items-center"}>
+              {formData.business_name || <span className="text-[#668091]">Not set</span>}
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-[#859bab]">POC Email</label>
-          <input
-            type="email"
-            value={formData.poc_email}
-            onChange={(e) => setFormData({ ...formData, poc_email: e.target.value })}
-            placeholder="eventy@gmail.com"
-            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff]"
-          />
+          {isEditing ? (
+            <input
+              type="email"
+              value={formData.poc_email}
+              onChange={(e) => setFormData({ ...formData, poc_email: e.target.value })}
+              placeholder="eventy@gmail.com"
+              className={inputEditClass}
+            />
+          ) : (
+            <div className={inputReadOnlyClass + " flex items-center"}>
+              {formData.poc_email || <span className="text-[#668091]">Not set</span>}
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-[#859bab]">POC Name</label>
-          <input
-            type="text"
-            value={formData.poc_name}
-            onChange={(e) => setFormData({ ...formData, poc_name: e.target.value })}
-            placeholder="Eventygo"
-            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff]"
-          />
+          {isEditing ? (
+            <input
+              type="text"
+              value={formData.poc_name}
+              onChange={(e) => setFormData({ ...formData, poc_name: e.target.value })}
+              placeholder="Eventygo"
+              className={inputEditClass}
+            />
+          ) : (
+            <div className={inputReadOnlyClass + " flex items-center"}>
+              {formData.poc_name || <span className="text-[#668091]">Not set</span>}
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-[#859bab]">Time Zone</label>
-          <input
-            type="text"
-            value={formData.timezone}
-            onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-            placeholder="UTC+00:00 — London"
-            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff]"
-          />
+          {isEditing ? (
+            <input
+              type="text"
+              value={formData.timezone}
+              onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+              placeholder="UTC+00:00 — London"
+              className={inputEditClass}
+            />
+          ) : (
+            <div className={inputReadOnlyClass + " flex items-center"}>
+              {formData.timezone || <span className="text-[#668091]">Not set</span>}
+            </div>
+          )}
         </div>
       </div>
 
@@ -569,25 +626,39 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-[#859bab]">Domain</label>
-          <input
-            type="text"
-            value={formData.domain}
-            onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-            placeholder="www.eventy.com"
-            className="h-9 px-3 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] w-full max-w-md"
-          />
+          {isEditing ? (
+            <input
+              type="text"
+              value={formData.domain}
+              onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+              placeholder="www.eventy.com"
+              className={inputEditClass + " w-full max-w-md"}
+            />
+          ) : (
+            <div className={inputReadOnlyClass + " flex items-center w-full max-w-md"}>
+              {formData.domain || <span className="text-[#668091]">Not set</span>}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <button
-          onClick={handleSave}
-          className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
-        >
-          Save changes
-        </button>
-      </div>
+      {/* Save/Cancel Buttons - only shown when editing */}
+      {isEditing && (
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={handleCancel}
+            className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
+            Save changes
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -621,16 +692,23 @@ function BrandingContent({ initialData }: { initialData?: any }) {
     headerIcon: "#00875A",
     chatSend: "#22292F",
   });
+  const [savedColors, setSavedColors] = useState(colors);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      setColors((prev) => ({ ...prev, ...initialData }));
+      const data = { ...colors, ...initialData };
+      setColors(data);
+      setSavedColors(data);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
 
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ colors });
+      setSavedColors(colors);
+      setIsEditing(false);
       toastQueue.add({
         title: "Branding Saved",
         description: "Your branding settings have been saved successfully.",
@@ -645,23 +723,46 @@ function BrandingContent({ initialData }: { initialData?: any }) {
     }
   };
 
+  const handleCancel = () => {
+    setColors(savedColors);
+    setIsEditing(false);
+  };
+
   const updateColor = (key: keyof typeof colors) => (hex: string) => {
     setColors((prev) => ({ ...prev, [key]: hex }));
   };
 
   return (
     <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      {/* Header with Edit Button */}
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Branding</span>
+          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+            Customize your app&apos;s visual appearance
+          </span>
+        </div>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
+            Edit
+          </button>
+        )}
+      </div>
+
       {/* Logo Uploads */}
       <div className="flex gap-8">
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-[#22292f]">Splash Screen Logo</span>
-          <div className="w-16 h-16 rounded-full border border-dashed border-[#d4d4d8] flex items-center justify-center cursor-pointer hover:border-[#859bab] transition-colors">
+          <div className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb]"}`}>
             <User className="w-4 h-4 text-[#71717b] opacity-60" />
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-[#22292f]">Home Screen logo</span>
-          <div className="w-16 h-16 rounded-full border border-dashed border-[#d4d4d8] flex items-center justify-center cursor-pointer hover:border-[#859bab] transition-colors">
+          <div className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb]"}`}>
             <User className="w-4 h-4 text-[#71717b] opacity-60" />
           </div>
         </div>
@@ -669,8 +770,8 @@ function BrandingContent({ initialData }: { initialData?: any }) {
 
       {/* Color Row 1: Primary Color + Invert Colors */}
       <div className="flex gap-4">
-        <ColorInput label="Primary Color" value={colors.primary} colorSwatch={colors.primary} onColorChange={updateColor("primary")} />
-        <ColorInput label="Invert Colors" value={colors.invert} colorSwatch={colors.invert} onColorChange={updateColor("invert")} />
+        <ColorInput label="Primary Color" value={colors.primary} colorSwatch={colors.primary} onColorChange={isEditing ? updateColor("primary") : undefined} />
+        <ColorInput label="Invert Colors" value={colors.invert} colorSwatch={colors.invert} onColorChange={isEditing ? updateColor("invert") : undefined} />
       </div>
 
       {/* Navigation/Icons hint */}
@@ -683,16 +784,16 @@ function BrandingContent({ initialData }: { initialData?: any }) {
 
       {/* Color Row 2: Secondary Color + Text Color */}
       <div className="flex gap-4">
-        <ColorInput label="Secondary Color" value={colors.secondary} colorSwatch={colors.secondary} onColorChange={updateColor("secondary")} />
-        <ColorInput label="Text Color" value={colors.text} colorSwatch={colors.text} onColorChange={updateColor("text")} />
+        <ColorInput label="Secondary Color" value={colors.secondary} colorSwatch={colors.secondary} onColorChange={isEditing ? updateColor("secondary") : undefined} />
+        <ColorInput label="Text Color" value={colors.text} colorSwatch={colors.text} onColorChange={isEditing ? updateColor("text") : undefined} />
       </div>
 
       {/* Color Row 3: Header BG + Chat BG + Header Icon + Chat Send Button */}
       <div className="flex gap-4">
-        <ColorInput label="Header Background Colors" value={colors.headerBg} colorSwatch={colors.headerBg} onColorChange={updateColor("headerBg")} />
-        <ColorInput label="Chat Background Screen Color" value={colors.chatBg} colorSwatch={colors.chatBg} onColorChange={updateColor("chatBg")} />
-        <ColorInput label="Header Icon Color" value={colors.headerIcon} colorSwatch={colors.headerIcon} onColorChange={updateColor("headerIcon")} />
-        <ColorInput label="Chat Send Button Color" value={colors.chatSend} colorSwatch={colors.chatSend} onColorChange={updateColor("chatSend")} />
+        <ColorInput label="Header Background Colors" value={colors.headerBg} colorSwatch={colors.headerBg} onColorChange={isEditing ? updateColor("headerBg") : undefined} />
+        <ColorInput label="Chat Background Screen Color" value={colors.chatBg} colorSwatch={colors.chatBg} onColorChange={isEditing ? updateColor("chatBg") : undefined} />
+        <ColorInput label="Header Icon Color" value={colors.headerIcon} colorSwatch={colors.headerIcon} onColorChange={isEditing ? updateColor("headerIcon") : undefined} />
+        <ColorInput label="Chat Send Button Color" value={colors.chatSend} colorSwatch={colors.chatSend} onColorChange={isEditing ? updateColor("chatSend") : undefined} />
       </div>
 
       {/* Image Uploads */}
@@ -704,15 +805,23 @@ function BrandingContent({ initialData }: { initialData?: any }) {
       {/* Divider */}
       <div className="h-px bg-[#d5dde2] w-full" />
 
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <button
-          onClick={handleSave}
-          className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
-        >
-          Save changes
-        </button>
-      </div>
+      {/* Save/Cancel Buttons - only shown when editing */}
+      {isEditing && (
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={handleCancel}
+            className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
+            Save changes
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -963,17 +1072,29 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
 function LegalAndTCContent({ initialData }: { initialData?: any }) {
   const [termsUrl, setTermsUrl] = useState("");
   const [privacyUrl, setPrivacyUrl] = useState("");
+  const [savedTermsUrl, setSavedTermsUrl] = useState("");
+  const [savedPrivacyUrl, setSavedPrivacyUrl] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      if (initialData.terms_url) setTermsUrl(initialData.terms_url);
-      if (initialData.privacy_url) setPrivacyUrl(initialData.privacy_url);
+      if (initialData.terms_url) {
+        setTermsUrl(initialData.terms_url);
+        setSavedTermsUrl(initialData.terms_url);
+      }
+      if (initialData.privacy_url) {
+        setPrivacyUrl(initialData.privacy_url);
+        setSavedPrivacyUrl(initialData.privacy_url);
+      }
     }
   }, [initialData]);
 
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ terms_url: termsUrl, privacy_url: privacyUrl });
+      setSavedTermsUrl(termsUrl);
+      setSavedPrivacyUrl(privacyUrl);
+      setIsEditing(false);
       toastQueue.add({
         title: "Legal Documents Saved",
         description: "Your legal URLs have been updated.",
@@ -988,16 +1109,36 @@ function LegalAndTCContent({ initialData }: { initialData?: any }) {
     }
   };
 
+  const handleCancel = () => {
+    setTermsUrl(savedTermsUrl);
+    setPrivacyUrl(savedPrivacyUrl);
+    setIsEditing(false);
+  };
+
+  const inputBaseClass = "flex items-center gap-2 h-10 px-3 border rounded-lg transition-colors";
+  const inputEditClass = `${inputBaseClass} bg-white border-[#b0bfc9] focus-within:border-[#3f52ff]`;
+  const inputReadOnlyClass = `${inputBaseClass} bg-[#f9fafb] border-[#d5dde2]`;
+
   return (
     <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
-      <div className="flex flex-col gap-2 px-2">
-        <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
-          Legal &amp; T&amp;C
-        </h1>
-        <p className="text-base font-semibold text-[#859bab] leading-[18px]">
-          Manage your Legal &amp; T&amp;C documents and compliance settings
-        </p>
+      <div className="flex items-center justify-between px-2">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+            Legal &amp; T&amp;C
+          </h1>
+          <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+            Manage your Legal &amp; T&amp;C documents and compliance settings
+          </p>
+        </div>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
+            Edit
+          </button>
+        )}
       </div>
 
       {/* White Card */}
@@ -1007,15 +1148,21 @@ function LegalAndTCContent({ initialData }: { initialData?: any }) {
           <label className="text-sm font-semibold text-[#22292f]">
             Terms &amp; Conditions URL
           </label>
-          <div className="flex items-center gap-2 h-10 px-3 bg-white border border-[#d5dde2] rounded-lg focus-within:border-[#3f52ff] transition-colors">
+          <div className={isEditing ? inputEditClass : inputReadOnlyClass}>
             <Link2 className="w-4 h-4 text-[#859bab] shrink-0" />
-            <input
-              type="url"
-              value={termsUrl}
-              onChange={(e) => setTermsUrl(e.target.value)}
-              placeholder="Paste URL"
-              className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
-            />
+            {isEditing ? (
+              <input
+                type="url"
+                value={termsUrl}
+                onChange={(e) => setTermsUrl(e.target.value)}
+                placeholder="Paste URL"
+                className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+              />
+            ) : (
+              <span className="flex-1 text-sm text-[#22292f] truncate">
+                {termsUrl || <span className="text-[#668091]">Not set</span>}
+              </span>
+            )}
           </div>
         </div>
 
@@ -1024,27 +1171,41 @@ function LegalAndTCContent({ initialData }: { initialData?: any }) {
           <label className="text-sm font-semibold text-[#22292f]">
             Privacy Policy URL
           </label>
-          <div className="flex items-center gap-2 h-10 px-3 bg-white border border-[#d5dde2] rounded-lg focus-within:border-[#3f52ff] transition-colors">
+          <div className={isEditing ? inputEditClass : inputReadOnlyClass}>
             <Link2 className="w-4 h-4 text-[#859bab] shrink-0" />
-            <input
-              type="url"
-              value={privacyUrl}
-              onChange={(e) => setPrivacyUrl(e.target.value)}
-              placeholder="Paste URL"
-              className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
-            />
+            {isEditing ? (
+              <input
+                type="url"
+                value={privacyUrl}
+                onChange={(e) => setPrivacyUrl(e.target.value)}
+                placeholder="Paste URL"
+                className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+              />
+            ) : (
+              <span className="flex-1 text-sm text-[#22292f] truncate">
+                {privacyUrl || <span className="text-[#668091]">Not set</span>}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Save Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
-          >
-            Save changes
-          </button>
-        </div>
+        {/* Save/Cancel Buttons - only shown when editing */}
+        {isEditing && (
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={handleCancel}
+              className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+            >
+              Save changes
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1060,19 +1221,28 @@ function ModulesContent({ initialData }: { initialData?: any }) {
     exploreMembers: true,
     exploreCompany: true,
   });
+  const [savedModules, setSavedModules] = useState(modules);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [exploreMembersRadio, setExploreMembersRadio] = useState(0);
   const [exploreCompanyRadio, setExploreCompanyRadio] = useState(0);
+  const [savedExploreMembersRadio, setSavedExploreMembersRadio] = useState(0);
+  const [savedExploreCompanyRadio, setSavedExploreCompanyRadio] = useState(0);
 
   useEffect(() => {
     if (initialData) {
       setModules((prev) => ({ ...prev, ...initialData }));
+      setSavedModules((prev) => ({ ...prev, ...initialData }));
     }
   }, [initialData]);
 
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ modules });
+      setSavedModules(modules);
+      setSavedExploreMembersRadio(exploreMembersRadio);
+      setSavedExploreCompanyRadio(exploreCompanyRadio);
+      setIsEditing(false);
       toastQueue.add({
         title: "Modules Saved",
         description: "Your module settings have been updated.",
@@ -1087,36 +1257,61 @@ function ModulesContent({ initialData }: { initialData?: any }) {
     }
   };
 
+  const handleCancel = () => {
+    setModules(savedModules);
+    setExploreMembersRadio(savedExploreMembersRadio);
+    setExploreCompanyRadio(savedExploreCompanyRadio);
+    setIsEditing(false);
+  };
+
   const updateModule = (key: keyof typeof modules) => (checked: boolean) => {
     setModules((prev) => ({ ...prev, [key]: checked }));
   };
 
   return (
     <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      {/* Header with Edit Button */}
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Modules</span>
+          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+            Enable or disable features for your platform
+          </span>
+        </div>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
+            Edit
+          </button>
+        )}
+      </div>
+
       <div className="flex flex-col gap-4">
         <ModuleItem
           icon={<Calendar className="w-4 h-4 text-[#71717b]" />}
           label="Events"
           description="Create and manage events"
-          action={<AriaSwitch isSelected={modules.events} onChange={updateModule("events")} />}
+          action={<AriaSwitch isSelected={modules.events} onChange={isEditing ? updateModule("events") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
           icon={<Ticket className="w-4 h-4 text-[#71717b]" />}
           label="Tickets"
           description="Sell tickets for events"
-          action={<AriaSwitch isSelected={modules.tickets} onChange={updateModule("tickets")} />}
+          action={<AriaSwitch isSelected={modules.tickets} onChange={isEditing ? updateModule("tickets") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
           icon={<CalendarDays className="w-4 h-4 text-[#71717b]" />}
           label="Calendar View"
           description="Display events in a calendar view"
-          action={<AriaSwitch isSelected={modules.calendarView} onChange={updateModule("calendarView")} />}
+          action={<AriaSwitch isSelected={modules.calendarView} onChange={isEditing ? updateModule("calendarView") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
           icon={<MessageSquare className="w-4 h-4 text-[#71717b]" />}
           label="Chat"
           description="Enable chat for events"
-          action={<AriaSwitch isSelected={modules.chat} onChange={updateModule("chat")} />}
+          action={<AriaSwitch isSelected={modules.chat} onChange={isEditing ? updateModule("chat") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
           icon={<Users className="w-4 h-4 text-[#71717b]" />}
@@ -1126,16 +1321,16 @@ function ModulesContent({ initialData }: { initialData?: any }) {
             <div className="flex items-center gap-4">
               <RadioOption
                 selected={exploreMembersRadio === 0}
-                onClick={() => setExploreMembersRadio(0)}
+                onClick={() => isEditing && setExploreMembersRadio(0)}
                 label="All"
               />
               <RadioOption
                 selected={exploreMembersRadio === 1}
-                onClick={() => setExploreMembersRadio(1)}
+                onClick={() => isEditing && setExploreMembersRadio(1)}
                 label="City Only"
               />
               <div className="h-6 w-px bg-[#d5dde2] mx-2" />
-              <AriaSwitch isSelected={modules.exploreMembers} onChange={updateModule("exploreMembers")} />
+              <AriaSwitch isSelected={modules.exploreMembers} onChange={isEditing ? updateModule("exploreMembers") : undefined} isDisabled={!isEditing} />
             </div>
           }
         />
@@ -1147,16 +1342,16 @@ function ModulesContent({ initialData }: { initialData?: any }) {
             <div className="flex items-center gap-4">
               <RadioOption
                 selected={exploreCompanyRadio === 0}
-                onClick={() => setExploreCompanyRadio(0)}
+                onClick={() => isEditing && setExploreCompanyRadio(0)}
                 label="All"
               />
               <RadioOption
                 selected={exploreCompanyRadio === 1}
-                onClick={() => setExploreCompanyRadio(1)}
+                onClick={() => isEditing && setExploreCompanyRadio(1)}
                 label="City Only"
               />
               <div className="h-6 w-px bg-[#d5dde2] mx-2" />
-              <AriaSwitch isSelected={modules.exploreCompany} onChange={updateModule("exploreCompany")} />
+              <AriaSwitch isSelected={modules.exploreCompany} onChange={isEditing ? updateModule("exploreCompany") : undefined} isDisabled={!isEditing} />
             </div>
           }
         />
@@ -1165,15 +1360,23 @@ function ModulesContent({ initialData }: { initialData?: any }) {
       {/* Divider */}
       <div className="h-px bg-[#d5dde2] w-full mt-2" />
 
-      {/* Save Button */}
-      <div className="flex justify-end w-full">
-        <button
-          onClick={handleSave}
-          className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
-        >
-          Save changes
-        </button>
-      </div>
+      {/* Save/Cancel Buttons - only shown when editing */}
+      {isEditing && (
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={handleCancel}
+            className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+          >
+            Save changes
+          </button>
+        </div>
+      )}
     </div>
   );
 }
