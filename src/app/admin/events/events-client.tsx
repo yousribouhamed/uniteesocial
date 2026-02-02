@@ -307,8 +307,8 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
             <button
               key={tab}
               onClick={() => setDetailTab(tab)}
-              className={`relative h-7 px-3 text-sm font-medium rounded-md transition-colors z-10 ${detailTab === tab
-                ? "text-[#22292f]"
+              className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${detailTab === tab
+                ? "text-[#3f52ff]"
                 : "text-[#516778] hover:text-[#22292f]"
                 }`}
             >
