@@ -1233,57 +1233,57 @@ function AnalyticsView() {
         {/* Card 1 - Total Registrations */}
         <div className="flex-1 bg-white border border-[#d5dde2] rounded-l-xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-md p-[7.2px] flex items-center justify-center">
+            <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <Users className="w-4 h-4 text-[#516778]" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Total Registrations</span>
-              <span className="text-xs text-[#516778]">68% of capacity</span>
+              <span className="text-xs text-[#516778] leading-[18px]">68% of capacity</span>
             </div>
           </div>
-          <span className="text-base font-semibold text-[#22292f]">342</span>
+          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">342</span>
         </div>
 
         {/* Card 2 - Checked In Users */}
         <div className="flex-1 bg-white border-y border-[#d5dde2] p-4 flex items-center justify-between -ml-px">
           <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-md p-[7.2px] flex items-center justify-center">
+            <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <LogIn className="w-4 h-4 text-[#516778]" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In Users</span>
-              <span className="text-xs text-[#516778]">0% attendance rate</span>
+              <span className="text-xs text-[#516778] leading-[18px]">0% attendance rate</span>
             </div>
           </div>
-          <span className="text-base font-semibold text-[#22292f]">0</span>
+          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
         </div>
 
         {/* Card 3 - Checked Out Users */}
         <div className="flex-1 bg-white border-y border-[#d5dde2] p-4 flex items-center justify-between -ml-px">
           <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-md p-[7.2px] flex items-center justify-center">
+            <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <LogOut className="w-4 h-4 text-[#516778]" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out Users</span>
-              <span className="text-xs text-[#516778]">0% of checked in</span>
+              <span className="text-xs text-[#516778] leading-[18px]">0% of checked in</span>
             </div>
           </div>
-          <span className="text-base font-semibold text-[#22292f]">0</span>
+          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
         </div>
 
         {/* Card 4 - Booked Users */}
         <div className="flex-1 bg-white border border-[#d5dde2] rounded-r-xl p-4 flex items-center justify-between -ml-px">
           <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-md p-[7.2px] flex items-center justify-center">
+            <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <ShieldCheck className="w-4 h-4 text-[#516778]" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Booked Users</span>
-              <span className="text-xs text-[#516778]">Checked-in</span>
+              <span className="text-xs text-[#516778] leading-[18px]">Checked-in</span>
             </div>
           </div>
-          <span className="text-base font-semibold text-[#22292f]">2</span>
+          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">2</span>
         </div>
       </div>
 
