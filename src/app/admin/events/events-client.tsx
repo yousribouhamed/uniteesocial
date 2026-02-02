@@ -37,6 +37,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Suspense } from "react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
 import { AriaCheckbox } from "@/components/ui/aria-checkbox";
+import { AriaSlider } from "@/components/ui/aria-slider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
@@ -638,17 +639,13 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
 
                 {/* Geo-Fence Radius */}
                 <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-[#22292f]">Geo-Fence Radius</span>
-                    <span className="text-sm font-medium text-[#668091]">{geoFenceRadius} meters</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={1000}
+                  <AriaSlider
+                    label="Geo-Fence Radius"
+                    unit="meters"
+                    minValue={0}
+                    maxValue={1000}
                     value={geoFenceRadius}
-                    onChange={(e) => setGeoFenceRadius(Number(e.target.value))}
-                    className="w-full h-1.5 bg-[#eceff2] rounded-full appearance-none accent-[#3f52ff] cursor-pointer"
+                    onChange={(v) => setGeoFenceRadius(v as number)}
                   />
                 </div>
 
