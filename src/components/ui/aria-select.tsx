@@ -54,12 +54,12 @@ export function AriaSelectItem(props: ListBoxItemProps) {
     return (
         <ListBoxItem
             {...props}
-            className={`group flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-[#22292f] outline-none cursor-pointer data-[focused]:bg-[#edf8ff] data-[focused]:text-[#1d2cb6] data-[selected]:font-semibold data-[selected]:bg-[#edf8ff] data-[selected]:text-[#1d2cb6]`}
+            className={`group flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-[#22292f] outline-none cursor-pointer data-[focused]:bg-[#edf8ff] data-[focused]:text-[#1d2cb6] data-[selected]:font-semibold data-[selected]:bg-[#1d2cb6] data-[selected]:text-white`}
         >
             {({ isSelected }) => (
                 <>
                     <span className="flex-1 truncate">{typeof props.children === 'string' ? props.children : props.textValue}</span>
-                    {isSelected && <Check className="w-4 h-4 text-[#1d2cb6]" />}
+                    {isSelected && <Check className="w-4 h-4 text-white" />}
                 </>
             )}
         </ListBoxItem>
