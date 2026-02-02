@@ -34,6 +34,7 @@ import {
   FileSpreadsheet,
 } from "lucide-react";
 import { AriaCheckbox } from "@/components/ui/aria-checkbox";
+import { toastQueue } from "@/components/ui/aria-toast";
 import AdminSidebar from "@/components/admin-sidebar";
 
 // --- Types ---
@@ -361,8 +362,18 @@ function EditUserView({
         return;
       }
       onSuccess();
+      toastQueue.add({
+        title: "User Updated",
+        description: `${firstName} ${lastName}'s profile has been updated successfully.`,
+        type: "success"
+      });
     } catch {
       setError("Network error. Please try again.");
+      toastQueue.add({
+        title: "Save Failed",
+        description: "Network error. Please try again.",
+        type: "error"
+      });
       setLoading(false);
     }
   };

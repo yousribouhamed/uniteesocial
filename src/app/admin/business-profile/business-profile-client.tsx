@@ -631,9 +631,17 @@ function BrandingContent({ initialData }: { initialData?: any }) {
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ colors });
-      alert("Branding saved successfully!");
+      toastQueue.add({
+        title: "Branding Saved",
+        description: "Your branding settings have been saved successfully.",
+        type: "success"
+      });
     } catch (e) {
-      alert("Failed to save branding");
+      toastQueue.add({
+        title: "Save Failed",
+        description: "Failed to save branding settings.",
+        type: "error"
+      });
     }
   };
 
