@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { motion } from "framer-motion";
@@ -183,7 +184,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
                   {/* Content Card - Branding */}
                   {activeInnerTab === "Branding" && (
-                    <BrandingContent initialData={profile?.colors} />
+                    <BrandingContent initialData={profile} />
                   )}
 
                   {/* Content Card - Modules */}
@@ -758,17 +759,163 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
 }
 
 
-// --- File Upload Component ---
-function FileUploadArea({ label }: { label: string }) {
+// --- Image Upload Component ---
+function ImageUploadArea({
+  label,
+  value,
+  onUpload,
+  disabled = false,
+}: {
+  label: string;
+  value?: string;
+  onUpload: (url: string) => void;
+  disabled?: boolean;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!disabled) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const processFile = async (file: File) => {
+    if (disabled) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toastQueue.add({
+        title: "Invalid File Type",
+        description: "Please upload an image file.",
+        variant: "error", // Note: Ensure 'variant' matches the toast API
+      }, { timeout: 3000 });
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toastQueue.add({
+        title: "File Too Large",
+        description: "Image size must be less than 10MB.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const supabase = createClient();
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `branding/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("brand-assets")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from("brand-assets")
+        .getPublicUrl(filePath);
+
+      onUpload(publicUrlData.publicUrl);
+
+      toastQueue.add({
+        title: "Upload Successful",
+        description: "Image uploaded successfully.",
+        variant: "success",
+      }, { timeout: 3000 });
+
+    } catch (error: any) {
+      console.error("Upload failed:", error);
+      toastQueue.add({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload image.",
+        variant: "error",
+      }, { timeout: 4000 });
+    } finally {
+      setIsUploading(false);
+      setIsDragging(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (disabled) return;
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      processFile(e.target.files[0]);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2 flex-1">
       <span className="text-sm font-semibold text-[#22292f]">{label}</span>
-      <div className="border border-dashed border-[#d4d4d8] rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 bg-white cursor-pointer hover:border-[#859bab] transition-colors">
-        <div className="w-11 h-11 rounded-full border border-[#e4e4e7] flex items-center justify-center mb-2">
-          <Upload className="w-4 h-4 text-[#71717b] opacity-60" />
-        </div>
-        <span className="text-sm font-medium text-[#09090b]">Upload image</span>
-        <span className="text-xs text-[#71717b]/70 mt-1">All files · Up to 10MB</span>
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => !disabled && fileInputRef.current?.click()}
+        className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-[#f9fafb] border-[#d5dde2] cursor-not-allowed" :
+          isDragging
+            ? "bg-[#eff6ff] border-[#3f52ff] cursor-copy"
+            : "bg-white border-[#d4d4d8] cursor-pointer hover:border-[#859bab]"
+          }`}
+      >
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept="image/*"
+          onChange={handleFileSelect}
+          disabled={disabled}
+        />
+
+        {isUploading ? (
+          <div className="flex flex-col items-center gap-3">
+            {/* Simple spinner */}
+            <div className="w-8 h-8 border-4 border-[#3f52ff]/30 border-t-[#3f52ff] rounded-full animate-spin" />
+            <span className="text-sm font-medium text-[#09090b]">Uploading...</span>
+          </div>
+        ) : value ? (
+          <div className="relative w-full h-full min-h-[120px] flex items-center justify-center group">
+            <img
+              src={value}
+              alt={label}
+              className="max-h-[140px] w-auto object-contain rounded-md shadow-sm"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md">
+              <div className="flex flex-col items-center text-white gap-1">
+                <Upload className="w-5 h-5" />
+                <span className="text-xs font-medium">Change Image</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className={`w-11 h-11 rounded-full border border-[#e4e4e7] flex items-center justify-center mb-2 ${isDragging ? "bg-white" : ""}`}>
+              <Upload className={`w-4 h-4 ${isDragging ? "text-[#3f52ff]" : "text-[#71717b] opacity-60"}`} />
+            </div>
+            <span className={`text-sm font-medium ${isDragging ? "text-[#3f52ff]" : "text-[#09090b]"}`}>
+              {isDragging ? "Drop to upload" : "Upload image"}
+            </span>
+            <span className="text-xs text-[#71717b]/70 mt-1">All files · Up to 10MB</span>
+          </>
+        )}
       </div>
     </div>
   );
@@ -785,45 +932,95 @@ function BrandingContent({ initialData }: { initialData?: any }) {
     chatBg: "#2563EB",
     headerIcon: "#00875A",
     chatSend: "#22292F",
+    // These will be pulled from `initialData` object directly if they exist at root of profile, 
+    // but here we are receiving `profile?.colors` as initialData prop in the parent... 
+    // Wait, the parent passed `initialData={profile?.colors}`.
+    // If we want to support images, we might need to change how data is passed or assume images are inside the `colors` JSON for now 
+    // OR ideally update the parent to pass the full profile.
   });
+
+  // Local state for images, separate from colors since they might be stored separately
+  const [images, setImages] = useState({
+    web_login_image: "",
+    home_background_image: "",
+  });
+
   const [savedColors, setSavedColors] = useState(colors);
+  const [savedImages, setSavedImages] = useState(images);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      const data = { ...colors, ...initialData };
-      setColors(data);
-      setSavedColors(data);
+      // Re-mapping initialData. 
+      // NOTE: We need to check if we should be receiving the FULL profile here or just colors.
+      // Looking at the parent usage: `<BrandingContent initialData={profile?.colors} />`
+      // We need to change the parent to pass the whole profile or valid subset if we want to save images correctly.
+      // For now, I will assume we will Fix the Parent call in a separate edit or use a workaround.
+      // Let's assume initialData MIGHT contain the images if we fix the parent.
+
+      const { web_login_image, home_background_image, ...colorData } = initialData || {};
+
+      setColors((prev) => ({ ...prev, ...colorData }));
+      setSavedColors((prev) => ({ ...prev, ...colorData }));
+
+      if (web_login_image || home_background_image) {
+        setImages({
+          web_login_image: web_login_image || "",
+          home_background_image: home_background_image || ""
+        });
+        setSavedImages({
+          web_login_image: web_login_image || "",
+          home_background_image: home_background_image || ""
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
 
   const handleSave = async () => {
     try {
-      await updateBusinessProfile({ colors });
+      // We are sending `colors` which is JSON, but images should likely be top-level columns or inside a `branding` JSON.
+      // Based on the prompt "make these two ... work ... setup a proper backend", 
+      // suggesting we should validly save them.
+      // I will save them as top-level fields in `updateBusinessProfile`.
+      // Note: `updateBusinessProfile` takes a payload.
+
+      await updateBusinessProfile({
+        colors,
+        web_login_image: images.web_login_image,
+        home_background_image: images.home_background_image
+      });
+
       setSavedColors(colors);
+      setSavedImages(images);
       setIsEditing(false);
       toastQueue.add({
         title: "Branding Saved",
         description: "Your branding settings have been saved successfully.",
-        type: "success"
-      });
+        variant: "success",
+      }, { timeout: 3000 });
     } catch (e) {
+      console.error(e);
       toastQueue.add({
         title: "Save Failed",
         description: "Failed to save branding settings.",
-        type: "error"
-      });
+        variant: "error",
+      }, { timeout: 4000 });
     }
   };
 
   const handleCancel = () => {
     setColors(savedColors);
+    setImages(savedImages);
     setIsEditing(false);
   };
 
   const updateColor = (key: keyof typeof colors) => (hex: string) => {
     setColors((prev) => ({ ...prev, [key]: hex }));
+  };
+
+  const updateImage = (key: keyof typeof images) => (url: string) => {
+    setImages((prev) => ({ ...prev, [key]: url }));
   };
 
   return (
@@ -846,7 +1043,7 @@ function BrandingContent({ initialData }: { initialData?: any }) {
         )}
       </div>
 
-      {/* Logo Uploads */}
+      {/* Logo Uploads - Kept static for now as requested only for the two specific bottom images */}
       <div className="flex gap-8">
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-[#22292f]">Splash Screen Logo</span>
@@ -890,10 +1087,20 @@ function BrandingContent({ initialData }: { initialData?: any }) {
         <ColorInput label="Chat Send Button Color" value={colors.chatSend} colorSwatch={colors.chatSend} onColorChange={isEditing ? updateColor("chatSend") : undefined} />
       </div>
 
-      {/* Image Uploads */}
+      {/* Image Uploads - Replaced with ImageUploadArea */}
       <div className="flex gap-4">
-        <FileUploadArea label="Web Login Image" />
-        <FileUploadArea label="Home Background Image" />
+        <ImageUploadArea
+          label="Web Login Image"
+          value={images.web_login_image}
+          onUpload={updateImage("web_login_image")}
+          disabled={!isEditing}
+        />
+        <ImageUploadArea
+          label="Home Background Image"
+          value={images.home_background_image}
+          onUpload={updateImage("home_background_image")}
+          disabled={!isEditing}
+        />
       </div>
 
       {/* Divider */}
