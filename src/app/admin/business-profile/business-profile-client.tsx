@@ -250,6 +250,21 @@ function hexToHsv(hex: string): [number, number, number] {
   return [h, s, max];
 }
 
+function rgbToHsv(r: number, g: number, b: number): [number, number, number] {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const d = max - min;
+  let h = 0;
+  if (d !== 0) {
+    if (max === r) h = ((g - b) / d + 6) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  const s = max === 0 ? 0 : d / max;
+  return [h, s, max];
+}
+
 // --- Color Picker Component ---
 function ColorPicker({
   color,
@@ -262,7 +277,9 @@ function ColorPicker({
 }) {
   const [hsv, setHsv] = useState<[number, number, number]>(() => hexToHsv(color));
   const [opacity, setOpacity] = useState(100);
+  const [mode, setMode] = useState<"HEX" | "RGB">("HEX");
   const [hexInput, setHexInput] = useState(color.toUpperCase());
+  const [rgbInput, setRgbInput] = useState(() => hsvToRgb(hsv[0], hsv[1], hsv[2]));
   const areaRef = useRef<HTMLDivElement>(null);
   const hueRef = useRef<HTMLDivElement>(null);
   const opacityRef = useRef<HTMLDivElement>(null);
@@ -280,9 +297,10 @@ function ColorPicker({
 
   const updateFromHsv = useCallback((h: number, s: number, v: number) => {
     setHsv([h, s, v]);
-    const [r, g, b] = hsvToRgb(h, s, v);
-    const hex = rgbToHex(r, g, b);
+    const rgb = hsvToRgb(h, s, v);
+    const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
     setHexInput(hex);
+    setRgbInput(rgb);
     onChange(hex);
   }, [onChange]);
 
@@ -334,8 +352,24 @@ function ColorPicker({
     if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
       const newHsv = hexToHsv(val);
       setHsv(newHsv);
+      const rgb = hsvToRgb(newHsv[0], newHsv[1], newHsv[2]);
+      setRgbInput(rgb);
       onChange(val.toUpperCase());
     }
+  };
+
+  const handleRgbChange = (index: number, val: string) => {
+    const num = parseInt(val) || 0;
+    const clamped = Math.max(0, Math.min(255, num));
+    const newRgb = [...rgbInput] as [number, number, number];
+    newRgb[index] = clamped;
+    setRgbInput(newRgb);
+
+    const newHsv = rgbToHsv(newRgb[0], newRgb[1], newRgb[2]);
+    setHsv(newHsv);
+    const hex = rgbToHex(newRgb[0], newRgb[1], newRgb[2]);
+    setHexInput(hex);
+    onChange(hex);
   };
 
   const [r, g, b] = hsvToRgb(hsv[0], 1, 1);
@@ -404,19 +438,72 @@ function ColorPicker({
         </div>
       </div>
 
-      {/* HEX Input Row */}
+      {/* HEX/RGB Input Row */}
       <div className="flex items-center gap-2">
-        <div className="flex items-center justify-between px-3 py-1.5 h-8 w-[72px] rounded-lg border border-[#e4e4e4] bg-white shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] shrink-0">
-          <span className="text-xs text-[rgba(9,9,9,0.9)]">HEX</span>
-          <ChevronDown className="w-3.5 h-3.5 text-[#70707d] opacity-50" />
-        </div>
+        <Menu as="div" className="relative">
+          <MenuButton className="flex items-center justify-between px-3 py-1.5 h-8 w-[72px] rounded-lg border border-[#e4e4e4] bg-white shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] shrink-0 hover:bg-[#f5f5f5] transition-colors focus:outline-none">
+            <span className="text-xs text-[rgba(9,9,9,0.9)]">{mode}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-[#70707d] opacity-50" />
+          </MenuButton>
+          <Portal>
+            <MenuItems
+              anchor="bottom start"
+              className="z-[100] mt-1 w-[120px] bg-white border border-[#e4e4e4] rounded-lg p-1 shadow-lg focus:outline-none"
+            >
+              <MenuItem>
+                {({ active }) => (
+                  <button
+                    onClick={() => setMode("HEX")}
+                    className={`flex items-center w-full px-2 py-1.5 rounded-md text-sm transition-colors ${active ? "bg-[#f5f5f5] text-[#22292f]" : "text-[#516778]"}`}
+                  >
+                    HEX
+                  </button>
+                )}
+              </MenuItem>
+              <MenuItem>
+                {({ active }) => (
+                  <button
+                    onClick={() => setMode("RGB")}
+                    className={`flex items-center w-full px-2 py-1.5 rounded-md text-sm transition-colors ${active ? "bg-[#f5f5f5] text-[#22292f]" : "text-[#516778]"}`}
+                  >
+                    RGB
+                  </button>
+                )}
+              </MenuItem>
+            </MenuItems>
+          </Portal>
+        </Menu>
+
         <div className="flex flex-1 rounded-lg shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] overflow-hidden">
-          <input
-            type="text"
-            value={hexInput}
-            onChange={(e) => handleHexChange(e.target.value)}
-            className="flex-1 h-7 px-2 py-1 bg-[#f5f5f5] border border-[#e4e4e4] rounded-l-lg text-sm text-[rgba(9,9,9,0.9)] outline-none"
-          />
+          {mode === "HEX" ? (
+            <input
+              type="text"
+              value={hexInput}
+              onChange={(e) => handleHexChange(e.target.value)}
+              className="flex-1 h-7 px-2 py-1 bg-[#f5f5f5] border border-[#e4e4e4] rounded-l-lg text-sm text-[rgba(9,9,9,0.9)] outline-none"
+            />
+          ) : (
+            <div className="flex flex-1 gap-px bg-[#e4e4e4] border border-[#e4e4e4] rounded-l-lg overflow-hidden">
+              <input
+                type="text"
+                value={rgbInput[0]}
+                onChange={(e) => handleRgbChange(0, e.target.value)}
+                className="w-1/3 h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+              />
+              <input
+                type="text"
+                value={rgbInput[1]}
+                onChange={(e) => handleRgbChange(1, e.target.value)}
+                className="w-1/3 h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+              />
+              <input
+                type="text"
+                value={rgbInput[2]}
+                onChange={(e) => handleRgbChange(2, e.target.value)}
+                className="w-1/3 h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+              />
+            </div>
+          )}
           <div className="relative h-7 w-[52px] bg-[#f5f5f5] border border-l-0 border-[#e4e4e4] rounded-r-lg flex items-center px-2">
             <span className="text-sm text-[rgba(9,9,9,0.9)]">{opacity}</span>
             <span className="absolute right-1.5 text-xs text-[#70707d]">%</span>
@@ -1878,8 +1965,12 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
 
         {/* Setting Tab */}
         {activeTab === "Setting" && (
-          <div className="flex flex-col gap-4 min-h-[200px] items-center justify-center text-[#859bab]">
-            <span className="text-sm">Chapter settings will appear here</span>
+          <div className="flex flex-col items-center justify-center p-8">
+            <img
+              src="/chapter-settings-empty.png"
+              alt="Chapter settings will appear here"
+              className="max-w-full h-auto rounded-lg"
+            />
           </div>
         )}
 
