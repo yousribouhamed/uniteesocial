@@ -1965,12 +1965,8 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
 
         {/* Setting Tab */}
         {activeTab === "Setting" && (
-          <div className="flex flex-col items-center justify-center p-8">
-            <img
-              src="/chapter-settings-empty.png"
-              alt="Chapter settings will appear here"
-              className="max-w-full h-auto rounded-lg"
-            />
+          <div className="flex flex-col gap-4 min-h-[200px] items-center justify-center text-[#859bab]">
+            <span className="text-sm">Chapter settings will appear here</span>
           </div>
         )}
 
