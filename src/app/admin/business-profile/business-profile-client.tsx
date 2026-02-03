@@ -810,22 +810,13 @@ function ImageUploadArea({
 
     try {
       setIsUploading(true);
-      const supabase = createClient();
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `branding/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("brand-assets")
-        .upload(filePath, file);
+      const formData = new FormData();
+      formData.append("file", file);
 
-      if (uploadError) throw uploadError;
+      const result = await uploadBrandAsset(formData);
 
-      const { data: publicUrlData } = supabase.storage
-        .from("brand-assets")
-        .getPublicUrl(filePath);
-
-      onUpload(publicUrlData.publicUrl);
+      onUpload(result.url);
 
       toastQueue.add({
         title: "Upload Successful",
