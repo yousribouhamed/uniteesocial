@@ -28,12 +28,14 @@ export async function updateBusinessProfile(payload: any) {
 
     let error;
     if (existing) {
+        console.log("Updating existing profile with payload:", JSON.stringify(payload, null, 2));
         const res = await supabase
             .from("business_profiles")
             .update(payload)
             .eq("id", existing.id);
         error = res.error;
     } else {
+        console.log("Inserting new profile with payload:", JSON.stringify(payload, null, 2));
         const res = await supabase
             .from("business_profiles")
             .insert(payload);
@@ -41,8 +43,8 @@ export async function updateBusinessProfile(payload: any) {
     }
 
     if (error) {
-        console.error("Error updating profile:", error);
-        throw new Error(error.message);
+        console.error("Error updating profile detailed:", JSON.stringify(error, null, 2));
+        return { success: false, error: `Supabase Error: ${error.message} (Code: ${error.code})` };
     }
 
     revalidatePath("/admin/business-profile");

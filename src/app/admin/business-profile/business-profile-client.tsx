@@ -588,18 +588,22 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
 
   const handleSave = async () => {
     try {
-      await updateBusinessProfile(formData);
-      setSavedData(formData);
-      setIsEditing(false);
-      toastQueue.add({
-        title: "General Settings Saved",
-        description: "Your general business settings have been updated.",
-        variant: "success",
-      }, { timeout: 3000 });
-    } catch (e) {
+      const result = await updateBusinessProfile(formData);
+      if (result.success) {
+        setSavedData(formData);
+        setIsEditing(false);
+        toastQueue.add({
+          title: "General Settings Saved",
+          description: "Your general business settings have been updated.",
+          variant: "success",
+        }, { timeout: 3000 });
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (e: any) {
       toastQueue.add({
         title: "Save Failed",
-        description: "Failed to save general settings.",
+        description: e.message || "Failed to save general settings.",
         variant: "error",
       }, { timeout: 4000 });
     }
@@ -970,31 +974,29 @@ function BrandingContent({ initialData }: { initialData?: any }) {
 
   const handleSave = async () => {
     try {
-      // We are sending `colors` which is JSON, but images should likely be top-level columns or inside a `branding` JSON.
-      // Based on the prompt "make these two ... work ... setup a proper backend", 
-      // suggesting we should validly save them.
-      // I will save them as top-level fields in `updateBusinessProfile`.
-      // Note: `updateBusinessProfile` takes a payload.
-
-      await updateBusinessProfile({
+      const result = await updateBusinessProfile({
         colors,
         web_login_image: images.web_login_image,
         home_background_image: images.home_background_image
       });
 
-      setSavedColors(colors);
-      setSavedImages(images);
-      setIsEditing(false);
-      toastQueue.add({
-        title: "Branding Saved",
-        description: "Your branding settings have been saved successfully.",
-        variant: "success",
-      }, { timeout: 3000 });
-    } catch (e) {
+      if (result.success) {
+        setSavedColors(colors);
+        setSavedImages(images);
+        setIsEditing(false);
+        toastQueue.add({
+          title: "Branding Saved",
+          description: "Your branding settings have been saved successfully.",
+          variant: "success",
+        }, { timeout: 3000 });
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (e: any) {
       console.error(e);
       toastQueue.add({
         title: "Save Failed",
-        description: "Failed to save branding settings.",
+        description: e.message || "Failed to save branding settings.",
         variant: "error",
       }, { timeout: 4000 });
     }
