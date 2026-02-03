@@ -46,7 +46,7 @@ import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
-import { getBusinessProfile, updateBusinessProfile } from "./actions";
+import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset } from "./actions";
 import { TIMEZONES } from "@/data/timezones";
 
 interface BusinessProfileClientProps {
@@ -814,17 +814,7 @@ function ImageUploadArea({
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("/api/brand-assets", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(errorBody?.error || "Failed to upload image.");
-      }
-
-      const result = await response.json();
+      const result = await uploadBrandAsset(formData);
 
       onUpload(result.url);
 
