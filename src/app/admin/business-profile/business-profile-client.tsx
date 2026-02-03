@@ -46,7 +46,7 @@ import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
-import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset } from "./actions";
+import { getBusinessProfile, updateBusinessProfile } from "./actions";
 import { TIMEZONES } from "@/data/timezones";
 
 interface BusinessProfileClientProps {
@@ -814,7 +814,17 @@ function ImageUploadArea({
       const formData = new FormData();
       formData.append("file", file);
 
-      const result = await uploadBrandAsset(formData);
+      const response = await fetch("/api/brand-assets", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        throw new Error(errorBody?.error || "Failed to upload image.");
+      }
+
+      const result = await response.json();
 
       onUpload(result.url);
 
@@ -1011,6 +1021,9 @@ function BrandingContent({ initialData }: { initialData?: any }) {
   };
 
   const updateImage = (key: keyof typeof images) => (url: string) => {
+    if (!isEditing) {
+      setIsEditing(true);
+    }
     setImages((prev) => ({ ...prev, [key]: url }));
   };
 
@@ -1084,13 +1097,13 @@ function BrandingContent({ initialData }: { initialData?: any }) {
           label="Web Login Image"
           value={images.web_login_image}
           onUpload={updateImage("web_login_image")}
-          disabled={!isEditing}
+          disabled={false}
         />
         <ImageUploadArea
           label="Home Background Image"
           value={images.home_background_image}
           onUpload={updateImage("home_background_image")}
-          disabled={!isEditing}
+          disabled={false}
         />
       </div>
 
