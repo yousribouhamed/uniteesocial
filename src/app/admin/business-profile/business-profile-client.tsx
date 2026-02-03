@@ -46,7 +46,7 @@ import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
-import { getBusinessProfile, updateBusinessProfile } from "./actions";
+import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset } from "./actions";
 import { TIMEZONES } from "@/data/timezones";
 
 interface BusinessProfileClientProps {
