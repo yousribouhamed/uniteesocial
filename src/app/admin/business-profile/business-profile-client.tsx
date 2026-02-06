@@ -288,9 +288,18 @@ function ColorPicker({
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
-        onClose();
+      const target = e.target as Node;
+      // Check if click is inside the picker
+      if (pickerRef.current && pickerRef.current.contains(target)) {
+        return;
       }
+      // Check if click is inside a Headless UI portal (menu items)
+      // Look for elements with data-headlessui-state or inside [data-headlessui-portal]
+      const portalElement = (target as Element).closest?.('[data-headlessui-portal], [data-headlessui-state], [role="menu"], [role="menuitem"]');
+      if (portalElement) {
+        return;
+      }
+      onClose();
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -360,7 +369,20 @@ function ColorPicker({
   };
 
   const handleRgbChange = (index: number, val: string) => {
-    const num = parseInt(val) || 0;
+    // Allow empty string for typing
+    if (val === "") {
+      const newRgb = [...rgbInput] as [number, number, number];
+      newRgb[index] = 0;
+      setRgbInput(newRgb);
+      return;
+    }
+
+    // Only allow numeric input
+    if (!/^\d*$/.test(val)) return;
+
+    const num = parseInt(val, 10);
+    if (isNaN(num)) return;
+
     const clamped = Math.max(0, Math.min(255, num));
     const newRgb = [...rgbInput] as [number, number, number];
     newRgb[index] = clamped;
@@ -372,6 +394,13 @@ function ColorPicker({
     setHexInput(hex);
     onChange(hex);
   };
+
+  // Update RGB input when mode changes to RGB to ensure sync
+  useEffect(() => {
+    if (mode === "RGB") {
+      setRgbInput(hsvToRgb(hsv[0], hsv[1], hsv[2]));
+    }
+  }, [mode, hsv]);
 
   const [r, g, b] = hsvToRgb(hsv[0], 1, 1);
   const hueColor = `rgb(${r},${g},${b})`;
@@ -485,24 +514,39 @@ function ColorPicker({
             />
           ) : (
             <div className="flex flex-1 gap-px bg-[#e4e4e4] border border-[#e4e4e4] rounded-l-lg overflow-hidden">
-              <input
-                type="text"
-                value={rgbInput[0]}
-                onChange={(e) => handleRgbChange(0, e.target.value)}
-                className="w-1/3 h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
-              />
-              <input
-                type="text"
-                value={rgbInput[1]}
-                onChange={(e) => handleRgbChange(1, e.target.value)}
-                className="w-1/3 h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
-              />
-              <input
-                type="text"
-                value={rgbInput[2]}
-                onChange={(e) => handleRgbChange(2, e.target.value)}
-                className="w-1/3 h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
-              />
+              <div className="flex flex-col items-center bg-[#f5f5f5] w-1/3">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={rgbInput[0]}
+                  onChange={(e) => handleRgbChange(0, e.target.value)}
+                  className="w-full h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+                  maxLength={3}
+                />
+                <span className="text-[10px] text-[#71717b] -mt-1 pb-0.5">R</span>
+              </div>
+              <div className="flex flex-col items-center bg-[#f5f5f5] w-1/3">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={rgbInput[1]}
+                  onChange={(e) => handleRgbChange(1, e.target.value)}
+                  className="w-full h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+                  maxLength={3}
+                />
+                <span className="text-[10px] text-[#71717b] -mt-1 pb-0.5">G</span>
+              </div>
+              <div className="flex flex-col items-center bg-[#f5f5f5] w-1/3">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={rgbInput[2]}
+                  onChange={(e) => handleRgbChange(2, e.target.value)}
+                  className="w-full h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+                  maxLength={3}
+                />
+                <span className="text-[10px] text-[#71717b] -mt-1 pb-0.5">B</span>
+              </div>
             </div>
           )}
           <div className="relative h-7 w-[52px] bg-[#f5f5f5] border border-l-0 border-[#e4e4e4] rounded-r-lg flex items-center px-2">
@@ -855,6 +899,17 @@ function ImageUploadArea({
     if (e.target.files && e.target.files.length > 0) {
       processFile(e.target.files[0]);
     }
+    // Reset input value to allow re-uploading the same file
+    e.target.value = "";
+  };
+
+  const handleClick = () => {
+    if (disabled) return;
+    // Reset the input before clicking to ensure change event fires even for same file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+      fileInputRef.current.click();
+    }
   };
 
   return (
@@ -864,7 +919,7 @@ function ImageUploadArea({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => !disabled && fileInputRef.current?.click()}
+        onClick={handleClick}
         className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-[#f9fafb] border-[#d5dde2] cursor-not-allowed" :
           isDragging
             ? "bg-[#eff6ff] border-[#3f52ff] cursor-copy"
@@ -946,38 +1001,40 @@ function BrandingContent({ initialData }: { initialData?: any }) {
 
   useEffect(() => {
     if (initialData) {
-      // Re-mapping initialData. 
-      // NOTE: We need to check if we should be receiving the FULL profile here or just colors.
-      // Looking at the parent usage: `<BrandingContent initialData={profile?.colors} />`
-      // We need to change the parent to pass the whole profile or valid subset if we want to save images correctly.
-      // For now, I will assume we will Fix the Parent call in a separate edit or use a workaround.
-      // Let's assume initialData MIGHT contain the images if we fix the parent.
+      // initialData is the full profile object
+      // colors is stored as JSON string or object in the database
+      // web_login_image and home_background_image are separate TEXT columns
 
-      const { web_login_image, home_background_image, ...colorData } = initialData || {};
+      const { colors: colorsData, web_login_image, home_background_image } = initialData;
 
-      setColors((prev) => ({ ...prev, ...colorData }));
-      setSavedColors((prev) => ({ ...prev, ...colorData }));
-
-      if (web_login_image || home_background_image) {
-        setImages({
-          web_login_image: web_login_image || "",
-          home_background_image: home_background_image || ""
-        });
-        setSavedImages({
-          web_login_image: web_login_image || "",
-          home_background_image: home_background_image || ""
-        });
+      // Parse colors if it's a JSON string, otherwise use as object
+      if (colorsData) {
+        const parsedColors = typeof colorsData === 'string' ? JSON.parse(colorsData) : colorsData;
+        setColors((prev) => ({ ...prev, ...parsedColors }));
+        setSavedColors((prev) => ({ ...prev, ...parsedColors }));
       }
+
+      // Set images from the profile
+      setImages({
+        web_login_image: web_login_image || "",
+        home_background_image: home_background_image || ""
+      });
+      setSavedImages({
+        web_login_image: web_login_image || "",
+        home_background_image: home_background_image || ""
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
 
   const handleSave = async () => {
     try {
+      // Structure the payload correctly for the database
+      // colors is stored as JSON, images are stored as separate TEXT columns
       const result = await updateBusinessProfile({
-        colors,
-        web_login_image: images.web_login_image,
-        home_background_image: images.home_background_image
+        colors: JSON.stringify(colors),
+        web_login_image: images.web_login_image || null,
+        home_background_image: images.home_background_image || null
       });
 
       if (result.success) {
