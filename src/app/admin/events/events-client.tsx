@@ -28,6 +28,8 @@ import {
   LogIn,
   LogOut,
   ShieldCheck,
+  Eye,
+  Trash2,
   TrendingUp,
   Search,
 } from "lucide-react";
@@ -1455,6 +1457,21 @@ function AnalyticsView() {
 
 // --- Event Card Component ---
 function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
   return (
     <div
       onClick={onClick}
@@ -1483,9 +1500,42 @@ function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }
             />
           )}
           {/* 3-dot menu */}
-          <button className="absolute top-1.5 right-1.5 w-6 h-6 bg-[#d8e6ff] rounded-full flex items-center justify-center hover:bg-[#c5d8f7] transition-colors">
-            <MoreVertical className="w-3.5 h-3.5 text-white" />
-          </button>
+          <div className="absolute top-1.5 right-1.5" ref={menuRef}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen(!menuOpen);
+              }}
+              className="w-6 h-6 bg-[#d8e6ff] rounded-full flex items-center justify-center hover:bg-[#c5d8f7] transition-colors"
+            >
+              <MoreVertical className="w-3.5 h-3.5 text-white" />
+            </button>
+            {menuOpen && (
+              <div className="absolute top-8 right-0 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg z-50">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuOpen(false);
+                    onClick();
+                  }}
+                  className="flex items-center gap-2 w-full h-8 px-2 rounded text-sm font-medium text-[#22292f] hover:bg-[#eceff2] transition-colors"
+                >
+                  <Eye className="w-4 h-4 text-[#516778]" />
+                  View
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 w-full h-8 px-2 rounded text-sm font-medium text-[#e22023] hover:bg-[#eceff2] transition-colors"
+                >
+                  <Trash2 className="w-4 h-4 text-[#e22023]" />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Content */}
