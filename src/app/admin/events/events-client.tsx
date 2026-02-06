@@ -1468,6 +1468,79 @@ function AnalyticsView() {
   );
 }
 
+// --- Delete Event Confirmation Modal ---
+function DeleteEventModal({
+  event,
+  onClose,
+  onConfirm,
+  isDeleting,
+}: {
+  event: EventItem;
+  onClose: () => void;
+  onConfirm: () => void;
+  isDeleting: boolean;
+}) {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white border border-[#d5dde2] rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-[#d5dde2]">
+          <div className="flex items-center gap-4">
+            <div className="bg-[#ffe0e1] rounded-md p-2">
+              <AlertCircle className="w-4 h-4 text-[#e53935]" />
+            </div>
+            <span className="text-base font-semibold text-[#22292f]">
+              Delete Event
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+          >
+            <X className="w-3.5 h-3.5 text-[#516778]" />
+          </button>
+        </div>
+        {/* Modal Body */}
+        <div className="px-4">
+          <p className="text-sm font-semibold text-[#859bab] leading-[20px]">
+            Are you sure you want to delete{" "}
+            <span className="font-bold text-[#22292f]">
+              &quot;{event.title}&quot;
+            </span>
+            ? This action cannot be undone and will permanently remove the event
+            and all associated data.
+          </p>
+        </div>
+        {/* Modal Footer */}
+        <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-[#d5dde2]">
+          <button
+            onClick={onClose}
+            disabled={isDeleting}
+            className="flex-1 h-10 px-4 text-sm font-medium text-[#22292f] bg-white border border-[#d5dde2] rounded-lg hover:bg-[#f5f5f5] transition-colors disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="flex-1 h-10 px-4 text-sm font-medium text-white bg-[#e53935] rounded-lg hover:bg-[#c62828] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {isDeleting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete Event"
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- Event Card Component ---
 function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: () => void; onDelete: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1639,6 +1712,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const [filterDate, setFilterDate] = useState<DateValue | null>(null);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<EventItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Load events from database on mount
   const loadEvents = useCallback(async () => {
@@ -1872,20 +1947,24 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
     router.push(pathname);
   };
 
-  const handleDeleteEvent = async (eventId: string) => {
-    if (!confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
-      return;
-    }
+  const handleDeleteEvent = (event: EventItem) => {
+    setEventToDelete(event);
+  };
 
+  const confirmDeleteEvent = async () => {
+    if (!eventToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const result = await deleteEvent(eventId);
+      const result = await deleteEvent(eventToDelete.id);
       if (result.success) {
-        setEvents((prev) => prev.filter((e) => e.id !== eventId));
+        setEvents((prev) => prev.filter((e) => e.id !== eventToDelete.id));
         toastQueue.add({
           title: "Event Deleted",
           description: "The event has been successfully deleted.",
           variant: "success",
         }, { timeout: 3000 });
+        setEventToDelete(null);
       } else {
         throw new Error(result.error);
       }
@@ -1896,6 +1975,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         description: error.message || "Failed to delete event. Please try again.",
         variant: "error",
       }, { timeout: 4000 });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -2128,7 +2209,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                               key={event.id}
                               event={event}
                               onClick={() => handleEditEvent(event)}
-                              onDelete={() => handleDeleteEvent(event.id)}
+                              onDelete={() => handleDeleteEvent(event)}
                             />
                           ))}
                         </div>
@@ -2193,6 +2274,16 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
           )}
         </main>
       </div>
+
+      {/* Delete Event Confirmation Modal */}
+      {eventToDelete && (
+        <DeleteEventModal
+          event={eventToDelete}
+          onClose={() => setEventToDelete(null)}
+          onConfirm={confirmDeleteEvent}
+          isDeleting={isDeleting}
+        />
+      )}
     </div>
   );
 }
