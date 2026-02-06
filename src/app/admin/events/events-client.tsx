@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Bell,
@@ -42,9 +42,10 @@ import { AriaCheckbox } from "@/components/ui/aria-checkbox";
 import { AriaSlider } from "@/components/ui/aria-slider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
-import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
+import { today, getLocalTimeZone, DateValue, parseDate } from "@internationalized/date";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
+import { getEvents, createEvent, updateEvent, deleteEvent, EventData } from "./actions";
 
 // --- Types ---
 interface EventItem {
@@ -1456,7 +1457,7 @@ function AnalyticsView() {
 }
 
 // --- Event Card Component ---
-function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }) {
+function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: () => void; onDelete: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -1527,6 +1528,7 @@ function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }
                   onClick={(e) => {
                     e.stopPropagation();
                     setMenuOpen(false);
+                    onDelete();
                   }}
                   className="flex items-center gap-2 w-full h-8 px-2 rounded text-sm font-medium text-[#e22023] hover:bg-[#eceff2] transition-colors"
                 >
@@ -1584,12 +1586,36 @@ function EventCard({ event, onClick }: { event: EventItem; onClick: () => void }
   );
 }
 
+// Helper to convert database event to EventItem
+function dbEventToEventItem(dbEvent: any): EventItem {
+  const eventDate = dbEvent.event_date ? new Date(dbEvent.event_date) : null;
+  const dateGroup = eventDate
+    ? eventDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+    : "No Date";
+
+  return {
+    id: dbEvent.id,
+    title: dbEvent.title,
+    coverImage: dbEvent.cover_image || "/img/event-cover-1.jpg",
+    chapter: dbEvent.chapter || "Dubai Chapter",
+    type: dbEvent.type || "Onsite",
+    eventCategory: dbEvent.event_category || "general",
+    date: dbEvent.event_date,
+    dateIso: dbEvent.event_date,
+    location: dbEvent.location || "",
+    signups: dbEvent.signups || 0,
+    maxSignups: dbEvent.max_signups || 300,
+    dateGroup,
+  };
+}
+
 function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const [events, setEvents] = useState<EventItem[]>(mockEvents);
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"all" | "current" | "past">("all");
   const [filterCategory, setFilterCategory] = useState<"all" | "general" | "match">("all");
   const [filterChapter, setFilterChapter] = useState<string>("all");
@@ -1597,6 +1623,31 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const [filterDate, setFilterDate] = useState<DateValue | null>(null);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+
+  // Load events from database on mount
+  const loadEvents = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await getEvents();
+      if (result.success && result.data) {
+        const eventItems = result.data.map(dbEventToEventItem);
+        setEvents(eventItems);
+      } else {
+        console.error("Failed to load events:", result.error);
+        // Fall back to empty array if no events
+        setEvents([]);
+      }
+    } catch (error) {
+      console.error("Error loading events:", error);
+      setEvents([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
 
   // Filter Logic
   const filteredEvents = events.filter((e) => {
@@ -1657,20 +1708,57 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
     }
   }, [searchParams, events]);
 
-  const handleSaveEvent = (savedEvent: EventItem) => {
-    if (selectedEvent) {
-      // Update existing
-      setEvents((prev) => prev.map((e) => (e.id === savedEvent.id ? savedEvent : e)));
-    } else {
-      // Create new
-      setEvents((prev) => [savedEvent, ...prev]);
+  const handleSaveEvent = async (savedEvent: EventItem) => {
+    try {
+      const eventData = {
+        title: savedEvent.title,
+        cover_image: savedEvent.coverImage,
+        chapter: savedEvent.chapter,
+        type: savedEvent.type,
+        event_category: savedEvent.eventCategory,
+        event_date: savedEvent.dateIso || savedEvent.date || null,
+        location: savedEvent.location,
+        signups: savedEvent.signups,
+        max_signups: savedEvent.maxSignups,
+      };
+
+      if (selectedEvent) {
+        // Update existing event in database
+        const result = await updateEvent(selectedEvent.id, eventData);
+        if (result.success) {
+          setEvents((prev) => prev.map((e) => (e.id === selectedEvent.id ? savedEvent : e)));
+          toastQueue.add({
+            title: "Event Updated",
+            description: `"${savedEvent.title}" has been successfully updated.`,
+            variant: "success",
+          }, { timeout: 3000 });
+        } else {
+          throw new Error(result.error);
+        }
+      } else {
+        // Create new event in database
+        const result = await createEvent(eventData);
+        if (result.success && result.data) {
+          const newEvent = dbEventToEventItem(result.data);
+          setEvents((prev) => [newEvent, ...prev]);
+          toastQueue.add({
+            title: "Event Created",
+            description: `"${savedEvent.title}" has been successfully created.`,
+            variant: "success",
+          }, { timeout: 3000 });
+        } else {
+          throw new Error(result.error);
+        }
+      }
+      handleClose();
+    } catch (error: any) {
+      console.error("Error saving event:", error);
+      toastQueue.add({
+        title: "Error",
+        description: error.message || "Failed to save event. Please try again.",
+        variant: "error",
+      }, { timeout: 4000 });
     }
-    toastQueue.add({
-      title: selectedEvent ? "Event Updated" : "Event Created",
-      description: `"${savedEvent.title}" has been successfully saved.`,
-      variant: "success",
-    }, { timeout: 3000 });
-    handleClose();
   };
 
   const handleCreateEvent = () => {
@@ -1683,6 +1771,33 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
   const handleClose = () => {
     router.push(pathname);
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const result = await deleteEvent(eventId);
+      if (result.success) {
+        setEvents((prev) => prev.filter((e) => e.id !== eventId));
+        toastQueue.add({
+          title: "Event Deleted",
+          description: "The event has been successfully deleted.",
+          variant: "success",
+        }, { timeout: 3000 });
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      console.error("Error deleting event:", error);
+      toastQueue.add({
+        title: "Error",
+        description: error.message || "Failed to delete event. Please try again.",
+        variant: "error",
+      }, { timeout: 4000 });
+    }
   };
 
   // Compute stats from events
@@ -1887,8 +2002,13 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 )}
               </div>
 
-              {/* Events Content: Empty State or Events List */}
-              {hasEvents ? (
+              {/* Events Content: Loading, Empty State or Events List */}
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center gap-4 py-16 bg-white border border-[#d5dde2] rounded-xl">
+                  <Loader2 className="w-8 h-8 text-[#3f52ff] animate-spin" />
+                  <p className="text-sm text-[#859bab]">Loading events...</p>
+                </div>
+              ) : hasEvents ? (
                 hasFilteredEvents ? (
                   <div className="flex flex-col gap-4">
                     {Object.entries(groupedEvents).map(([dateGroup, events]) => (
@@ -1908,6 +2028,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                               key={event.id}
                               event={event}
                               onClick={() => handleEditEvent(event)}
+                              onDelete={() => handleDeleteEvent(event.id)}
                             />
                           ))}
                         </div>
