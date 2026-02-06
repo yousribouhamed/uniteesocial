@@ -687,6 +687,7 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
 
             <button
               onClick={() => {
+                const dateIsoString = startDate?.toString() || null;
                 const savedEvent: EventItem = {
                   id: event?.id || crypto.randomUUID(),
                   title: eventTitle,
@@ -697,8 +698,11 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                   location: locationInput,
                   signups: event?.signups || 0,
                   maxSignups: event?.maxSignups || 300,
-                  dateGroup: startDate?.toString() || "", // Using start date as date group for now
-                  date: startDate?.toString(),
+                  dateGroup: startDate
+                    ? new Date(startDate.year, startDate.month - 1, startDate.day).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+                    : "No Date",
+                  date: dateIsoString || undefined,
+                  dateIso: dateIsoString || undefined,
                 };
                 onSave(savedEvent);
               }}
@@ -2064,7 +2068,31 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                     </button>
                   </div>
                 )
-              ) : null}
+              ) : (
+                /* Empty State - No Events Created Yet */
+                <div className="flex flex-col items-center justify-center gap-4 py-16 bg-white border border-[#d5dde2] rounded-xl">
+                  <Image
+                    src="/img/events-empty.svg"
+                    alt="No events"
+                    width={165}
+                    height={160}
+                    className="object-contain"
+                  />
+                  <div className="flex flex-col items-center gap-1">
+                    <h3 className="text-lg font-semibold text-[#22292f]">No events yet</h3>
+                    <p className="text-sm text-[#859bab] text-center max-w-xs">
+                      You haven&apos;t created any events yet. <br /> Click the button below to create your first event.
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleCreateEvent}
+                    className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Create Event
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </main>
