@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+const EVENT_IMAGES_BUCKET = "event-images";
+
 export interface EventData {
   id?: string;
   title: string;
@@ -129,5 +131,51 @@ export async function deleteEvent(id: string) {
   } catch (err: any) {
     console.error("Exception deleting event:", err);
     return { success: false, error: err.message || "Failed to delete event" };
+  }
+}
+
+export async function uploadEventCoverImage(base64Data: string, fileName: string) {
+  try {
+    const supabase = await createClient();
+
+    // Extract the base64 content and mime type
+    const matches = base64Data.match(/^data:([^;]+);base64,(.+)$/);
+    if (!matches) {
+      return { success: false, error: "Invalid image data format" };
+    }
+
+    const mimeType = matches[1];
+    const base64Content = matches[2];
+
+    // Convert base64 to buffer
+    const buffer = Buffer.from(base64Content, "base64");
+
+    // Generate unique filename
+    const fileExt = mimeType.split("/")[1] || "jpg";
+    const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `covers/${uniqueFileName}`;
+
+    // Upload to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from(EVENT_IMAGES_BUCKET)
+      .upload(filePath, buffer, {
+        contentType: mimeType,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("Error uploading event cover image:", uploadError);
+      return { success: false, error: uploadError.message };
+    }
+
+    // Get public URL
+    const { data: publicUrlData } = supabase.storage
+      .from(EVENT_IMAGES_BUCKET)
+      .getPublicUrl(filePath);
+
+    return { success: true, url: publicUrlData.publicUrl };
+  } catch (err: any) {
+    console.error("Exception uploading event cover image:", err);
+    return { success: false, error: err.message || "Failed to upload image" };
   }
 }

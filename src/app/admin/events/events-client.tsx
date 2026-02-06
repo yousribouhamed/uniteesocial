@@ -45,7 +45,7 @@ import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue, parseDate } from "@internationalized/date";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
-import { getEvents, createEvent, updateEvent, deleteEvent, EventData } from "./actions";
+import { getEvents, createEvent, updateEvent, deleteEvent, uploadEventCoverImage, EventData } from "./actions";
 
 // --- Types ---
 interface EventItem {
@@ -202,7 +202,7 @@ const mockGuests: GuestItem[] = [
 ];
 
 // --- Create Event View ---
-function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void }) {
+function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void; isSaving?: boolean }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSlidoModal, setShowSlidoModal] = useState(false);
@@ -686,6 +686,7 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
             </div>
 
             <button
+              disabled={isSaving}
               onClick={() => {
                 const dateIsoString = startDate?.toString() || null;
                 const savedEvent: EventItem = {
@@ -706,9 +707,16 @@ function CreateEventView({ event, onClose, onSave }: { event: EventItem | null; 
                 };
                 onSave(savedEvent);
               }}
-              className="w-full min-h-[40px] bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4"
+              className="w-full min-h-[40px] bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Save Changes
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </button>
           </div>
         </div>
@@ -1712,17 +1720,37 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
     }
   }, [searchParams, events]);
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSaveEvent = async (savedEvent: EventItem) => {
+    setIsSaving(true);
     try {
-      // Don't save base64 images directly - they're too large
-      // Only save URL references (either existing URLs or uploaded ones)
-      const coverImageToSave = savedEvent.coverImage?.startsWith('data:')
-        ? null  // Skip base64 images for now - need to upload to storage first
-        : savedEvent.coverImage;
+      let coverImageUrl: string | null = savedEvent.coverImage || null;
+
+      // If cover image is base64, upload it first
+      if (savedEvent.coverImage?.startsWith('data:')) {
+        const uploadResult = await uploadEventCoverImage(
+          savedEvent.coverImage,
+          `event-cover-${Date.now()}`
+        );
+
+        if (uploadResult.success && uploadResult.url) {
+          coverImageUrl = uploadResult.url;
+        } else {
+          // If upload fails, continue without the image but show warning
+          console.warn("Image upload failed:", uploadResult.error);
+          coverImageUrl = null;
+          toastQueue.add({
+            title: "Image Upload Failed",
+            description: "Event will be saved without the cover image.",
+            variant: "error",
+          }, { timeout: 3000 });
+        }
+      }
 
       const eventData = {
         title: savedEvent.title,
-        cover_image: coverImageToSave,
+        cover_image: coverImageUrl,
         chapter: savedEvent.chapter,
         type: savedEvent.type,
         event_category: savedEvent.eventCategory,
@@ -1736,7 +1764,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         // Update existing event in database
         const result = await updateEvent(selectedEvent.id, eventData);
         if (result.success) {
-          setEvents((prev) => prev.map((e) => (e.id === selectedEvent.id ? savedEvent : e)));
+          const updatedEvent = { ...savedEvent, coverImage: coverImageUrl || savedEvent.coverImage };
+          setEvents((prev) => prev.map((e) => (e.id === selectedEvent.id ? updatedEvent : e)));
           toastQueue.add({
             title: "Event Updated",
             description: `"${savedEvent.title}" has been successfully updated.`,
@@ -1768,6 +1797,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         description: error.message || "Failed to save event. Please try again.",
         variant: "error",
       }, { timeout: 4000 });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -1843,6 +1874,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
               event={selectedEvent}
               onClose={handleClose}
               onSave={handleSaveEvent}
+              isSaving={isSaving}
             />
           ) : (
             <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
