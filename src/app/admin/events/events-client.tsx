@@ -1714,9 +1714,15 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
   const handleSaveEvent = async (savedEvent: EventItem) => {
     try {
+      // Don't save base64 images directly - they're too large
+      // Only save URL references (either existing URLs or uploaded ones)
+      const coverImageToSave = savedEvent.coverImage?.startsWith('data:')
+        ? null  // Skip base64 images for now - need to upload to storage first
+        : savedEvent.coverImage;
+
       const eventData = {
         title: savedEvent.title,
-        cover_image: savedEvent.coverImage,
+        cover_image: coverImageToSave,
         chapter: savedEvent.chapter,
         type: savedEvent.type,
         event_category: savedEvent.eventCategory,
