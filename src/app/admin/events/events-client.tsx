@@ -45,7 +45,7 @@ import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue, parseDate } from "@internationalized/date";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
-import { getEvents, createEvent, updateEvent, deleteEvent, uploadEventCoverImage, EventData } from "./actions";
+import { getEvents, createEvent, updateEvent, deleteEvent, EventData } from "./actions";
 
 // --- Types ---
 interface EventItem {
@@ -1722,23 +1722,77 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
   const [isSaving, setIsSaving] = useState(false);
 
+  // Helper function to convert base64 to File
+  const base64ToFile = (base64: string, filename: string): File | null => {
+    try {
+      const matches = base64.match(/^data:([^;]+);base64,(.+)$/);
+      if (!matches) return null;
+
+      const mimeType = matches[1];
+      const base64Content = matches[2];
+      const byteCharacters = atob(base64Content);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: mimeType });
+      const extension = mimeType.split('/')[1] || 'jpg';
+
+      return new File([blob], `${filename}.${extension}`, { type: mimeType });
+    } catch (error) {
+      console.error("Error converting base64 to file:", error);
+      return null;
+    }
+  };
+
+  // Upload image using the API endpoint
+  const uploadCoverImage = async (base64Data: string): Promise<string | null> => {
+    try {
+      const file = base64ToFile(base64Data, `event-cover-${Date.now()}`);
+      if (!file) {
+        console.error("Failed to convert base64 to file");
+        return null;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "events");
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Upload failed:", errorData.error);
+        return null;
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return null;
+    }
+  };
+
   const handleSaveEvent = async (savedEvent: EventItem) => {
     setIsSaving(true);
     try {
       let coverImageUrl: string | null = savedEvent.coverImage || null;
 
-      // If cover image is base64, upload it first
+      // If cover image is base64, upload it first using API
       if (savedEvent.coverImage?.startsWith('data:')) {
-        const uploadResult = await uploadEventCoverImage(
-          savedEvent.coverImage,
-          `event-cover-${Date.now()}`
-        );
+        const uploadedUrl = await uploadCoverImage(savedEvent.coverImage);
 
-        if (uploadResult.success && uploadResult.url) {
-          coverImageUrl = uploadResult.url;
+        if (uploadedUrl) {
+          coverImageUrl = uploadedUrl;
         } else {
           // If upload fails, continue without the image but show warning
-          console.warn("Image upload failed:", uploadResult.error);
           coverImageUrl = null;
           toastQueue.add({
             title: "Image Upload Failed",
