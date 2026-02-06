@@ -1493,14 +1493,18 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
       <div className="flex flex-col gap-4">
         {/* Cover Image */}
         <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d9d9d9]">
-          {event.coverImage?.startsWith("data:") ? (
+          {event.coverImage?.startsWith("data:") || event.coverImage?.startsWith("http") ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={event.coverImage}
               alt={event.title}
               className="w-full h-full object-cover absolute inset-0"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = "none";
+              }}
             />
-          ) : (
+          ) : event.coverImage ? (
             <Image
               src={event.coverImage}
               alt={event.title}
@@ -1511,7 +1515,7 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
                 target.style.display = "none";
               }}
             />
-          )}
+          ) : null}
           {/* 3-dot menu */}
           <div className="absolute top-1.5 right-1.5" ref={menuRef}>
             <button
