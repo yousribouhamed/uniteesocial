@@ -1034,9 +1034,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
 
       {/* Analytics Tab Content */}
       {detailTab === "analytics" && (
-        <div className="p-4">
-          <AnalyticsView />
-        </div>
+        <AnalyticsView />
       )}
       {showCancelModal && (
         <CancelEventModal
@@ -1289,81 +1287,70 @@ function AnalyticsView() {
   const [timeFilter, setTimeFilter] = useState("Last 24 Hours");
 
   return (
-    <div className="flex flex-col gap-2 animate-in fade-in duration-300">
-      {/* Top Stats Row - unified container matching Figma exactly */}
-      <div className="flex items-center pr-px">
-        {/* Card 1 - Total Registrations */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-l-xl p-4 flex flex-col gap-0 items-end justify-end -mr-px">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                <Users className="w-4 h-4 text-[#516778]" />
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Total Registrations</span>
-                <span className="text-xs font-normal text-[#516778] leading-[18px]">68% of capacity</span>
-              </div>
+    <div className="flex flex-col gap-4 animate-in fade-in duration-300">
+      {/* Stats Row - matching Guests tab style with unified border container */}
+      <div className="flex items-stretch border border-[#d5dde2] rounded-lg bg-white">
+        {/* Total Registrations */}
+        <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+          <div className="flex items-center gap-2">
+            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+              <Users className="w-4 h-4 text-[#516778]" />
             </div>
-            <span className="text-base font-semibold text-[#22292f] leading-[18px]">342</span>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Total Registrations</span>
+              <span className="text-xs font-normal text-[#516778] leading-[18px]">68% of capacity</span>
+            </div>
           </div>
+          <span className="text-base font-semibold text-[#22292f] leading-[18px]">342</span>
         </div>
-
-        {/* Card 2 - Checked In Users */}
-        <div className="flex-1 bg-white border border-[#d5dde2] p-4 flex flex-col gap-0 items-end justify-end -mr-px">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                <LogIn className="w-4 h-4 text-[#516778]" />
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In Users</span>
-                <span className="text-xs font-normal text-[#516778] leading-[18px]">0% attendance rate</span>
-              </div>
+        {/* Checked In Users */}
+        <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+          <div className="flex items-center gap-2">
+            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+              <LogIn className="w-4 h-4 text-[#516778]" />
             </div>
-            <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In Users</span>
+              <span className="text-xs font-normal text-[#516778] leading-[18px]">0% attendance rate</span>
+            </div>
           </div>
+          <span className="text-base font-semibold text-[#22292f] leading-[18px]">0</span>
         </div>
-
-        {/* Card 3 - Checked Out Users */}
-        <div className="flex-1 bg-white border border-[#d5dde2] p-4 flex flex-col gap-0 items-end justify-end -mr-px">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                <LogOut className="w-4 h-4 text-[#516778]" />
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out Users</span>
-                <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of checked in</span>
-              </div>
+        {/* Checked Out Users */}
+        <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+          <div className="flex items-center gap-2">
+            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+              <LogOut className="w-4 h-4 text-[#516778]" />
             </div>
-            <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out Users</span>
+              <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of checked in</span>
+            </div>
           </div>
+          <span className="text-base font-semibold text-[#22292f] leading-[18px]">0</span>
         </div>
-
-        {/* Card 4 - Booked Users */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-r-lg p-4 flex flex-col gap-0 items-end justify-end -mr-px">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                <ShieldCheck className="w-4 h-4 text-[#516778]" />
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="text-base font-semibold text-[#3f52ff] leading-[18px]">Booked Users</span>
-                <span className="text-xs font-normal text-[#516778] leading-[18px]">Checked-in</span>
-              </div>
+        {/* Booked Users */}
+        <div className="flex-1 flex items-center justify-between p-4">
+          <div className="flex items-center gap-2">
+            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-[#516778]" />
             </div>
-            <span className="text-xl font-semibold text-[#22292f] leading-[18px]">2</span>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Booked Users</span>
+              <span className="text-xs font-normal text-[#516778] leading-[18px]">Checked-in</span>
+            </div>
           </div>
+          <span className="text-base font-semibold text-[#22292f] leading-[18px]">2</span>
         </div>
       </div>
 
-      {/* Chart - matching Figma design */}
-      <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4 items-center justify-center">
+      {/* Chart */}
+      <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-start justify-between w-full">
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col">
             <span className="text-base font-semibold text-[#22292f] leading-[18px]">Registrations Over Time</span>
-            <span className="text-xs font-semibold text-[#859bab] leading-[18px]">Track how registrations grew over time</span>
+            <span className="text-xs font-normal text-[#859bab] leading-[18px]">Track how registrations grew over time</span>
           </div>
           <Menu>
             <MenuButton className="h-8 px-3 bg-[#eceff2] rounded-lg flex items-center gap-1 text-xs font-medium text-[#22292f] hover:bg-[#d5dde2] transition-colors">
@@ -1396,7 +1383,7 @@ function AnalyticsView() {
           {/* Y-axis labels */}
           <div className="flex flex-col gap-4 items-start w-[24px] shrink-0">
             {[100, 90, 80, 70, 60, 50, 40, 30, 20, 10].map(val => (
-              <span key={val} className="text-base font-semibold text-[#859bab] leading-[18px]">{val}</span>
+              <span key={val} className="text-sm font-semibold text-[#859bab] leading-[18px]">{val}</span>
             ))}
           </div>
 
@@ -1404,39 +1391,37 @@ function AnalyticsView() {
           <div className="flex-1 flex gap-3 items-end">
             {["0h", "1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h", "13h", "14h", "15h", "16h", "17h", "18h", "19h", "20h", "21h", "22h", "23h", "24h"].map((hour) => (
               <div key={hour} className="flex-1 flex flex-col items-center justify-end min-w-0">
-                <span className="text-base font-semibold text-[#859bab] leading-[18px]">{hour}</span>
+                <span className="text-sm font-semibold text-[#859bab] leading-[18px]">{hour}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Footer text */}
-        <span className="text-sm font-normal text-[#859bab] leading-[18px]">Registrations in the last 24 hours</span>
+        <div className="text-center">
+          <span className="text-sm font-normal text-[#859bab]">Registrations in the last 24 hours</span>
+        </div>
       </div>
 
       {/* Bottom Tables Row */}
-      <div className="flex gap-2 items-start w-full">
+      <div className="flex gap-4">
         {/* Check-In Summary */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4 items-center justify-center">
-          <div className="flex items-start w-full">
-            <span className="text-base font-semibold text-[#668091] leading-[18px]">Check-In Summary</span>
-          </div>
-          <div className="flex flex-col gap-2 items-start w-full text-base leading-[18px]">
-            {/* Total Registered - bold label */}
-            <div className="flex items-start justify-between w-full">
+        <div className="flex-1 bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+          <span className="text-base font-semibold text-[#668091] leading-[18px]">Check-In Summary</span>
+          <div className="flex flex-col gap-2 text-sm leading-[18px]">
+            <div className="flex items-center justify-between">
               <span className="font-semibold text-[#22292f]">Total Registered</span>
               <span className="font-semibold text-[#859bab]">342</span>
             </div>
-            {/* Other rows - normal weight label */}
-            <div className="flex items-start justify-between w-full">
+            <div className="flex items-center justify-between">
               <span className="font-normal text-[#22292f]">Checked In</span>
               <span className="font-semibold text-[#859bab]">0</span>
             </div>
-            <div className="flex items-start justify-between w-full">
+            <div className="flex items-center justify-between">
               <span className="font-normal text-[#22292f]">Checked Out</span>
               <span className="font-semibold text-[#859bab]">0</span>
             </div>
-            <div className="flex items-start justify-between w-full">
+            <div className="flex items-center justify-between">
               <span className="font-normal text-[#22292f]">Still Inside</span>
               <span className="font-semibold text-[#859bab]">0</span>
             </div>
@@ -1444,24 +1429,22 @@ function AnalyticsView() {
         </div>
 
         {/* Event Information */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4 items-center justify-center">
-          <div className="flex items-start w-full">
-            <span className="text-base font-semibold text-[#668091] leading-[18px]">Event Information</span>
-          </div>
-          <div className="flex flex-col gap-2 items-start w-full text-base leading-[18px]">
-            <div className="flex items-start justify-between w-full">
+        <div className="flex-1 bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+          <span className="text-base font-semibold text-[#668091] leading-[18px]">Event Information</span>
+          <div className="flex flex-col gap-2 text-sm leading-[18px]">
+            <div className="flex items-center justify-between">
               <span className="font-normal text-[#22292f]">Event Type</span>
               <span className="font-semibold text-[#859bab]">General Event</span>
             </div>
-            <div className="flex items-start justify-between w-full">
+            <div className="flex items-center justify-between">
               <span className="font-normal text-[#22292f]">Mode</span>
               <span className="font-semibold text-[#859bab]">On Site</span>
             </div>
-            <div className="flex items-start justify-between w-full">
+            <div className="flex items-center justify-between">
               <span className="font-normal text-[#22292f]">Language</span>
               <span className="font-semibold text-[#859bab]">English</span>
             </div>
-            <div className="flex items-start justify-between w-full">
+            <div className="flex items-center justify-between">
               <span className="font-normal text-[#22292f]">Capacity</span>
               <span className="font-semibold text-[#859bab]">500</span>
             </div>
