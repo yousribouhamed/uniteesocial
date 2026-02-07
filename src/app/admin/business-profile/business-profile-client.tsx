@@ -896,6 +896,7 @@ function ImageUploadArea({
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
     if (e.target.files && e.target.files.length > 0) {
       processFile(e.target.files[0]);
     }
@@ -916,11 +917,12 @@ function ImageUploadArea({
     <div className="flex flex-col gap-2 flex-1">
       <span className="text-sm font-semibold text-[#22292f]">{label}</span>
       <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={handleClick}
-        className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-[#f9fafb] border-[#d5dde2] cursor-not-allowed" :
+        onDragOver={disabled ? undefined : handleDragOver}
+        onDragLeave={disabled ? undefined : handleDragLeave}
+        onDrop={disabled ? undefined : handleDrop}
+        onClick={disabled ? undefined : handleClick}
+        aria-disabled={disabled}
+        className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-[#f9fafb] border-[#d5dde2] cursor-not-allowed pointer-events-none" :
           isDragging
             ? "bg-[#eff6ff] border-[#3f52ff] cursor-copy"
             : "bg-white border-[#d4d4d8] cursor-pointer hover:border-[#859bab]"
@@ -948,12 +950,14 @@ function ImageUploadArea({
               alt={label}
               className="max-h-[140px] w-auto object-contain rounded-md shadow-sm"
             />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md">
-              <div className="flex flex-col items-center text-white gap-1">
-                <Upload className="w-5 h-5" />
-                <span className="text-xs font-medium">Change Image</span>
+            {!disabled && (
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md">
+                <div className="flex flex-col items-center text-white gap-1">
+                  <Upload className="w-5 h-5" />
+                  <span className="text-xs font-medium">Change Image</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ) : (
           <>
@@ -1070,9 +1074,7 @@ function BrandingContent({ initialData }: { initialData?: any }) {
   };
 
   const updateImage = (key: keyof typeof images) => (url: string) => {
-    if (!isEditing) {
-      setIsEditing(true);
-    }
+    if (!isEditing) return;
     setImages((prev) => ({ ...prev, [key]: url }));
   };
 
@@ -1100,13 +1102,19 @@ function BrandingContent({ initialData }: { initialData?: any }) {
       <div className="flex gap-8">
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-[#22292f]">Splash Screen Logo</span>
-          <div className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb]"}`}>
+          <div
+            aria-disabled={!isEditing}
+            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb] pointer-events-none cursor-not-allowed"}`}
+          >
             <User className="w-4 h-4 text-[#71717b] opacity-60" />
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-[#22292f]">Home Screen logo</span>
-          <div className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb]"}`}>
+          <div
+            aria-disabled={!isEditing}
+            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb] pointer-events-none cursor-not-allowed"}`}
+          >
             <User className="w-4 h-4 text-[#71717b] opacity-60" />
           </div>
         </div>
@@ -1146,13 +1154,13 @@ function BrandingContent({ initialData }: { initialData?: any }) {
           label="Web Login Image"
           value={images.web_login_image}
           onUpload={updateImage("web_login_image")}
-          disabled={false}
+          disabled={!isEditing}
         />
         <ImageUploadArea
           label="Home Background Image"
           value={images.home_background_image}
           onUpload={updateImage("home_background_image")}
-          disabled={false}
+          disabled={!isEditing}
         />
       </div>
 
@@ -1574,28 +1582,23 @@ function ModulesContent({ initialData }: { initialData?: any }) {
     chat: false,
     exploreMembers: true,
     exploreCompany: true,
+    exploreMembersScope: "all",
+    exploreCompanyScope: "all",
   });
   const [savedModules, setSavedModules] = useState(modules);
   const [isEditing, setIsEditing] = useState(false);
-
-  const [exploreMembersRadio, setExploreMembersRadio] = useState(0);
-  const [exploreCompanyRadio, setExploreCompanyRadio] = useState(0);
-  const [savedExploreMembersRadio, setSavedExploreMembersRadio] = useState(0);
-  const [savedExploreCompanyRadio, setSavedExploreCompanyRadio] = useState(0);
 
   useEffect(() => {
     if (initialData) {
       setModules((prev) => ({ ...prev, ...initialData }));
       setSavedModules((prev) => ({ ...prev, ...initialData }));
     }
-  }, [initialData]);
+    }, [initialData]);
 
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ modules });
       setSavedModules(modules);
-      setSavedExploreMembersRadio(exploreMembersRadio);
-      setSavedExploreCompanyRadio(exploreCompanyRadio);
       setIsEditing(false);
       toastQueue.add({
         title: "Modules Saved",
@@ -1613,8 +1616,6 @@ function ModulesContent({ initialData }: { initialData?: any }) {
 
   const handleCancel = () => {
     setModules(savedModules);
-    setExploreMembersRadio(savedExploreMembersRadio);
-    setExploreCompanyRadio(savedExploreCompanyRadio);
     setIsEditing(false);
   };
 
@@ -1674,13 +1675,13 @@ function ModulesContent({ initialData }: { initialData?: any }) {
           action={
             <div className="flex items-center gap-4">
               <RadioOption
-                selected={exploreMembersRadio === 0}
-                onClick={() => isEditing && setExploreMembersRadio(0)}
+                selected={modules.exploreMembersScope === "all"}
+                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "all" }))}
                 label="All"
               />
               <RadioOption
-                selected={exploreMembersRadio === 1}
-                onClick={() => isEditing && setExploreMembersRadio(1)}
+                selected={modules.exploreMembersScope === "city"}
+                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "city" }))}
                 label="City Only"
               />
               <div className="h-6 w-px bg-[#d5dde2] mx-2" />
@@ -1695,13 +1696,13 @@ function ModulesContent({ initialData }: { initialData?: any }) {
           action={
             <div className="flex items-center gap-4">
               <RadioOption
-                selected={exploreCompanyRadio === 0}
-                onClick={() => isEditing && setExploreCompanyRadio(0)}
+                selected={modules.exploreCompanyScope === "all"}
+                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "all" }))}
                 label="All"
               />
               <RadioOption
-                selected={exploreCompanyRadio === 1}
-                onClick={() => isEditing && setExploreCompanyRadio(1)}
+                selected={modules.exploreCompanyScope === "city"}
+                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "city" }))}
                 label="City Only"
               />
               <div className="h-6 w-px bg-[#d5dde2] mx-2" />
