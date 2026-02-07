@@ -47,6 +47,7 @@ import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
 import { getEvents, createEvent, updateEvent, deleteEvent, EventData } from "./actions";
 import { CreateEventScreen, EventFormData } from "./create-event-screen";
+import { CloneEventModal } from "@/components/clone-event-modal";
 
 // --- Types ---
 interface EventItem {
@@ -202,11 +203,21 @@ const mockGuests: GuestItem[] = [
   { id: "g8", name: "Crysta Crist", email: "crysta.crist@gmail.com", registrationTime: "10/12/2024 - 12:34", ticketId: "789456", status: "checked-in" },
 ];
 
+const guestTableHeaders = [
+  { label: "Name", key: "name", sortable: true },
+  { label: "Email", key: "email", sortable: true },
+  { label: "Registration Time", key: "registrationTime", sortable: true },
+  { label: "Ticket ID", key: "ticketId", sortable: true },
+  { label: "Ticket QR", key: "ticketQr", sortable: false },
+  { label: "Status", key: "status", sortable: false },
+];
+
 // --- Create Event View ---
 function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void; isSaving?: boolean }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSlidoModal, setShowSlidoModal] = useState(false);
+  const [showCloneModal, setShowCloneModal] = useState(false);
   const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
   const [chapter, setChapter] = useState(event?.chapter || "Dubai Chapter");
   const [type, setType] = useState<"Onsite" | "Online" | "Hybrid">(event?.type || "Onsite");
@@ -233,6 +244,23 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const [guestStatusFilter, setGuestStatusFilter] = useState<string>("all");
   const [guestPage, setGuestPage] = useState(1);
   const guestsPerPage = 8;
+
+  const filteredGuests = guests.filter((g) => {
+    const matchesFilter = guestStatusFilter === "all" || g.status === guestStatusFilter;
+    const query = guestSearchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !query ||
+      g.name.toLowerCase().includes(query) ||
+      g.email.toLowerCase().includes(query);
+    return matchesFilter && matchesSearch;
+  });
+
+  const guestsToDisplay = filteredGuests.slice(
+    (guestPage - 1) * guestsPerPage,
+    guestPage * guestsPerPage
+  );
+
+  const totalGuestPages = Math.max(1, Math.ceil(filteredGuests.length / guestsPerPage));
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -354,6 +382,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             >
               <MenuItem>
                 <button
+                  onClick={() => setShowCloneModal(true)}
                   className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f0f2f5] transition-colors group focus:outline-none"
                 >
                   <Copy className="w-4 h-4 text-[#516778]" />
@@ -887,7 +916,6 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 </colgroup>
                 <thead>
                   <tr className="[&>th]:bg-[#eceff2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
-                    {/* Checkbox */}
                     <th className="h-9 px-4 py-2 text-left">
                       <AriaCheckbox
                         isSelected={selectedGuests.size === guests.length && guests.length > 0}
@@ -901,22 +929,14 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                         }}
                       />
                     </th>
-                    {/* Headers */}
-                    {[
-                      { label: "Name", key: "name" },
-                      { label: "Email", key: "email" },
-                      { label: "Registration Time", key: "registrationTime" },
-                      { label: "Ticket ID", key: "ticketId" },
-                      { label: "Ticket QR", key: "ticketQr" },
-                      { label: "Status", key: "status" }
-                    ].map((header) => (
+                    {guestTableHeaders.map((header) => (
                       <th
                         key={header.key}
                         className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]"
                       >
                         <div className="flex items-center gap-1">
                           {header.label}
-                          {header.key !== "ticketQr" && header.key !== "status" && (
+                          {header.sortable && (
                             <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
                           )}
                         </div>
@@ -925,85 +945,128 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   </tr>
                 </thead>
                 <tbody>
-                  {guests
-                    .filter(g => {
-                      if (guestStatusFilter !== "all" && g.status !== guestStatusFilter) return false;
-                      if (guestSearchQuery && !g.name.toLowerCase().includes(guestSearchQuery.toLowerCase()) && !g.email.toLowerCase().includes(guestSearchQuery.toLowerCase())) return false;
-                      return true;
-                    })
-                    .slice((guestPage - 1) * guestsPerPage, guestPage * guestsPerPage)
-                    .map((guest) => (
-                      <tr
-                        key={guest.id}
-                        className="border-b border-[#eceff2] last:border-b-0 hover:bg-[#f9fafb] transition-colors"
-                      >
-                        {/* Checkbox */}
-                        <td className="px-4 py-3">
-                          <AriaCheckbox
-                            isSelected={selectedGuests.has(guest.id)}
-                            onChange={(isSelected) => {
-                              const newSet = new Set(selectedGuests);
-                              if (isSelected) {
-                                newSet.add(guest.id);
-                              } else {
-                                newSet.delete(guest.id);
-                              }
-                              setSelectedGuests(newSet);
-                            }}
-                          />
-                        </td>
-                        {/* Name */}
-                        <td className="px-3 py-3">
-                          <span className="text-sm font-medium text-[#22292f] block truncate">{guest.name}</span>
-                        </td>
-                        {/* Email */}
-                        <td className="px-3 py-3">
-                          <span className="text-sm text-[#516778] block truncate">{guest.email}</span>
-                        </td>
-                        {/* Registration Time */}
-                        <td className="px-3 py-3">
-                          <span className="text-sm text-[#516778] block truncate">{guest.registrationTime}</span>
-                        </td>
-                        {/* Ticket ID */}
-                        <td className="px-3 py-3">
-                          <span className="text-sm font-medium text-[#22292f] block truncate">{guest.ticketId}</span>
-                        </td>
-                        {/* Ticket QR */}
-                        <td className="px-3 py-3">
-                          <button className="flex items-center gap-1 h-7 px-2 bg-white border border-[#d5dde2] rounded text-xs font-medium text-[#516778] hover:bg-[#f9fafb] transition-colors">
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1" stroke="#516778" strokeWidth="1" /><rect x="3" y="3" width="2" height="2" fill="#516778" /><rect x="7" y="3" width="2" height="2" fill="#516778" /><rect x="3" y="7" width="2" height="2" fill="#516778" /><rect x="7" y="7" width="2" height="2" fill="#516778" /></svg>
-                            View QR
-                          </button>
-                        </td>
-                        {/* Status */}
-                        <td className="px-3 py-3">
-                          {guest.status === "checked-in" && (
-                            <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
-                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#22892e" /><path d="M4 6L5.5 7.5L8 4.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              Checked-In
-                            </span>
-                          )}
-                          {guest.status === "not-checked-in" && (
-                            <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fff4e5] text-[#d97706] text-xs font-medium rounded-full">
-                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L11 10H1L6 1Z" fill="#d97706" /><path d="M6 4.5V6.5M6 8V8.01" stroke="white" strokeWidth="1" strokeLinecap="round" /></svg>
-                              Not Checked-In
-                            </span>
-                          )}
-                          {guest.status === "booked" && (
-                            <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
-                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#22892e" /><path d="M4 6L5.5 7.5L8 4.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              Booked
-                            </span>
-                          )}
-                          {guest.status === "cancelled" && (
-                            <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fee2e2] text-[#dc2626] text-xs font-medium rounded-full">
-                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#dc2626" /><path d="M4 4L8 8M8 4L4 8" stroke="white" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                              Cancelled
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                  {guestsToDisplay.map((guest) => (
+                    <tr
+                      key={guest.id}
+                      className="border-b border-[#eceff2] last:border-b-0 hover:bg-[#f9fafb] transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <AriaCheckbox
+                          isSelected={selectedGuests.has(guest.id)}
+                          onChange={(isSelected) => {
+                            const newSet = new Set(selectedGuests);
+                            if (isSelected) {
+                              newSet.add(guest.id);
+                            } else {
+                              newSet.delete(guest.id);
+                            }
+                            setSelectedGuests(newSet);
+                          }}
+                        />
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="text-sm font-medium text-[#22292f] block truncate">
+                          {guest.name}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="text-sm text-[#516778] block truncate">
+                          {guest.email}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="text-sm text-[#516778] block truncate">
+                          {guest.registrationTime}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="text-sm font-medium text-[#22292f] block truncate">
+                          {guest.ticketId}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <button className="flex items-center gap-1 h-7 px-2 bg-white border border-[#d5dde2] rounded text-xs font-medium text-[#516778] hover:bg-[#f9fafb] transition-colors">
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                            <rect
+                              x="1"
+                              y="1"
+                              width="10"
+                              height="10"
+                              rx="1"
+                              stroke="#516778"
+                              strokeWidth="1"
+                            />
+                            <rect x="3" y="3" width="2" height="2" fill="#516778" />
+                            <rect x="7" y="3" width="2" height="2" fill="#516778" />
+                            <rect x="3" y="7" width="2" height="2" fill="#516778" />
+                            <rect x="7" y="7" width="2" height="2" fill="#516778" />
+                          </svg>
+                          View QR
+                        </button>
+                      </td>
+                      <td className="px-3 py-3">
+                        {guest.status === "checked-in" && (
+                          <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                              <circle cx="6" cy="6" r="5" fill="#22892e" />
+                              <path
+                                d="M4 6L5.5 7.5L8 4.5"
+                                stroke="white"
+                                strokeWidth="1.2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            Checked-In
+                          </span>
+                        )}
+                        {guest.status === "not-checked-in" && (
+                          <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fff4e5] text-[#d97706] text-xs font-medium rounded-full">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                              <path d="M6 1L11 10H1L6 1Z" fill="#d97706" />
+                              <path
+                                d="M6 4.5V6.5M6 8V8.01"
+                                stroke="white"
+                                strokeWidth="1"
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                            Not Checked-In
+                          </span>
+                        )}
+                        {guest.status === "booked" && (
+                          <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#e8f8ea] text-[#22892e] text-xs font-medium rounded-full">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                              <circle cx="6" cy="6" r="5" fill="#22892e" />
+                              <path
+                                d="M4 6L5.5 7.5L8 4.5"
+                                stroke="white"
+                                strokeWidth="1.2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            Booked
+                          </span>
+                        )}
+                        {guest.status === "cancelled" && (
+                          <span className="inline-flex items-center gap-1 h-6 px-2 bg-[#fee2e2] text-[#dc2626] text-xs font-medium rounded-full">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                              <circle cx="6" cy="6" r="5" fill="#dc2626" />
+                              <path
+                                d="M4 4L8 8M8 4L4 8"
+                                stroke="white"
+                                strokeWidth="1.2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            Cancelled
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -1019,11 +1082,11 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
             <span className="text-sm text-[#516778]">
-              Page <span className="font-semibold text-[#22292f]">{guestPage}</span> of <span className="font-semibold text-[#22292f]">{Math.ceil(guests.filter(g => (guestStatusFilter === "all" || g.status === guestStatusFilter) && (!guestSearchQuery || g.name.toLowerCase().includes(guestSearchQuery.toLowerCase()) || g.email.toLowerCase().includes(guestSearchQuery.toLowerCase()))).length / guestsPerPage) || 1}</span>
+              Page <span className="font-semibold text-[#22292f]">{guestPage}</span> of <span className="font-semibold text-[#22292f]">{totalGuestPages}</span>
             </span>
             <button
-              onClick={() => setGuestPage(p => p + 1)}
-              disabled={guestPage >= Math.ceil(guests.filter(g => (guestStatusFilter === "all" || g.status === guestStatusFilter) && (!guestSearchQuery || g.name.toLowerCase().includes(guestSearchQuery.toLowerCase()) || g.email.toLowerCase().includes(guestSearchQuery.toLowerCase()))).length / guestsPerPage)}
+              onClick={() => setGuestPage(p => Math.min(totalGuestPages, p + 1))}
+              disabled={guestPage >= totalGuestPages}
               className="w-8 h-8 flex items-center justify-center border border-[#d5dde2] rounded-lg bg-white text-[#516778] hover:bg-[#f9fafb] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -1048,6 +1111,20 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
           onClose={() => setShowSlidoModal(false)}
         />
       )}
+      <CloneEventModal
+        isOpen={showCloneModal}
+        onClose={() => setShowCloneModal(false)}
+        onClone={(startDate, startTime, endDate, endTime) => {
+          // Handle clone logic here
+          setShowCloneModal(false);
+          toastQueue.add({
+            title: "Event Cloned",
+            description: `Event "${eventTitle}" has been cloned successfully.`,
+            type: "success"
+          });
+        }}
+        eventTitle={eventTitle}
+      />
     </div>
   );
 }
