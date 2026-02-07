@@ -46,6 +46,7 @@ import { today, getLocalTimeZone, DateValue, parseDate } from "@internationalize
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
 import { getEvents, createEvent, updateEvent, deleteEvent, EventData } from "./actions";
+import { CreateEventScreen, EventFormData } from "./create-event-screen";
 
 // --- Types ---
 interface EventItem {
@@ -1285,78 +1286,89 @@ function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps)
 // --- Analytics Tab Components ---
 
 function AnalyticsView() {
+  const [timeFilter, setTimeFilter] = useState("Last 24 Hours");
+
   return (
     <div className="flex flex-col gap-2 animate-in fade-in duration-300">
-      {/* Top Stats Row - unified container */}
-      <div className="flex items-stretch">
+      {/* Top Stats Row - unified container matching Figma exactly */}
+      <div className="flex items-center pr-px">
         {/* Card 1 - Total Registrations */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-l-xl p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-              <Users className="w-4 h-4 text-[#516778]" />
+        <div className="flex-1 bg-white border border-[#d5dde2] rounded-l-xl p-4 flex flex-col gap-0 items-end justify-end -mr-px">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                <Users className="w-4 h-4 text-[#516778]" />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Total Registrations</span>
+                <span className="text-xs font-normal text-[#516778] leading-[18px]">68% of capacity</span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Total Registrations</span>
-              <span className="text-xs text-[#516778] leading-[18px]">68% of capacity</span>
-            </div>
+            <span className="text-base font-semibold text-[#22292f] leading-[18px]">342</span>
           </div>
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">342</span>
         </div>
 
         {/* Card 2 - Checked In Users */}
-        <div className="flex-1 bg-white border-y border-[#d5dde2] p-4 flex items-center justify-between -ml-px">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-              <LogIn className="w-4 h-4 text-[#516778]" />
+        <div className="flex-1 bg-white border border-[#d5dde2] p-4 flex flex-col gap-0 items-end justify-end -mr-px">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                <LogIn className="w-4 h-4 text-[#516778]" />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In Users</span>
+                <span className="text-xs font-normal text-[#516778] leading-[18px]">0% attendance rate</span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In Users</span>
-              <span className="text-xs text-[#516778] leading-[18px]">0% attendance rate</span>
-            </div>
+            <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
           </div>
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
         </div>
 
         {/* Card 3 - Checked Out Users */}
-        <div className="flex-1 bg-white border-y border-[#d5dde2] p-4 flex items-center justify-between -ml-px">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-              <LogOut className="w-4 h-4 text-[#516778]" />
+        <div className="flex-1 bg-white border border-[#d5dde2] p-4 flex flex-col gap-0 items-end justify-end -mr-px">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                <LogOut className="w-4 h-4 text-[#516778]" />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out Users</span>
+                <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of checked in</span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out Users</span>
-              <span className="text-xs text-[#516778] leading-[18px]">0% of checked in</span>
-            </div>
+            <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
           </div>
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
         </div>
 
         {/* Card 4 - Booked Users */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-r-xl p-4 flex items-center justify-between -ml-px">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-[#516778]" />
+        <div className="flex-1 bg-white border border-[#d5dde2] rounded-r-lg p-4 flex flex-col gap-0 items-end justify-end -mr-px">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                <ShieldCheck className="w-4 h-4 text-[#516778]" />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-base font-semibold text-[#3f52ff] leading-[18px]">Booked Users</span>
+                <span className="text-xs font-normal text-[#516778] leading-[18px]">Checked-in</span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Booked Users</span>
-              <span className="text-xs text-[#516778] leading-[18px]">Checked-in</span>
-            </div>
+            <span className="text-xl font-semibold text-[#22292f] leading-[18px]">2</span>
           </div>
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">2</span>
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="bg-white border border-[#d5dde2] rounded-xl p-6 flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <h3 className="text-base font-semibold text-[#22292f]">Registrations Over Time</h3>
-            <span className="text-xs text-[#3f52ff]">Track how registrations grew over time</span>
+      {/* Chart - matching Figma design */}
+      <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4 items-center justify-center">
+        {/* Header */}
+        <div className="flex items-start justify-between w-full">
+          <div className="flex flex-col items-start">
+            <span className="text-base font-semibold text-[#22292f] leading-[18px]">Registrations Over Time</span>
+            <span className="text-xs font-semibold text-[#859bab] leading-[18px]">Track how registrations grew over time</span>
           </div>
           <Menu>
-            <MenuButton className="h-8 px-3 bg-[#eceff2] rounded-lg flex items-center gap-2 text-sm font-medium text-[#22292f] hover:bg-[#d5dde2] transition-colors">
-              Last 24 Hours
-              <ChevronDown className="w-4 h-4 text-[#516778]" />
+            <MenuButton className="h-8 px-3 bg-[#eceff2] rounded-lg flex items-center gap-1 text-xs font-medium text-[#22292f] hover:bg-[#d5dde2] transition-colors">
+              {timeFilter}
+              <ChevronDown className="w-4 h-4" />
             </MenuButton>
             <Portal>
               <MenuItems
@@ -1364,103 +1376,95 @@ function AnalyticsView() {
                 transition
                 className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[140px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
               >
-                <MenuItem>
-                  <button className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none">
-                    Last 24 Hours
-                  </button>
-                </MenuItem>
-                <MenuItem>
-                  <button className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none">
-                    Last 7 days
-                  </button>
-                </MenuItem>
-                <MenuItem>
-                  <button className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none">
-                    Last 30 days
-                  </button>
-                </MenuItem>
-                <MenuItem>
-                  <button className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none">
-                    Last 60 days
-                  </button>
-                </MenuItem>
+                {["Last 24 Hours", "Last 7 days", "Last 30 days", "Last 60 days"].map((option) => (
+                  <MenuItem key={option}>
+                    <button
+                      onClick={() => setTimeFilter(option)}
+                      className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                    >
+                      {option}
+                    </button>
+                  </MenuItem>
+                ))}
               </MenuItems>
             </Portal>
           </Menu>
         </div>
 
-        <div className="relative h-[300px] w-full">
+        {/* Chart Area with Y-axis and X-axis labels */}
+        <div className="flex gap-3 items-end w-full">
           {/* Y-axis labels */}
-          <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-sm text-[#22292f] pr-4 font-medium">
-            {[100, 90, 80, 70, 60, 50, 40, 30, 20, 10].map(val => <span key={val}>{val}</span>)}
-          </div>
-
-          {/* Chart Area */}
-          <div className="absolute left-10 right-0 top-0 bottom-8">
-            <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 800 120">
-              {/* The Line */}
-              <path
-                d="M 0 110 L 40 100 L 80 105 L 120 70 L 160 65 L 200 65 L 240 80 L 280 75 L 320 78 L 360 78 L 400 65 L 440 30 L 480 20 L 520 40 L 560 38 L 600 55 L 640 50 L 680 50 L 720 40 L 760 110 L 800 110"
-                fill="none"
-                stroke="#3f52ff"
-                strokeWidth="2"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            </svg>
+          <div className="flex flex-col gap-4 items-start w-[24px] shrink-0">
+            {[100, 90, 80, 70, 60, 50, 40, 30, 20, 10].map(val => (
+              <span key={val} className="text-base font-semibold text-[#859bab] leading-[18px]">{val}</span>
+            ))}
           </div>
 
           {/* X-axis labels */}
-          <div className="absolute left-10 right-0 bottom-0 flex justify-between text-sm text-[#22292f] font-medium">
-            {["0h", "1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h", "13h", "14h", "15h", "16h", "17h", "18h", "19h", "20h", "21h", "22h", "23h", "24h"].map(h => (
-              <span key={h}>{h}</span>
+          <div className="flex-1 flex gap-3 items-end">
+            {["0h", "1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h", "13h", "14h", "15h", "16h", "17h", "18h", "19h", "20h", "21h", "22h", "23h", "24h"].map((hour) => (
+              <div key={hour} className="flex-1 flex flex-col items-center justify-end min-w-0">
+                <span className="text-base font-semibold text-[#859bab] leading-[18px]">{hour}</span>
+              </div>
             ))}
           </div>
         </div>
-        <div className="text-center">
-          <span className="text-sm text-[#859bab]">Registrations in the last 24 hours</span>
-        </div>
+
+        {/* Footer text */}
+        <span className="text-sm font-normal text-[#859bab] leading-[18px]">Registrations in the last 24 hours</span>
       </div>
 
       {/* Bottom Tables Row */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-start w-full">
         {/* Check-In Summary */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#d5dde2]">
-            <h4 className="text-sm font-semibold text-[#516778]">Check-In Summary</h4>
+        <div className="flex-1 bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4 items-center justify-center">
+          <div className="flex items-start w-full">
+            <span className="text-base font-semibold text-[#668091] leading-[18px]">Check-In Summary</span>
           </div>
-          <div className="p-4 flex flex-col gap-3">
-            {[
-              { label: "Total Registered", value: 342 },
-              { label: "Checked In", value: 0 },
-              { label: "Checked Out", value: 0 },
-              { label: "Still Inside", value: 0 },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-[#22292f]">{item.label}</span>
-                <span className="text-sm font-medium text-[#859bab]">{item.value}</span>
-              </div>
-            ))}
+          <div className="flex flex-col gap-2 items-start w-full text-base leading-[18px]">
+            {/* Total Registered - bold label */}
+            <div className="flex items-start justify-between w-full">
+              <span className="font-semibold text-[#22292f]">Total Registered</span>
+              <span className="font-semibold text-[#859bab]">342</span>
+            </div>
+            {/* Other rows - normal weight label */}
+            <div className="flex items-start justify-between w-full">
+              <span className="font-normal text-[#22292f]">Checked In</span>
+              <span className="font-semibold text-[#859bab]">0</span>
+            </div>
+            <div className="flex items-start justify-between w-full">
+              <span className="font-normal text-[#22292f]">Checked Out</span>
+              <span className="font-semibold text-[#859bab]">0</span>
+            </div>
+            <div className="flex items-start justify-between w-full">
+              <span className="font-normal text-[#22292f]">Still Inside</span>
+              <span className="font-semibold text-[#859bab]">0</span>
+            </div>
           </div>
         </div>
 
         {/* Event Information */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#d5dde2]">
-            <h4 className="text-sm font-semibold text-[#516778]">Event Information</h4>
+        <div className="flex-1 bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4 items-center justify-center">
+          <div className="flex items-start w-full">
+            <span className="text-base font-semibold text-[#668091] leading-[18px]">Event Information</span>
           </div>
-          <div className="p-4 flex flex-col gap-3">
-            {[
-              { label: "Event Type", value: "General Event" },
-              { label: "Mode", value: "On Site" },
-              { label: "Language", value: "English" },
-              { label: "Capacity", value: 500 },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between">
-                <span className="text-sm text-[#22292f]">{item.label}</span>
-                <span className="text-sm font-medium text-[#859bab]">{item.value}</span>
-              </div>
-            ))}
+          <div className="flex flex-col gap-2 items-start w-full text-base leading-[18px]">
+            <div className="flex items-start justify-between w-full">
+              <span className="font-normal text-[#22292f]">Event Type</span>
+              <span className="font-semibold text-[#859bab]">General Event</span>
+            </div>
+            <div className="flex items-start justify-between w-full">
+              <span className="font-normal text-[#22292f]">Mode</span>
+              <span className="font-semibold text-[#859bab]">On Site</span>
+            </div>
+            <div className="flex items-start justify-between w-full">
+              <span className="font-normal text-[#22292f]">Language</span>
+              <span className="font-semibold text-[#859bab]">English</span>
+            </div>
+            <div className="flex items-start justify-between w-full">
+              <span className="font-normal text-[#22292f]">Capacity</span>
+              <span className="font-semibold text-[#859bab]">500</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1785,14 +1789,14 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
       const event = events.find((e) => e.id === editId);
       if (event) {
         setSelectedEvent(event);
-        setShowCreateEvent(true);
+        setShowCreateEvent(false); // Not creating, editing
       } else {
         setSelectedEvent(null);
         setShowCreateEvent(false);
       }
     } else if (create === "true") {
       setSelectedEvent(null);
-      setShowCreateEvent(true);
+      setShowCreateEvent(true); // Creating new event
     } else {
       setSelectedEvent(null);
       setShowCreateEvent(false);
@@ -1935,6 +1939,76 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
     }
   };
 
+  // Handler for the new CreateEventScreen component
+  const handleSaveNewEvent = async (formData: EventFormData) => {
+    setIsSaving(true);
+    try {
+      let coverImageUrl: string | null = formData.coverImage || null;
+
+      // If cover image is base64, upload it first using API
+      if (formData.coverImage?.startsWith('data:')) {
+        const uploadedUrl = await uploadCoverImage(formData.coverImage);
+
+        if (uploadedUrl) {
+          coverImageUrl = uploadedUrl;
+        } else {
+          // If upload fails, continue without the image but show warning
+          coverImageUrl = null;
+          toastQueue.add({
+            title: "Image Upload Failed",
+            description: "Event will be saved without the cover image.",
+            variant: "error",
+          }, { timeout: 3000 });
+        }
+      }
+
+      // Convert date to ISO string
+      const eventDateIso = formData.startDate
+        ? `${formData.startDate.year}-${String(formData.startDate.month).padStart(2, '0')}-${String(formData.startDate.day).padStart(2, '0')}`
+        : null;
+
+      // Determine capacity
+      const maxSignups = formData.capacity === "Unlimited" ? 9999 : parseInt(formData.capacity) || 300;
+
+      const eventData = {
+        title: formData.title,
+        cover_image: coverImageUrl,
+        chapter: formData.chapter + " Chapter",
+        type: formData.type,
+        event_category: formData.eventCategory,
+        event_date: eventDateIso,
+        location: formData.location,
+        signups: 0,
+        max_signups: maxSignups,
+        description: formData.description,
+      };
+
+      // Create new event in database
+      const result = await createEvent(eventData);
+      if (result.success && result.data) {
+        const newEvent = dbEventToEventItem(result.data);
+        setEvents((prev) => [newEvent, ...prev]);
+        toastQueue.add({
+          title: "Event Created",
+          description: `"${formData.title}" has been successfully created.`,
+          variant: "success",
+        }, { timeout: 3000 });
+        handleClose();
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      console.error("Error creating event:", error);
+      toastQueue.add({
+        title: "Error",
+        description: error.message || "Failed to create event. Please try again.",
+        variant: "error",
+      }, { timeout: 4000 });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleCreateEvent = () => {
     router.push(`${pathname}?create=true`);
   };
@@ -2008,7 +2082,15 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto px-8 py-8">
-          {showCreateEvent || selectedEvent ? (
+          {showCreateEvent ? (
+            /* New Create Event Screen from Figma design */
+            <CreateEventScreen
+              onClose={handleClose}
+              onSave={handleSaveNewEvent}
+              isSaving={isSaving}
+            />
+          ) : selectedEvent ? (
+            /* Edit Event Screen (existing CreateEventView) */
             <CreateEventView
               event={selectedEvent}
               onClose={handleClose}
