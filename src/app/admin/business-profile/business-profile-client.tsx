@@ -852,6 +852,7 @@ function ImageUploadArea({
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
     if (e.target.files && e.target.files.length > 0) {
       processFile(e.target.files[0]);
     }
@@ -861,11 +862,12 @@ function ImageUploadArea({
     <div className="flex flex-col gap-2 flex-1">
       <span className="text-sm font-semibold text-[#22292f]">{label}</span>
       <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => !disabled && fileInputRef.current?.click()}
-        className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-[#f9fafb] border-[#d5dde2] cursor-not-allowed" :
+        onDragOver={disabled ? undefined : handleDragOver}
+        onDragLeave={disabled ? undefined : handleDragLeave}
+        onDrop={disabled ? undefined : handleDrop}
+        onClick={disabled ? undefined : () => fileInputRef.current?.click()}
+        aria-disabled={disabled}
+        className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-[#f9fafb] border-[#d5dde2] cursor-not-allowed pointer-events-none" :
           isDragging
             ? "bg-[#eff6ff] border-[#3f52ff] cursor-copy"
             : "bg-white border-[#d4d4d8] cursor-pointer hover:border-[#859bab]"
@@ -893,12 +895,14 @@ function ImageUploadArea({
               alt={label}
               className="max-h-[140px] w-auto object-contain rounded-md shadow-sm"
             />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md">
-              <div className="flex flex-col items-center text-white gap-1">
-                <Upload className="w-5 h-5" />
-                <span className="text-xs font-medium">Change Image</span>
+            {!disabled && (
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md">
+                <div className="flex flex-col items-center text-white gap-1">
+                  <Upload className="w-5 h-5" />
+                  <span className="text-xs font-medium">Change Image</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ) : (
           <>
