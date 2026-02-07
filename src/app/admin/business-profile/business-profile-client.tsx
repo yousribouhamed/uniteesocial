@@ -1525,28 +1525,23 @@ function ModulesContent({ initialData }: { initialData?: any }) {
     chat: false,
     exploreMembers: true,
     exploreCompany: true,
+    exploreMembersScope: "all",
+    exploreCompanyScope: "all",
   });
   const [savedModules, setSavedModules] = useState(modules);
   const [isEditing, setIsEditing] = useState(false);
-
-  const [exploreMembersRadio, setExploreMembersRadio] = useState(0);
-  const [exploreCompanyRadio, setExploreCompanyRadio] = useState(0);
-  const [savedExploreMembersRadio, setSavedExploreMembersRadio] = useState(0);
-  const [savedExploreCompanyRadio, setSavedExploreCompanyRadio] = useState(0);
 
   useEffect(() => {
     if (initialData) {
       setModules((prev) => ({ ...prev, ...initialData }));
       setSavedModules((prev) => ({ ...prev, ...initialData }));
     }
-  }, [initialData]);
+    }, [initialData]);
 
   const handleSave = async () => {
     try {
       await updateBusinessProfile({ modules });
       setSavedModules(modules);
-      setSavedExploreMembersRadio(exploreMembersRadio);
-      setSavedExploreCompanyRadio(exploreCompanyRadio);
       setIsEditing(false);
       toastQueue.add({
         title: "Modules Saved",
@@ -1564,8 +1559,6 @@ function ModulesContent({ initialData }: { initialData?: any }) {
 
   const handleCancel = () => {
     setModules(savedModules);
-    setExploreMembersRadio(savedExploreMembersRadio);
-    setExploreCompanyRadio(savedExploreCompanyRadio);
     setIsEditing(false);
   };
 
@@ -1625,13 +1618,13 @@ function ModulesContent({ initialData }: { initialData?: any }) {
           action={
             <div className="flex items-center gap-4">
               <RadioOption
-                selected={exploreMembersRadio === 0}
-                onClick={() => isEditing && setExploreMembersRadio(0)}
+                selected={modules.exploreMembersScope === "all"}
+                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "all" }))}
                 label="All"
               />
               <RadioOption
-                selected={exploreMembersRadio === 1}
-                onClick={() => isEditing && setExploreMembersRadio(1)}
+                selected={modules.exploreMembersScope === "city"}
+                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "city" }))}
                 label="City Only"
               />
               <div className="h-6 w-px bg-[#d5dde2] mx-2" />
@@ -1646,13 +1639,13 @@ function ModulesContent({ initialData }: { initialData?: any }) {
           action={
             <div className="flex items-center gap-4">
               <RadioOption
-                selected={exploreCompanyRadio === 0}
-                onClick={() => isEditing && setExploreCompanyRadio(0)}
+                selected={modules.exploreCompanyScope === "all"}
+                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "all" }))}
                 label="All"
               />
               <RadioOption
-                selected={exploreCompanyRadio === 1}
-                onClick={() => isEditing && setExploreCompanyRadio(1)}
+                selected={modules.exploreCompanyScope === "city"}
+                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "city" }))}
                 label="City Only"
               />
               <div className="h-6 w-px bg-[#d5dde2] mx-2" />
