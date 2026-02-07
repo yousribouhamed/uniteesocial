@@ -1045,13 +1045,19 @@ function BrandingContent({ initialData }: { initialData?: any }) {
       <div className="flex gap-8">
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-[#22292f]">Splash Screen Logo</span>
-          <div className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb]"}`}>
+          <div
+            aria-disabled={!isEditing}
+            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb] pointer-events-none cursor-not-allowed"}`}
+          >
             <User className="w-4 h-4 text-[#71717b] opacity-60" />
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-[#22292f]">Home Screen logo</span>
-          <div className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb]"}`}>
+          <div
+            aria-disabled={!isEditing}
+            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb] pointer-events-none cursor-not-allowed"}`}
+          >
             <User className="w-4 h-4 text-[#71717b] opacity-60" />
           </div>
         </div>
