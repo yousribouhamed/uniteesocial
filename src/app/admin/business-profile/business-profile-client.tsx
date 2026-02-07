@@ -77,12 +77,14 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
   const [activeTopTab, setActiveTopTab] = useState<TopTab>("Tenant Setup");
   const [activeInnerTab, setActiveInnerTab] = useState<InnerTab>("General Setting");
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const refreshProfile = useCallback(async () => {
+    const data = await getBusinessProfile();
+    if (data) setProfile(data);
+  }, []);
 
   useEffect(() => {
-    getBusinessProfile().then((data) => {
-      if (data) setProfile(data);
-    });
-  }, []);
+    refreshProfile();
+  }, [refreshProfile]);
 
   return (
     <div className="flex min-h-screen bg-[#f9fafb] font-[family-name:'Instrument_Sans',sans-serif]">
@@ -179,28 +181,28 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
                   {/* Content Card - General Setting */}
                   {activeInnerTab === "General Setting" && (
-                    <GeneralSettingContent initialData={profile} />
+                    <GeneralSettingContent initialData={profile} refreshProfile={refreshProfile} />
                   )}
 
                   {/* Content Card - Branding */}
                   {activeInnerTab === "Branding" && (
-                    <BrandingContent initialData={profile} />
+                    <BrandingContent initialData={profile} refreshProfile={refreshProfile} />
                   )}
 
                   {/* Content Card - Modules */}
                   {activeInnerTab === "Modules" && (
-                    <ModulesContent initialData={profile?.modules} />
+                    <ModulesContent initialData={profile?.modules} refreshProfile={refreshProfile} />
                   )}
                 </div>
               </div>
             )}
 
             {activeTopTab === "Social Links" && (
-              <SocialLinksContent initialData={profile?.social_links} />
+              <SocialLinksContent initialData={profile?.social_links} refreshProfile={refreshProfile} />
             )}
 
             {activeTopTab === "Legal and T&C" && (
-              <LegalAndTCContent initialData={profile} />
+              <LegalAndTCContent initialData={profile} refreshProfile={refreshProfile} />
             )}
 
             {activeTopTab === "Chapters" && (
@@ -605,7 +607,7 @@ function ColorInput({
 }
 
 // --- General Setting Content ---
-function GeneralSettingContent({ initialData }: { initialData?: ProfileData | null }) {
+function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: ProfileData | null; refreshProfile?: () => Promise<void> }) {
   const [formData, setFormData] = useState({
     business_name: "",
     poc_email: "",
@@ -641,6 +643,9 @@ function GeneralSettingContent({ initialData }: { initialData?: ProfileData | nu
           description: "Your general business settings have been updated.",
           variant: "success",
         }, { timeout: 3000 });
+        if (refreshProfile) {
+          await refreshProfile();
+        }
       } else {
         throw new Error(result.error);
       }
@@ -976,7 +981,7 @@ function ImageUploadArea({
 }
 
 // --- Branding Content ---
-function BrandingContent({ initialData }: { initialData?: any }) {
+function BrandingContent({ initialData, refreshProfile }: { initialData?: any; refreshProfile?: () => Promise<void> }) {
   const [colors, setColors] = useState({
     primary: "#1F4E79",
     invert: "#00875A",
@@ -1041,16 +1046,19 @@ function BrandingContent({ initialData }: { initialData?: any }) {
         home_background_image: images.home_background_image || null
       });
 
-      if (result.success) {
-        setSavedColors(colors);
-        setSavedImages(images);
-        setIsEditing(false);
-        toastQueue.add({
-          title: "Branding Saved",
-          description: "Your branding settings have been saved successfully.",
-          variant: "success",
-        }, { timeout: 3000 });
-      } else {
+        if (result.success) {
+          setSavedColors(colors);
+          setSavedImages(images);
+          setIsEditing(false);
+          toastQueue.add({
+            title: "Branding Saved",
+            description: "Your branding settings have been saved successfully.",
+            variant: "success",
+          }, { timeout: 3000 });
+          if (refreshProfile) {
+            await refreshProfile();
+          }
+        } else {
         throw new Error(result.error);
       }
     } catch (e: any) {
@@ -1303,7 +1311,7 @@ function SocialLinkInput({
 }
 
 // --- Social Links Content ---
-function SocialLinksContent({ initialData }: { initialData?: any }) {
+function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any; refreshProfile?: () => Promise<void> }) {
   const [links, setLinks] = useState({
     linkedin: "",
     xTwitter: "",
@@ -1330,6 +1338,9 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
         description: "Your social media links have been updated.",
         variant: "success",
       }, { timeout: 3000 });
+      if (refreshProfile) {
+        await refreshProfile();
+      }
     } catch (e) {
       toastQueue.add({
         title: "Save Failed",
@@ -1431,7 +1442,7 @@ function SocialLinksContent({ initialData }: { initialData?: any }) {
 }
 
 // --- Legal and T&C Content ---
-function LegalAndTCContent({ initialData }: { initialData?: any }) {
+function LegalAndTCContent({ initialData, refreshProfile }: { initialData?: any; refreshProfile?: () => Promise<void> }) {
   const [termsUrl, setTermsUrl] = useState("");
   const [privacyUrl, setPrivacyUrl] = useState("");
   const [savedTermsUrl, setSavedTermsUrl] = useState("");
@@ -1462,6 +1473,9 @@ function LegalAndTCContent({ initialData }: { initialData?: any }) {
         description: "Your legal URLs have been updated.",
         variant: "success",
       }, { timeout: 3000 });
+      if (refreshProfile) {
+        await refreshProfile();
+      }
     } catch (e) {
       toastQueue.add({
         title: "Save Failed",
@@ -1574,7 +1588,7 @@ function LegalAndTCContent({ initialData }: { initialData?: any }) {
 }
 
 // --- Modules Content ---
-function ModulesContent({ initialData }: { initialData?: any }) {
+function ModulesContent({ initialData, refreshProfile }: { initialData?: any; refreshProfile?: () => Promise<void> }) {
   const [modules, setModules] = useState({
     events: false,
     tickets: false,
@@ -1605,6 +1619,9 @@ function ModulesContent({ initialData }: { initialData?: any }) {
         description: "Your module settings have been updated.",
         variant: "success",
       }, { timeout: 3000 });
+      if (refreshProfile) {
+        await refreshProfile();
+      }
     } catch (e) {
       toastQueue.add({
         title: "Save Failed",
