@@ -167,11 +167,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             <div className="flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg">
               <button
                 onClick={() => setEventCategory("general")}
-                className={`relative h-9 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  eventCategory === "general"
+                className={`relative h-9 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${eventCategory === "general"
                     ? "text-[#3f52ff]"
                     : "text-[#516778] hover:text-[#22292f]"
-                }`}
+                  }`}
               >
                 {eventCategory === "general" && (
                   <motion.div
@@ -185,11 +184,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               </button>
               <button
                 onClick={() => setEventCategory("match")}
-                className={`relative h-9 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  eventCategory === "match"
+                className={`relative h-9 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${eventCategory === "match"
                     ? "text-[#3f52ff]"
                     : "text-[#516778] hover:text-[#22292f]"
-                }`}
+                  }`}
               >
                 {eventCategory === "match" && (
                   <motion.div
@@ -294,14 +292,13 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             <span className="text-sm font-medium text-[#3f52ff]">Event Location</span>
 
             {/* Location Type Tabs */}
-            <div className="flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg w-fit">
+            <div className="flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg w-full">
               <button
                 onClick={() => setLocationType("onsite")}
-                className={`relative h-9 px-8 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  locationType === "onsite"
+                className={`relative flex-1 h-9 px-8 py-2 rounded-lg text-sm font-medium transition-colors ${locationType === "onsite"
                     ? "text-[#3f52ff]"
                     : "text-[#516778] hover:text-[#22292f]"
-                }`}
+                  }`}
               >
                 {locationType === "onsite" && (
                   <motion.div
@@ -311,15 +308,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
                 )}
-                <span className="relative z-10">On site</span>
+                <span className="relative z-10 w-full text-center">On site</span>
               </button>
               <button
                 onClick={() => setLocationType("virtual")}
-                className={`relative h-9 px-8 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  locationType === "virtual"
+                className={`relative flex-1 h-9 px-8 py-2 rounded-lg text-sm font-medium transition-colors ${locationType === "virtual"
                     ? "text-[#3f52ff]"
                     : "text-[#516778] hover:text-[#22292f]"
-                }`}
+                  }`}
               >
                 {locationType === "virtual" && (
                   <motion.div
@@ -329,7 +325,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
                 )}
-                <span className="relative z-10">Virtual</span>
+                <span className="relative z-10 w-full text-center">Virtual</span>
               </button>
             </div>
 
@@ -433,8 +429,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 <span className="text-xs text-[#859bab]">{eventDescription.length}/280 characters</span>
                 <button className="text-[#859bab] hover:text-[#516778]">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M13.333 8.667V12.667C13.333 13.0203 13.1927 13.3594 12.9426 13.6095C12.6925 13.8595 12.3536 14 12 14H3.333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.667V4C2 3.64638 2.14048 3.30724 2.39052 3.05719C2.64057 2.80714 2.97971 2.667 3.333 2.667H7.333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M11.333 1.333L14.666 4.666L8 11.333H4.667V8L11.333 1.333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M13.333 8.667V12.667C13.333 13.0203 13.1927 13.3594 12.9426 13.6095C12.6925 13.8595 12.3536 14 12 14H3.333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.667V4C2 3.64638 2.14048 3.30724 2.39052 3.05719C2.64057 2.80714 2.97971 2.667 3.333 2.667H7.333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M11.333 1.333L14.666 4.666L8 11.333H4.667V8L11.333 1.333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
               </div>
