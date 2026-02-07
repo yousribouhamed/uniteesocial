@@ -818,10 +818,48 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               <span className="text-sm text-[#859bab]">All registered guests for this event</span>
             </div>
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-2 h-8 px-3 bg-[#22292f] text-white text-xs font-medium rounded-lg hover:bg-[#3a4249] transition-colors">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12.25 8.75V11.0833C12.25 11.3928 12.1271 11.6895 11.9083 11.9083C11.6895 12.1271 11.3928 12.25 11.0833 12.25H2.91667C2.60725 12.25 2.3105 12.1271 2.09171 11.9083C1.87292 11.6895 1.75 11.3928 1.75 11.0833V8.75" stroke="white" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" /><path d="M4.66699 5.83301L7.00033 8.16634L9.33366 5.83301" stroke="white" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" /><path d="M7 8.16634V1.74967" stroke="white" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <button
+                onClick={() => {
+                  if (selectedGuests.size === 0) return;
+                  // CSV Export Logic
+                  const guestsToExport = guests.filter(g => selectedGuests.has(g.id));
+                  const csvContent = [
+                    ["ID", "Name", "Email", "Registration Time", "Ticket ID", "Status"],
+                    ...guestsToExport.map(g => [g.id, g.name, g.email, g.registrationTime, g.ticketId, g.status])
+                  ].map(e => e.join(",")).join("\n");
+
+                  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement("a");
+                  link.setAttribute("href", url);
+                  link.setAttribute("download", `guests_export_${new Date().toISOString()}.csv`);
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+
+                  toastQueue.add({
+                    title: "Export Successful",
+                    description: `Exported ${selectedGuests.size} guests to CSV.`,
+                    type: "success"
+                  });
+                }}
+                disabled={selectedGuests.size === 0}
+                className={`flex items-center gap-2 h-8 px-3 text-xs font-medium rounded-lg transition-colors ${selectedGuests.size > 0
+                    ? "bg-[#22292f] text-white hover:bg-[#3a4249]"
+                    : "bg-[#eceff2] text-[#859bab] cursor-not-allowed"
+                  }`}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M12.25 8.75V11.0833C12.25 11.3928 12.1271 11.6895 11.9083 11.9083C11.6895 12.1271 11.3928 12.25 11.0833 12.25H2.91667C2.60725 12.25 2.3105 12.1271 2.09171 11.9083C1.87292 11.6895 1.75 11.3928 1.75 11.0833V8.75" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4.66699 5.83301L7.00033 8.16634L9.33366 5.83301" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M7 8.16634V1.74967" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
                 Export CSV
-                <span className="bg-white/20 text-white text-[10px] font-medium px-1.5 py-0.5 rounded">2</span>
+                {selectedGuests.size > 0 && (
+                  <span className="bg-white/20 text-white text-[10px] font-medium px-1.5 py-0.5 rounded">
+                    {selectedGuests.size}
+                  </span>
+                )}
               </button>
               <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
                 Add User
