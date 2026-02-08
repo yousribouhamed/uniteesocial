@@ -2449,8 +2449,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 </div>
 
                 {/* Filter Tabs + Percentage */}
-                <div className="flex items-center justify-between p-4">
-                  <div className="inline-flex items-center gap-1 bg-[#dfe3e8] rounded-[32px] p-[6px]">
+                <div className="flex-1 flex items-center justify-between p-4">
+                  <div className="inline-flex items-center bg-[#dfe3e8] rounded-full p-1">
                     {([
                       { key: "general", label: "General Event" },
                       { key: "match", label: "Match" },
@@ -2460,7 +2460,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                         <button
                           key={tab.key}
                           onClick={() => setFilterCategory(tab.key)}
-                          className={`relative px-5 py-2 rounded-[26px] text-sm font-semibold transition-colors ${isActive
+                          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${isActive
                             ? "bg-white text-[#3f52ff] shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
                             : "text-[#516778]"
                             }`}
@@ -2470,7 +2470,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                       );
                     })}
                   </div>
-                  <span className="text-xs font-normal text-[#516778] leading-[18px] ml-4">
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">
                     {filterCategory === "general" ? `${generalPercent}% of total` : `${matchPercent}% of total`}
                   </span>
                 </div>
