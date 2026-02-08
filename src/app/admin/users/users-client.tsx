@@ -1516,7 +1516,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                   </div>
 
                   {/* Table - Design System */}
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto px-4">
                     <table className="w-full table-fixed">
                       <colgroup>
                         <col className="w-12" />
