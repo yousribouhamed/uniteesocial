@@ -242,6 +242,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set());
   const [guestSearchQuery, setGuestSearchQuery] = useState("");
   const [guestStatusFilter, setGuestStatusFilter] = useState<string>("all");
+  const [eventTab, setEventTab] = useState<"general" | "match">("general");
   const [guestPage, setGuestPage] = useState(1);
   const guestsPerPage = 8;
 
@@ -2252,24 +2253,36 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 </div>
 
                 {/* General Event */}
-                <div className="flex-1 flex items-center justify-between p-4 rounded-r-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                      <Calendar className="w-4 h-4 text-[#516778]" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
-                        General Event
-                      </span>
-                      <span className="text-xs font-normal text-[#516778] leading-[18px]">
-                        {generalPercent}% of total
-                      </span>
-                    </div>
-                  </div>
+              <div className="flex-1 flex items-center justify-between p-4 rounded-r-lg">
+                <div className="inline-flex items-center gap-2 bg-[#dfe3e8] rounded-[32px] p-[6px]">
+                  {([
+                    { key: "general", label: "General Event" },
+                    { key: "match", label: "Match" },
+                  ] as const).map((tab) => {
+                    const isActive = eventTab === tab.key;
+                    return (
+                      <button
+                        key={tab.key}
+                        onClick={() => setEventTab(tab.key)}
+                        className={`relative px-5 py-2 rounded-[26px] text-sm font-semibold transition-colors ${isActive
+                          ? "bg-white text-[#3f52ff] shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                          : "text-[#516778]"
+                          }`}
+                      >
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex flex-col items-end">
                   <span className="text-base font-semibold text-[#22292f] leading-[18px]">
-                    {generalCount}
+                    {eventTab === "general" ? generalCount : matchCount}
+                  </span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">
+                    {eventTab === "general" ? `${generalPercent}% of total` : `${matchPercent}% of total`}
                   </span>
                 </div>
+              </div>
               </div>
 
               {/* Tabs + Filters Bar */}
