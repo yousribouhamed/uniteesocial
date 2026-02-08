@@ -931,8 +931,10 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
         {/* Modal Header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-[#d5dde2]">
           <div className="flex items-center gap-4">
-            <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-[9px] p-3 flex items-center justify-center">
-              <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
+            <div className="bg-[#3f52ff] border-[3px] border-white rounded-full w-10 h-10 flex items-center justify-center shadow-[0_0_0_1px_#3f52ff]" data-node-id="2868:13090">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M17 20C17 18.3431 14.7614 17 12 17C9.23858 17 7 18.3431 7 20M21 17.0004C21 15.7702 19.7659 14.7129 18 14.25M3 17.0004C3 15.7702 4.2341 14.7129 6 14.25M18 10.2361C18.6137 9.68679 19 8.8885 19 8C19 6.34315 17.6569 5 16 5C15.2316 5 14.5308 5.28885 14 5.76389M6 10.2361C5.38625 9.68679 5 8.8885 5 8C5 6.34315 6.34315 5 8 5C8.76835 5 9.46924 5.28885 10 5.76389M12 14C10.3431 14 9 12.6569 9 11C9 9.34315 10.3431 8 12 8C13.6569 8 15 9.34315 15 11C15 12.6569 13.6569 14 12 14Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </div>
             <div className="flex flex-col">
               <span className="text-base font-semibold text-[#22292f] leading-[25px]">
