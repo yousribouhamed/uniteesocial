@@ -292,10 +292,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             <span className="text-sm font-medium text-[#3f52ff]">Event Location</span>
 
             {/* Location Type Tabs */}
-            <div className="flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg w-full">
+            <div className="flex items-center bg-[#dfe3e8] rounded-[32px] p-[6px] w-full">
               <button
                 onClick={() => setLocationType("onsite")}
-                className={`relative flex-1 h-9 px-8 py-2 rounded-lg text-sm font-medium transition-colors ${locationType === "onsite"
+                className={`relative flex-1 h-[36px] px-6 rounded-[26px] text-sm font-semibold transition-all duration-200 ${locationType === "onsite"
                     ? "text-[#3f52ff]"
                     : "text-[#516778] hover:text-[#22292f]"
                   }`}
@@ -303,7 +303,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 {locationType === "onsite" && (
                   <motion.div
                     layoutId="locationTypeIndicator"
-                    className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                    className="absolute inset-0 bg-white rounded-[26px] shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
@@ -312,7 +312,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               </button>
               <button
                 onClick={() => setLocationType("virtual")}
-                className={`relative flex-1 h-9 px-8 py-2 rounded-lg text-sm font-medium transition-colors ${locationType === "virtual"
+                className={`relative flex-1 h-[36px] px-6 rounded-[26px] text-sm font-semibold transition-all duration-200 ${locationType === "virtual"
                     ? "text-[#3f52ff]"
                     : "text-[#516778] hover:text-[#22292f]"
                   }`}
@@ -320,7 +320,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 {locationType === "virtual" && (
                   <motion.div
                     layoutId="locationTypeIndicator"
-                    className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                    className="absolute inset-0 bg-white rounded-[26px] shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
