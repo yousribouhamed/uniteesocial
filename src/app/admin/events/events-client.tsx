@@ -218,7 +218,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSlidoModal, setShowSlidoModal] = useState(false);
   const [showCloneModal, setShowCloneModal] = useState(false);
-  const [eventTitle, setEventTitle] = useState(event?.title || "New Event");
+  const [eventTitle, setEventTitle] = useState(event?.title || "");
   const [chapter, setChapter] = useState(event?.chapter || "Dubai Chapter");
   const [type, setType] = useState<"Onsite" | "Online" | "Hybrid">(event?.type || "Onsite");
   const [startDate, setStartDate] = useState<DateValue | null>(today(getLocalTimeZone()));
@@ -234,8 +234,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const [eventDescription, setEventDescription] = useState(
     "Lorem ipsum dolor sit amet consectetur. Et at quam phasellus accumsan neque tempus tincidunt tellus nulla. At consectetur sollicitudin at fames. Tristique molestie enim facilisi egestas."
   );
-  const [coverImage, setCoverImage] = useState(event?.coverImage || "/img/event-cover-1.jpg");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [coverImage, setCoverImage] = useState(event?.coverImage || "");
 
   // Guest tab state
   const [guests] = useState<GuestItem[]>(mockGuests);
@@ -262,17 +261,6 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   );
 
   const totalGuestPages = Math.max(1, Math.ceil(filteredGuests.length / guestsPerPage));
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCoverImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const getDayAndMonth = (date: DateValue | null | string) => {
     if (!date) return { day: "25", month: "OCT." };
@@ -419,47 +407,40 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
           {/* Left: Event Preview Card */}
           <div className="w-full lg:w-[417px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3">
             <div className="flex flex-col gap-4">
-              {/* Cover Image Upload Area */}
-              <div
-                className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2] group cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {coverImage?.startsWith("data:") ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={coverImage}
-                    alt="Event cover"
-                    className="w-full h-full object-cover transition-opacity group-hover:opacity-80 absolute inset-0"
-                  />
+              {/* Cover Image Preview */}
+              <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2]">
+                {coverImage ? (
+                  coverImage.startsWith("data:") ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={coverImage}
+                      alt="Event cover"
+                      className="w-full h-full object-cover absolute inset-0"
+                    />
+                  ) : (
+                    <Image
+                      key={coverImage}
+                      src={coverImage}
+                      alt="Event cover"
+                      fill
+                      className="object-cover"
+                    />
+                  )
                 ) : (
-                  <Image
-                    key={coverImage}
-                    src={coverImage}
-                    alt="Event cover"
-                    fill
-                    className="object-cover transition-opacity group-hover:opacity-80"
-                  />
-                )}
-                {/* Overlay with Larger Camera Icon (Matching Figma/User Photo) */}
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  <div className="w-[46px] h-[46px] bg-[#3f52ff] border-2 border-white rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
-                    <Camera className="w-5 h-5 text-white" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-[#eceff2]">
+                    <div className="flex flex-col items-center gap-2 text-[#859bab]">
+                      <Camera className="w-6 h-6" />
+                      <span className="text-xs font-medium">Image placeholder</span>
+                    </div>
                   </div>
-                </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                />
+                )}
               </div>
 
               {/* Event Info Prevew */}
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
                   <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
-                    {eventTitle}
+                    {eventTitle || "Event Title"}
                   </h3>
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
