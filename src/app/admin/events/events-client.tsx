@@ -1435,8 +1435,25 @@ function AnalyticsView() {
   };
 
   const chartData = getChartData();
-  const maxValue = Math.max(...chartData.map(d => d.value));
+  const maxDataValue = Math.max(...chartData.map(d => d.value));
   const chartHeight = 280; // Fixed chart height
+
+  // Calculate dynamic Y-axis max and step
+  // Round up to a nice number (next multiple of 10, 50, 100, etc.)
+  const calculateYAxisMax = (max: number): number => {
+    if (max <= 10) return 10;
+    if (max <= 50) return Math.ceil(max / 10) * 10;
+    if (max <= 100) return Math.ceil(max / 10) * 10;
+    if (max <= 500) return Math.ceil(max / 50) * 50;
+    if (max <= 1000) return Math.ceil(max / 100) * 100;
+    return Math.ceil(max / 500) * 500;
+  };
+
+  const yAxisMax = calculateYAxisMax(maxDataValue);
+  const yAxisStep = yAxisMax / 10; // Always 10 steps for consistency
+
+  // Generate Y-axis labels (from max to step, descending)
+  const yAxisLabels = Array.from({ length: 10 }, (_, i) => yAxisMax - (i * yAxisStep));
 
   // Get footer text based on filter
   const getFooterText = () => {
@@ -1448,9 +1465,6 @@ function AnalyticsView() {
       default: return "Registrations over time";
     }
   };
-
-  // Y-axis labels based on max value
-  const yAxisLabels = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10];
 
   return (
     <div className="flex flex-col gap-4 animate-in fade-in duration-300">
@@ -1567,7 +1581,7 @@ function AnalyticsView() {
               {/* Bars */}
               <div className="absolute inset-0 flex items-end gap-[2px] px-1">
                 {chartData.map((item, index) => {
-                  const barHeight = (item.value / 100) * chartHeight;
+                  const barHeight = (item.value / yAxisMax) * chartHeight;
                   return (
                     <div
                       key={index}
