@@ -133,9 +133,9 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
   return (
     <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-4 pb-2 flex flex-col gap-4">
-      <div className="flex lg:flex-row flex-col gap-4">
+      <div className="flex lg:flex-row flex-col gap-4 items-start">
         {/* Left: Event Preview Card */}
-        <div className="w-full lg:w-[493px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-4">
+        <div className="w-full lg:w-[493px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-4 h-fit">
           {/* Cover Image */}
           <div
             className="relative w-full h-[264px] rounded-lg overflow-hidden bg-[#d5dde2] cursor-pointer group"
