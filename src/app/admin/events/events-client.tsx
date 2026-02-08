@@ -342,7 +342,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {/* Tabs Row */}
       <div className="flex items-center justify-between">
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg w-fit">
+        <div className="inline-flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg w-fit self-start">
           {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
             <button
               key={tab}
@@ -2275,7 +2275,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
               {/* Tabs + Filters Bar */}
               <div className="flex items-center justify-between">
                 {/* Left: Event tabs */}
-                <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative">
+                <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative self-start w-fit">
                   {(["all", "current", "past"] as const).map((tab) => (
                     <button
                       key={tab}
