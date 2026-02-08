@@ -19,6 +19,9 @@ import {
   ClipboardPenLine,
   ArrowUpRight,
   Info,
+  X,
+  Upload,
+  Link2,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
@@ -88,6 +91,45 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [livestreamUrl, setLivestreamUrl] = useState("");
   const [matchDescription, setMatchDescription] = useState("");
   const [ticketsUrl, setTicketsUrl] = useState("");
+  const [stadiumVenueName, setStadiumVenueName] = useState("");
+  const [matchLocationMasking, setMatchLocationMasking] = useState(false);
+
+  // Modal state
+  const [showCreateLeagueModal, setShowCreateLeagueModal] = useState(false);
+  const [newLeagueName, setNewLeagueName] = useState("");
+  const [newLeagueNameAr, setNewLeagueNameAr] = useState("");
+  const [newLeagueWebsite, setNewLeagueWebsite] = useState("");
+  const [newLeagueLogo, setNewLeagueLogo] = useState<string>("");
+  const [newLeagueVisible, setNewLeagueVisible] = useState(true);
+  const leagueLogoInputRef = useRef<HTMLInputElement>(null);
+
+  // Custom leagues list
+  const [customLeagues, setCustomLeagues] = useState<string[]>([]);
+
+  const handleLeagueLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewLeagueLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCreateLeague = () => {
+    if (newLeagueName.trim()) {
+      setCustomLeagues([...customLeagues, newLeagueName.trim()]);
+      setLeague(newLeagueName.trim());
+      setShowCreateLeagueModal(false);
+      // Reset form
+      setNewLeagueName("");
+      setNewLeagueNameAr("");
+      setNewLeagueWebsite("");
+      setNewLeagueLogo("");
+      setNewLeagueVisible(true);
+    }
+  };
 
   // Calculate duration
   const calculateDuration = () => {
@@ -193,7 +235,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <div className="flex items-center gap-2">
                 {eventCategory === "match" ? (
                   <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
-                    Virtual
+                    {matchLocationType === "virtual" ? "Virtual" : "Onsite"}
                   </span>
                 ) : (
                   <>
@@ -362,13 +404,13 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         {/* Create League Option */}
                         <MenuItem>
                           <button
-                            onClick={() => {/* Handle create league */}}
+                            onClick={() => setShowCreateLeagueModal(true)}
                             className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-[#d8e6ff] text-sm font-medium text-[#3f52ff] transition-colors focus:outline-none hover:bg-[#c8daff]"
                           >
                             + Create League
                           </button>
                         </MenuItem>
-                        {["Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].map((l) => (
+                        {[...customLeagues, "Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].map((l) => (
                           <MenuItem key={l}>
                             <button
                               onClick={() => setLeague(l)}
@@ -666,25 +708,66 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   </button>
                 </div>
 
-                {/* Livestream URL Input */}
-                <div className="bg-white rounded-lg p-3 flex flex-col gap-3">
-                  <span className="text-base font-medium text-[#22292f]">Livestream URL</span>
-                  <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                      <Link className="w-4 h-4 text-[#859bab]" />
-                    </div>
-                    <input
-                      type="url"
-                      placeholder="Enter the location URL"
-                      value={livestreamUrl}
-                      onChange={(e) => setLivestreamUrl(e.target.value)}
-                      className="w-full h-9 pl-10 pr-10 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
-                    />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      <Loader2 className="w-4 h-4 text-[#859bab] animate-spin" />
+                {/* Location Content based on selected tab */}
+                {matchLocationType === "onsite" ? (
+                  <div className="bg-white rounded-lg p-3 flex flex-col gap-3">
+                    <span className="text-base font-medium text-[#22292f]">Stadium/Venue Name</span>
+                    <div className="flex flex-col gap-3">
+                      {/* Stadium/Venue Input */}
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                          <MapPin className="w-4 h-4 text-[#859bab]" />
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Enter stadium/venue name"
+                          value={stadiumVenueName}
+                          onChange={(e) => setStadiumVenueName(e.target.value)}
+                          className="w-full h-9 pl-10 pr-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                        />
+                      </div>
+
+                      {/* Location Masking Toggle */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-sm font-semibold text-[#22292f]">Location Masking</span>
+                          <span className="text-xs text-[#859bab]">Hide real location and show custom name</span>
+                        </div>
+                        <button
+                          onClick={() => setMatchLocationMasking(!matchLocationMasking)}
+                          className={`relative w-[42px] h-[24px] rounded-full transition-colors ${
+                            matchLocationMasking ? "bg-[#3f52ff]" : "bg-[#d5dde2]"
+                          }`}
+                        >
+                          <div
+                            className={`absolute top-1 w-[16px] h-[16px] bg-white rounded-full shadow transition-all ${
+                              matchLocationMasking ? "left-[22px]" : "left-1"
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-white rounded-lg p-3 flex flex-col gap-3">
+                    <span className="text-base font-medium text-[#22292f]">Livestream URL</span>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                        <Link className="w-4 h-4 text-[#859bab]" />
+                      </div>
+                      <input
+                        type="url"
+                        placeholder="Enter the location URL"
+                        value={livestreamUrl}
+                        onChange={(e) => setLivestreamUrl(e.target.value)}
+                        className="w-full h-9 pl-10 pr-10 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <Loader2 className="w-4 h-4 text-[#859bab] animate-spin" />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Match Description */}
@@ -1194,6 +1277,129 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
           )}
         </div>
       </div>
+
+      {/* Create League Modal */}
+      {showCreateLeagueModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]">
+          <div className="bg-white border border-[#d5dde2] rounded-xl w-[493px] flex flex-col">
+            {/* Modal Header */}
+            <div className="bg-white border-b border-[#d5dde2] rounded-t-xl px-4 pt-4 pb-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-1 flex-1">
+                  <h3 className="text-base font-semibold text-[#22292f] leading-[25.2px]">Create League</h3>
+                  <p className="text-sm font-medium text-[#668091] leading-[18px]">Enter the league details below to create a new league.</p>
+                </div>
+                <button
+                  onClick={() => setShowCreateLeagueModal(false)}
+                  className="w-[26px] h-[26px] bg-[#eceff2] rounded-full flex items-center justify-center hover:bg-[#dfe3e8] transition-colors"
+                >
+                  <X className="w-3.5 h-3.5 text-[#425462]" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="px-4 py-4 flex flex-col gap-4">
+              {/* League Name Inputs - Side by Side */}
+              <div className="flex gap-4">
+                <input
+                  type="text"
+                  placeholder="Enter league name"
+                  value={newLeagueName}
+                  onChange={(e) => setNewLeagueName(e.target.value)}
+                  className="flex-1 h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                />
+                <input
+                  type="text"
+                  placeholder="أدخل اسم الدوري"
+                  dir="rtl"
+                  value={newLeagueNameAr}
+                  onChange={(e) => setNewLeagueNameAr(e.target.value)}
+                  className="flex-1 h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                />
+              </div>
+
+              {/* League Logo */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-[#22292f]">League Logo</span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => leagueLogoInputRef.current?.click()}
+                    className="w-20 h-20 border border-black/10 rounded-lg flex items-center justify-center bg-white hover:bg-[#f9fafb] transition-colors overflow-hidden"
+                  >
+                    {newLeagueLogo ? (
+                      <img src={newLeagueLogo} alt="League logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <Upload className="w-4 h-4 text-[#668091]" />
+                    )}
+                  </button>
+                  <input
+                    type="file"
+                    ref={leagueLogoInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleLeagueLogoUpload}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-base font-semibold text-[#525252]">Upload league logo</span>
+                    <span className="text-sm font-normal text-[#668091]">Recommended: 400x400px</span>
+                  </div>
+                </div>
+
+                {/* Website URL */}
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <Link2 className="w-4 h-4 text-[#668091]" />
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="https://league-website.com"
+                    value={newLeagueWebsite}
+                    onChange={(e) => setNewLeagueWebsite(e.target.value)}
+                    className="w-full h-9 pl-10 pr-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                  />
+                </div>
+              </div>
+
+              {/* Visible in league selection checkbox */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setNewLeagueVisible(!newLeagueVisible)}
+                  className={`w-4 h-4 rounded shrink-0 flex items-center justify-center shadow-sm ${
+                    newLeagueVisible
+                      ? "bg-[#3f52ff]"
+                      : "bg-white border border-[#d5dde2]"
+                  }`}
+                >
+                  {newLeagueVisible && (
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                      <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </button>
+                <span className="text-sm font-medium text-[#22292f]">Visible in league selection</span>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-4 py-4 border-t border-[#d5dde2] flex items-center justify-end gap-2">
+              <button
+                onClick={() => setShowCreateLeagueModal(false)}
+                className="h-9 px-4 bg-[#eceff2] text-sm font-medium text-[#22292f] rounded-lg hover:bg-[#dfe3e8] transition-colors"
+              >
+                Dismiss
+              </button>
+              <button
+                onClick={handleCreateLeague}
+                disabled={!newLeagueName.trim()}
+                className="h-9 px-4 bg-[#3f52ff] text-sm font-medium text-white rounded-lg hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Create League
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
