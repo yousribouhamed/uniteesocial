@@ -352,7 +352,7 @@ function EditUserView({
     const initial = Object.fromEntries(directoryFields.map((f) => [f, true]));
     if (user.directory_fields && Array.isArray(user.directory_fields)) {
       directoryFields.forEach((f) => {
-        initial[f] = user.directory_fields?.includes(f);
+        initial[f] = user.directory_fields?.includes(f) ?? false;
       });
     }
     return initial;
