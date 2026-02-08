@@ -408,7 +408,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
           <div className="w-full lg:w-[417px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3">
             <div className="flex flex-col gap-4">
               {/* Cover Image Preview */}
-              <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d5dde2]">
+              <div className="relative w-full h-[200px] rounded-lg overflow-hidden bg-[#d5dde2]">
                 {coverImage ? (
                   coverImage.startsWith("data:") ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -434,73 +434,85 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                     </div>
                   </div>
                 )}
+                {/* Centered User Icon */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] rounded-full border-[3px] border-white flex items-center justify-center">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
               </div>
 
-              {/* Event Info Prevew */}
+              {/* Event Info Preview */}
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
                   <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
                     {eventTitle || "Event Title"}
                   </h3>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
-                      <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] text-white text-xs font-medium rounded">
+                      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
                       </svg>
                       {chapter}
                     </span>
-                    <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
+                    <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
                       {type}
                     </span>
                   </div>
                 </div>
 
-                {/* Date + Location Preview */}
-                <div className="flex flex-wrap gap-x-8 gap-y-4">
-                  {/* Date Widget */}
+                {/* Date & Venue Row */}
+                <div className="flex items-start gap-8 flex-wrap">
+                  {/* Date Section */}
                   <div className="flex items-center gap-2">
-                    <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
-                      <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
-                        <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
+                    {/* Date Box */}
+                    <div className="w-10 h-11 border border-[#859bab] rounded-lg overflow-hidden flex flex-col">
+                      <div className="bg-[#859bab] px-1 py-1 flex items-center justify-center">
+                        <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">{displayMonth}</span>
                       </div>
-                      <div className="flex-1 flex items-center justify-center w-full">
-                        <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
+                      <div className="flex-1 flex items-center justify-center">
+                        <span className="text-base font-medium text-[#859bab] leading-none">{displayDay}</span>
                       </div>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-base font-medium text-[#22292f] leading-none">{startDate?.toString()}</span>
-                      <span className="text-sm font-normal text-[#859bab] leading-[21px] mt-1">{startTime} - {endTime} UTC+4</span>
+                    {/* Date Text */}
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-base font-medium text-[#22292f] leading-[24px]">
+                        {startDate ? (() => {
+                          const weekdays = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+                          const monthsFull = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+                          const d = new Date(startDate.year, startDate.month - 1, startDate.day);
+                          return weekdays[d.getDay()];
+                        })() : "samedi"}
+                      </span>
+                      <span className="text-sm font-normal text-[#859bab] leading-[21px]">
+                        {startDate ? `${startDate.day} ${(() => {
+                          const monthsFull = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+                          return monthsFull[startDate.month - 1];
+                        })()}` : "25 octobre"}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Location Icon Block */}
+                  {/* Venue Section */}
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 border border-[#859bab] rounded-lg flex items-center justify-center">
+                    {/* Location Icon Box */}
+                    <div className="w-10 h-11 border border-[#859bab] rounded-lg flex items-center justify-center">
                       <Globe className="w-5 h-5 text-[#859bab]" />
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-base font-medium text-[#22292f] leading-[24px]">Location Preview</span>
-                      <span className="text-sm font-normal text-[#859bab] leading-[21px] truncate w-[150px]">
-                        {locationInput || "Add location below"}
+                    {/* Venue Text */}
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-base font-medium text-[#22292f] leading-[24px]">Lieu</span>
+                      <span className="text-sm font-normal text-[#859bab] leading-[21px] max-w-[150px] truncate">
+                        {locationInput || "Non spécifié"}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Bottom Rows: Map Pin + Signups */}
-                <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
-                    <span className="text-sm font-normal text-[#22292f] leading-[18px] truncate">
-                      {locationInput || "Not specificed"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
-                    <span className="text-sm font-normal text-[#22292f] leading-[18px]">
-                      {event?.signups || 0}/{event?.maxSignups || 300}
-                    </span>
-                  </div>
+                {/* Time Row */}
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-[#859bab]" />
+                  <span className="text-sm font-normal text-[#859bab] leading-[21px]">
+                    {startTime} - {endTime} UTC+4
+                  </span>
                 </div>
               </div>
             </div>
