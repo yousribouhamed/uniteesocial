@@ -81,6 +81,9 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [homeTeam, setHomeTeam] = useState("");
   const [awayTeam, setAwayTeam] = useState("");
   const [enableLineUpAnnouncement, setEnableLineUpAnnouncement] = useState(false);
+  const [lineUpAnnouncementTime, setLineUpAnnouncementTime] = useState("45 min before match");
+  const [homeTeamLineup, setHomeTeamLineup] = useState("");
+  const [awayTeamLineup, setAwayTeamLineup] = useState("");
   const [matchLocationType, setMatchLocationType] = useState<"onsite" | "virtual">("virtual");
   const [livestreamUrl, setLivestreamUrl] = useState("");
   const [matchDescription, setMatchDescription] = useState("");
@@ -525,8 +528,73 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       </svg>
                     )}
                   </button>
-                  <span className="text-base font-medium text-[#22292f]">Enable Line-Up Announcement</span>
+                  <span className="text-base font-medium text-[#22292f] flex-1">Enable Line-Up Announcement</span>
+
+                  {/* Timing Dropdown - Only shown when enabled */}
+                  {enableLineUpAnnouncement && (
+                    <Menu as="div" className="relative">
+                      <MenuButton className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-[#668091]">{lineUpAnnouncementTime}</span>
+                        <ChevronDown className="w-4 h-4 text-[#668091]" />
+                      </MenuButton>
+                      <Portal>
+                        <MenuItems
+                          anchor="bottom end"
+                          transition
+                          className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                        >
+                          {["15 min before match", "30 min before match", "45 min before match", "1 hour before match", "2 hours before match"].map((time) => (
+                            <MenuItem key={time}>
+                              <button
+                                onClick={() => setLineUpAnnouncementTime(time)}
+                                className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                                  lineUpAnnouncementTime === time
+                                    ? "bg-[#d8e6ff] text-[#3f52ff]"
+                                    : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                                }`}
+                              >
+                                {time}
+                              </button>
+                            </MenuItem>
+                          ))}
+                        </MenuItems>
+                      </Portal>
+                    </Menu>
+                  )}
                 </div>
+
+                {/* Home Team Lineup & Away Team Lineup - Only shown when enabled */}
+                {enableLineUpAnnouncement && (
+                  <>
+                    {/* Home Team Lineup */}
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-[#22292f]">Home Team Lineup</span>
+                        <span className="text-sm font-medium text-[#859bab]">Optional</span>
+                      </div>
+                      <textarea
+                        placeholder="Enter lineup for home team (eg. player names, numbers, positions)"
+                        value={homeTeamLineup}
+                        onChange={(e) => setHomeTeamLineup(e.target.value)}
+                        className="w-full h-[74px] px-3 py-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] resize-none"
+                      />
+                    </div>
+
+                    {/* Away Team Lineup */}
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-[#22292f]">Away Team Lineup</span>
+                        <span className="text-sm font-medium text-[#859bab]">Optional</span>
+                      </div>
+                      <textarea
+                        placeholder="Enter lineup for home team (eg. player names, numbers, positions)"
+                        value={awayTeamLineup}
+                        onChange={(e) => setAwayTeamLineup(e.target.value)}
+                        className="w-full h-[74px] px-3 py-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] resize-none"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Match Location */}
