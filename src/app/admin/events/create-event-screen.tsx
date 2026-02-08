@@ -359,11 +359,20 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         transition
                         className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                       >
+                        {/* Create League Option */}
+                        <MenuItem>
+                          <button
+                            onClick={() => {/* Handle create league */}}
+                            className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-[#d8e6ff] text-sm font-medium text-[#3f52ff] transition-colors focus:outline-none hover:bg-[#c8daff]"
+                          >
+                            + Create League
+                          </button>
+                        </MenuItem>
                         {["Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].map((l) => (
                           <MenuItem key={l}>
                             <button
                               onClick={() => setLeague(l)}
-                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                              className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
                                 league === l
                                   ? "bg-[#d8e6ff] text-[#3f52ff]"
                                   : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
@@ -396,11 +405,20 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           transition
                           className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                         >
-                          {["Team A", "Team B", "Team C", "Team D"].map((t) => (
+                          {/* Create Team Option */}
+                          <MenuItem>
+                            <button
+                              onClick={() => {/* Handle create team */}}
+                              className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-[#d8e6ff] text-sm font-medium text-[#3f52ff] transition-colors focus:outline-none hover:bg-[#c8daff]"
+                            >
+                              + Create Team
+                            </button>
+                          </MenuItem>
+                          {["Al-Hilal", "Etihad Jeddah", "Al-Nassr"].map((t) => (
                             <MenuItem key={t}>
                               <button
                                 onClick={() => setHomeTeam(t)}
-                                className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                                className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
                                   homeTeam === t
                                     ? "bg-[#d8e6ff] text-[#3f52ff]"
                                     : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
@@ -431,11 +449,20 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           transition
                           className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                         >
-                          {["Team A", "Team B", "Team C", "Team D"].map((t) => (
+                          {/* Create Team Option */}
+                          <MenuItem>
+                            <button
+                              onClick={() => {/* Handle create team */}}
+                              className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-[#d8e6ff] text-sm font-medium text-[#3f52ff] transition-colors focus:outline-none hover:bg-[#c8daff]"
+                            >
+                              + Create Team
+                            </button>
+                          </MenuItem>
+                          {["Al-Hilal", "Etihad Jeddah", "Al-Nassr"].map((t) => (
                             <MenuItem key={t}>
                               <button
                                 onClick={() => setAwayTeam(t)}
-                                className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                                className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
                                   awayTeam === t
                                     ? "bg-[#d8e6ff] text-[#3f52ff]"
                                     : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
