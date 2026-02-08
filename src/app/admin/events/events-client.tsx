@@ -227,6 +227,11 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const [endDate, setEndDate] = useState<DateValue | null>(today(getLocalTimeZone()));
   const [endTime, setEndTime] = useState("02:00");
   const [locationInput, setLocationInput] = useState(event?.location || "");
+  const [locationPlaceId, setLocationPlaceId] = useState<string | null>(null);
+  const [locationLatLng, setLocationLatLng] = useState<{ lat: number; lng: number } | null>(null);
+  const [placePredictions, setPlacePredictions] = useState<Array<{ description: string; place_id: string }>>([]);
+  const [isPlacesOpen, setIsPlacesOpen] = useState(false);
+  const placesBoxRef = useRef<HTMLDivElement>(null);
   const [geoFenceRadius, setGeoFenceRadius] = useState(650);
   const [locationMasking, setLocationMasking] = useState(false);
   const [locationDescription, setLocationDescription] = useState(
@@ -262,6 +267,65 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   );
 
   const totalGuestPages = Math.max(1, Math.ceil(filteredGuests.length / guestsPerPage));
+
+  useEffect(() => {
+    function onDocMouseDown(e: MouseEvent) {
+      if (placesBoxRef.current && !placesBoxRef.current.contains(e.target as Node)) {
+        setIsPlacesOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onDocMouseDown);
+    return () => document.removeEventListener("mousedown", onDocMouseDown);
+  }, []);
+
+  useEffect(() => {
+    const q = locationInput.trim();
+    if (q.length < 3) {
+      setPlacePredictions([]);
+      return;
+    }
+
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        const preds = Array.isArray(data?.predictions) ? data.predictions : [];
+        setPlacePredictions(
+          preds
+            .map((p: any) => ({ description: p?.description, place_id: p?.place_id }))
+            .filter((p: any) => typeof p.description === "string" && typeof p.place_id === "string")
+        );
+      } catch {
+        setPlacePredictions([]);
+      }
+    }, 250);
+
+    return () => clearTimeout(t);
+  }, [locationInput]);
+
+  const selectPlace = async (placeId: string, description: string) => {
+    setLocationPlaceId(placeId);
+    setLocationInput(description);
+    setIsPlacesOpen(false);
+
+    try {
+      const res = await fetch(`/api/places/details?place_id=${encodeURIComponent(placeId)}`);
+      const data = await res.json();
+      const result = data?.result;
+      const formatted = result?.formatted_address;
+      const lat = result?.geometry?.location?.lat;
+      const lng = result?.geometry?.location?.lng;
+
+      if (typeof formatted === "string" && formatted.trim()) {
+        setLocationInput(formatted);
+      }
+      if (typeof lat === "number" && typeof lng === "number") {
+        setLocationLatLng({ lat, lng });
+      }
+    } catch {
+      // non-fatal; keep description
+    }
+  };
 
   const getDayAndMonth = (date: DateValue | null | string) => {
     if (!date) return { day: "25", month: "OCT." };
@@ -658,13 +722,35 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-semibold text-[#22292f]">Location Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter the location"
-                    value={locationInput}
-                    onChange={(e) => setLocationInput(e.target.value)}
-                    className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff]"
-                  />
+                  <div className="relative" ref={placesBoxRef}>
+                    <input
+                      type="text"
+                      placeholder="Search places"
+                      value={locationInput}
+                      onChange={(e) => {
+                        setLocationInput(e.target.value);
+                        setLocationPlaceId(null);
+                        setLocationLatLng(null);
+                        setIsPlacesOpen(true);
+                      }}
+                      onFocus={() => setIsPlacesOpen(true)}
+                      className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] w-full"
+                    />
+                    {isPlacesOpen && placePredictions.length > 0 && (
+                      <div className="absolute z-50 mt-1 w-full bg-white border border-[#d5dde2] rounded-lg shadow-lg overflow-hidden">
+                        {placePredictions.slice(0, 6).map((p) => (
+                          <button
+                            key={p.place_id}
+                            type="button"
+                            onClick={() => selectPlace(p.place_id, p.description)}
+                            className="w-full text-left px-3 py-2 text-sm text-[#22292f] hover:bg-[#f5f7fa] transition-colors"
+                          >
+                            {p.description}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#eee]">
                   <Image src="/img/map-placeholder.jpg" alt="Map" fill className="object-cover" />
