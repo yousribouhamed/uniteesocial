@@ -737,72 +737,62 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {/* Guests Tab Content */}
       {detailTab === "guests" && (
         <div className="flex flex-col gap-4">
-          {/* Stats Row */}
-          {/* Stats Row */}
-          <div className="grid grid-cols-4 gap-4">
+          {/* Stats Row - unified border container */}
+          <div className="flex items-stretch border border-[#d5dde2] rounded-xl bg-white">
             {/* Registered Guests */}
-            <div className="bg-white border border-[#d5dde2] rounded-xl p-4 flex items-center justify-between shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center gap-3">
-                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-lg w-9 h-9 flex items-center justify-center shrink-0">
-                  <Users className="w-5 h-5 text-[#516778]" />
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+              <div className="flex items-center gap-2">
+                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <Users className="w-4 h-4 text-[#516778]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#3f52ff] leading-none mb-1">Registered Guests</span>
-                  <span className="text-xs font-normal text-[#516778] leading-none">Capacity limit</span>
+                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Registered Guests</span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">Capacity limit</span>
                 </div>
               </div>
-              <span className="text-xl font-semibold text-[#22292f] leading-none">42 / 50</span>
+              <span className="text-base font-semibold text-[#22292f] leading-[18px]">42 / 50</span>
             </div>
 
             {/* Checked In */}
-            <div className="bg-white border border-[#d5dde2] rounded-xl p-4 flex items-center justify-between shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center gap-3">
-                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-lg w-9 h-9 flex items-center justify-center shrink-0">
-                  <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-                    <path d="M10.667 2H13.333C13.687 2 14 2.313 14 2.667V13.333C14 13.687 13.687 14 13.333 14H10.667" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M6.667 11.333L10 8L6.667 4.667M2 8H10" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+              <div className="flex items-center gap-2">
+                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <LogIn className="w-4 h-4 text-[#516778]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#3f52ff] leading-none mb-1">Checked In</span>
-                  <span className="text-xs font-normal text-[#516778] leading-none">0% of registered</span>
+                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In</span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of registered</span>
                 </div>
               </div>
-              <span className="text-xl font-semibold text-[#22292f] leading-none">0</span>
+              <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
             </div>
 
             {/* Checked Out */}
-            <div className="bg-white border border-[#d5dde2] rounded-xl p-4 flex items-center justify-between shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center gap-3">
-                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-lg w-9 h-9 flex items-center justify-center shrink-0">
-                  <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-                    <path d="M10.667 2H13.333C13.687 2 14 2.313 14 2.667V13.333C14 13.687 13.687 14 13.333 14H10.667" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M10 11.333L13.333 8L10 4.667M2 8H13.333" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+              <div className="flex items-center gap-2">
+                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <LogOut className="w-4 h-4 text-[#516778]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#3f52ff] leading-none mb-1">Checked Out</span>
-                  <span className="text-xs font-normal text-[#516778] leading-none">0% of checked in</span>
+                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out</span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of checked in</span>
                 </div>
               </div>
-              <span className="text-xl font-semibold text-[#22292f] leading-none">0</span>
+              <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
             </div>
 
             {/* Booked */}
-            <div className="bg-white border border-[#d5dde2] rounded-xl p-4 flex items-center justify-between shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center gap-3">
-                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-lg w-9 h-9 flex items-center justify-center shrink-0">
-                  <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-                    <circle cx="8" cy="8" r="6" stroke="#516778" strokeWidth="1.33" />
-                    <path d="M8 5V8L10 10" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" />
-                  </svg>
+            <div className="flex-1 flex items-center justify-between p-4">
+              <div className="flex items-center gap-2">
+                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4 text-[#516778]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#3f52ff] leading-none mb-1">Booked</span>
-                  <span className="text-xs font-normal text-[#516778] leading-none">Checked-in</span>
+                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Booked</span>
+                  <span className="text-xs font-normal text-[#516778] leading-[18px]">Checked-in</span>
                 </div>
               </div>
-              <span className="text-xl font-semibold text-[#22292f] leading-none">0</span>
+              <span className="text-xl font-semibold text-[#22292f] leading-[18px]">2</span>
             </div>
           </div>
 
