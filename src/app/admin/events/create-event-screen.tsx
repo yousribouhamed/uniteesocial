@@ -18,6 +18,7 @@ import {
   CheckCircle,
   ClipboardPenLine,
   ArrowUpRight,
+  Info,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
@@ -74,6 +75,16 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [capacity, setCapacity] = useState("Unlimited");
   const [coverImage, setCoverImage] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Match-specific state
+  const [league, setLeague] = useState("");
+  const [homeTeam, setHomeTeam] = useState("");
+  const [awayTeam, setAwayTeam] = useState("");
+  const [enableLineUpAnnouncement, setEnableLineUpAnnouncement] = useState(false);
+  const [matchLocationType, setMatchLocationType] = useState<"onsite" | "virtual">("virtual");
+  const [livestreamUrl, setLivestreamUrl] = useState("");
+  const [matchDescription, setMatchDescription] = useState("");
+  const [ticketsUrl, setTicketsUrl] = useState("");
 
   // Calculate duration
   const calculateDuration = () => {
@@ -172,18 +183,28 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             {/* Title + Badges */}
             <div className="flex flex-col gap-2">
               <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
-                {eventTitle || "Event name"}
+                {eventCategory === "match"
+                  ? (homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : "Team A Vs Team B")
+                  : (eventTitle || "Event name")}
               </h3>
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] text-white text-xs font-medium rounded">
-                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
-                  </svg>
-                  {chapter}
-                </span>
-                <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
-                  {locationType === "virtual" ? "Online" : "Onsite"}
-                </span>
+                {eventCategory === "match" ? (
+                  <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
+                    Virtual
+                  </span>
+                ) : (
+                  <>
+                    <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] text-white text-xs font-medium rounded">
+                      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                      </svg>
+                      {chapter}
+                    </span>
+                    <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
+                      {locationType === "virtual" ? "Online" : "Onsite"}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -312,16 +333,394 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             </div>
           </div>
 
-          {/* Event Title */}
-          <input
-            type="text"
-            value={eventTitle}
-            onChange={(e) => setEventTitle(e.target.value)}
-            className="text-[40px] font-bold text-[#8faeff] leading-[46px] bg-transparent outline-none w-full placeholder:text-[#8faeff]"
-            placeholder="Event name"
-          />
+          {/* MATCH FORM */}
+          {eventCategory === "match" ? (
+            <div className="flex flex-col gap-4">
+              {/* Match Setup Section */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">Match Setup</span>
 
-          {/* Date/Time Section */}
+                {/* League Dropdown - Full Width with top rounded corners */}
+                <div className="bg-white rounded-t-lg px-3 py-2 flex items-center justify-between">
+                  <span className="text-base font-medium text-[#22292f]">
+                    League<span className="text-[#f43f42]">*</span>
+                  </span>
+                  <Menu as="div" className="relative">
+                    <MenuButton className="flex items-center gap-1">
+                      <span className="text-sm font-medium text-[#668091]">{league || "Select League"}</span>
+                      <ChevronDown className="w-4 h-4 text-[#668091]" />
+                    </MenuButton>
+                    <Portal>
+                      <MenuItems
+                        anchor="bottom end"
+                        transition
+                        className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                      >
+                        {["Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].map((l) => (
+                          <MenuItem key={l}>
+                            <button
+                              onClick={() => setLeague(l)}
+                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                                league === l
+                                  ? "bg-[#d8e6ff] text-[#3f52ff]"
+                                  : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                              }`}
+                            >
+                              {l}
+                            </button>
+                          </MenuItem>
+                        ))}
+                      </MenuItems>
+                    </Portal>
+                  </Menu>
+                </div>
+
+                {/* Home Team & Away Team Row */}
+                <div className="flex gap-2">
+                  {/* Home Team */}
+                  <div className="flex-1 bg-white rounded-lg px-3 py-2 flex items-center justify-between">
+                    <span className="text-base font-medium text-[#22292f]">
+                      Home Team<span className="text-[#f43f42]">*</span>
+                    </span>
+                    <Menu as="div" className="relative">
+                      <MenuButton className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-[#668091]">{homeTeam || "Select Team"}</span>
+                        <ChevronDown className="w-4 h-4 text-[#668091]" />
+                      </MenuButton>
+                      <Portal>
+                        <MenuItems
+                          anchor="bottom end"
+                          transition
+                          className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                        >
+                          {["Team A", "Team B", "Team C", "Team D"].map((t) => (
+                            <MenuItem key={t}>
+                              <button
+                                onClick={() => setHomeTeam(t)}
+                                className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                                  homeTeam === t
+                                    ? "bg-[#d8e6ff] text-[#3f52ff]"
+                                    : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                                }`}
+                              >
+                                {t}
+                              </button>
+                            </MenuItem>
+                          ))}
+                        </MenuItems>
+                      </Portal>
+                    </Menu>
+                  </div>
+
+                  {/* Away Team */}
+                  <div className="flex-1 bg-white rounded-lg px-3 py-2 flex items-center justify-between">
+                    <span className="text-base font-medium text-[#22292f]">
+                      Away Team<span className="text-[#f43f42]">*</span>
+                    </span>
+                    <Menu as="div" className="relative">
+                      <MenuButton className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-[#668091]">{awayTeam || "Select Team"}</span>
+                        <ChevronDown className="w-4 h-4 text-[#668091]" />
+                      </MenuButton>
+                      <Portal>
+                        <MenuItems
+                          anchor="bottom end"
+                          transition
+                          className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                        >
+                          {["Team A", "Team B", "Team C", "Team D"].map((t) => (
+                            <MenuItem key={t}>
+                              <button
+                                onClick={() => setAwayTeam(t)}
+                                className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                                  awayTeam === t
+                                    ? "bg-[#d8e6ff] text-[#3f52ff]"
+                                    : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                                }`}
+                              >
+                                {t}
+                              </button>
+                            </MenuItem>
+                          ))}
+                        </MenuItems>
+                      </Portal>
+                    </Menu>
+                  </div>
+                </div>
+              </div>
+
+              {/* Date/Time Section */}
+              <div className="flex gap-2">
+                {/* Start/End Date-Time */}
+                <div className="flex-1 bg-white rounded-lg p-1 flex flex-col">
+                  {/* Start Row */}
+                  <div className="flex items-center justify-between p-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 flex flex-col items-center justify-center px-1">
+                        <div className="w-[10px] h-[10px] bg-[#3f52ff] rounded-full" />
+                      </div>
+                      <span className="text-sm font-normal text-[#22292f]">Start</span>
+                    </div>
+                    <div className="flex gap-[2px] items-center">
+                      <div className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg flex items-center justify-center">
+                        <span className="text-base font-normal text-[#22292f]">{formatDateForDisplay(startDate)}</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg text-base font-normal text-[#22292f] w-[70px] text-center outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Vertical Divider */}
+                  <div className="ml-[13px] h-4 border-l-[1.5px] border-dashed border-[#3f52ff]" />
+
+                  {/* End Row */}
+                  <div className="flex items-center justify-between p-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 flex flex-col items-center justify-center px-1">
+                        <div className="w-[10px] h-[10px] border border-[#3f52ff] rounded-full" />
+                      </div>
+                      <span className="text-sm font-normal text-[#22292f]">End</span>
+                    </div>
+                    <div className="flex gap-[2px] items-center">
+                      <div className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg flex items-center justify-center">
+                        <span className="text-base font-normal text-[#22292f]">{formatDateForDisplay(endDate)}</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg text-base font-normal text-[#22292f] w-[70px] text-center outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Timezone */}
+                <div className="bg-white rounded-lg w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                  <Globe className="w-4 h-4 text-[#22292f]" />
+                  <span className="text-sm font-medium text-[#22292f]">GMT+01:00</span>
+                  <span className="text-xs font-normal text-[#668091]">Algiers</span>
+                </div>
+              </div>
+
+              {/* Line-Up Announcement Settings */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">Line-Up Announcement Settings</span>
+                <div className="bg-white rounded-lg px-3 py-2 flex items-center gap-2">
+                  <button
+                    onClick={() => setEnableLineUpAnnouncement(!enableLineUpAnnouncement)}
+                    className={`w-4 h-4 border rounded shrink-0 flex items-center justify-center ${
+                      enableLineUpAnnouncement
+                        ? "bg-[#3f52ff] border-[#3f52ff]"
+                        : "bg-white border-[#d5dde2]"
+                    }`}
+                  >
+                    {enableLineUpAnnouncement && (
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </button>
+                  <span className="text-base font-medium text-[#22292f]">Enable Line-Up Announcement</span>
+                </div>
+              </div>
+
+              {/* Match Location */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">Match Location</span>
+
+                {/* Location Type Tabs */}
+                <div className="flex items-center bg-[#dfe3e8] rounded-lg p-[6px] w-full">
+                  <button
+                    onClick={() => setMatchLocationType("onsite")}
+                    className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "onsite"
+                        ? "text-[#3f52ff]"
+                        : "text-[#516778] hover:text-[#22292f]"
+                      }`}
+                  >
+                    {matchLocationType === "onsite" && (
+                      <motion.div
+                        layoutId="matchLocationTypeIndicator"
+                        className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                      />
+                    )}
+                    <span className="relative z-10 w-full text-center">On site</span>
+                  </button>
+                  <button
+                    onClick={() => setMatchLocationType("virtual")}
+                    className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "virtual"
+                        ? "text-[#3f52ff]"
+                        : "text-[#516778] hover:text-[#22292f]"
+                      }`}
+                  >
+                    {matchLocationType === "virtual" && (
+                      <motion.div
+                        layoutId="matchLocationTypeIndicator"
+                        className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                      />
+                    )}
+                    <span className="relative z-10 w-full text-center">Virtual</span>
+                  </button>
+                </div>
+
+                {/* Livestream URL Input */}
+                <div className="bg-white rounded-lg p-3 flex flex-col gap-3">
+                  <span className="text-base font-medium text-[#22292f]">Livestream URL</span>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                      <Link className="w-4 h-4 text-[#859bab]" />
+                    </div>
+                    <input
+                      type="url"
+                      placeholder="Enter the location URL"
+                      value={livestreamUrl}
+                      onChange={(e) => setLivestreamUrl(e.target.value)}
+                      className="w-full h-9 pl-10 pr-10 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <Loader2 className="w-4 h-4 text-[#859bab] animate-spin" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Match Description */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">Match Description</span>
+                  <span className="text-sm font-medium text-[#859bab]">Optional</span>
+                </div>
+                <div className="bg-white border border-[#d5dde2] rounded-lg p-3 flex flex-col gap-2">
+                  <textarea
+                    placeholder="Placeholder"
+                    value={matchDescription}
+                    onChange={(e) => setMatchDescription(e.target.value)}
+                    maxLength={280}
+                    className="w-full h-[100px] text-sm text-[#22292f] placeholder:text-[#859bab] outline-none resize-none"
+                  />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-white bg-[#3f52ff] px-2 py-0.5 rounded">{matchDescription.length}/280 characters</span>
+                    <button className="text-[#859bab] hover:text-[#516778]">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M13.333 8.667V12.667C13.333 13.0203 13.1927 13.3594 12.9426 13.6095C12.6925 13.8595 12.3536 14 12 14H3.333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.667V4C2 3.64638 2.14048 3.30724 2.39052 3.05719C2.64057 2.80714 2.97971 2.667 3.333 2.667H7.333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M11.333 1.333L14.666 4.666L8 11.333H4.667V8L11.333 1.333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Options */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">Additional Options</span>
+                <div className="bg-white rounded-lg overflow-hidden">
+                  {/* Capacity */}
+                  <div className="px-3 py-2 flex items-center gap-2 border-b border-[#f0f2f4]">
+                    <Users className="w-4 h-4 text-[#22292f]" />
+                    <span className="text-base font-medium text-[#22292f] flex-1">Capacity</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-medium text-[#668091]">{capacity}</span>
+                      <Pencil className="w-4 h-4 text-[#668091]" />
+                    </div>
+                  </div>
+
+                  {/* Tickets Go Live */}
+                  <Menu as="div" className="relative">
+                    <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-[#f9fafb] transition-colors">
+                      <Ticket className="w-4 h-4 text-[#22292f]" />
+                      <span className="text-base font-medium text-[#22292f] flex-1 text-left">When tickets should go live?</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-[#668091]">{ticketGoLive === "Custom Date" ? "Immediately" : ticketGoLive}</span>
+                        <ChevronDown className="w-4 h-4 text-[#668091]" />
+                      </div>
+                    </MenuButton>
+                    <Portal>
+                      <MenuItems
+                        anchor="bottom end"
+                        transition
+                        className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                      >
+                        {["Immediately", "One Day Before", "Three Days Before", "One Week Before", "Custom Date"].map((option) => (
+                          <MenuItem key={option}>
+                            <button
+                              onClick={() => setTicketGoLive(option)}
+                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                                ticketGoLive === option
+                                  ? "bg-[#d8e6ff] text-[#3f52ff]"
+                                  : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                              }`}
+                            >
+                              {option}
+                            </button>
+                          </MenuItem>
+                        ))}
+                      </MenuItems>
+                    </Portal>
+                  </Menu>
+                </div>
+              </div>
+
+              {/* Tickets URL */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-[#22292f]">Tickets URL</span>
+                  <span className="text-sm font-medium text-[#859bab]">Optional</span>
+                </div>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <Ticket className="w-4 h-4 text-[#859bab]" />
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="https://ticketing-url.com"
+                    value={ticketsUrl}
+                    onChange={(e) => setTicketsUrl(e.target.value)}
+                    className="w-full h-9 pl-10 pr-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                  />
+                </div>
+                <div className="flex items-center gap-2 text-[#859bab]">
+                  <Info className="w-4 h-4" />
+                  <span className="text-sm font-normal">External ticketing link for fans to purchase tickets</span>
+                </div>
+              </div>
+
+              {/* Create Match Event Button */}
+              <button
+                onClick={handleSubmit}
+                disabled={isSaving}
+                className="w-full h-10 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  "+ Create Match Event"
+                )}
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* GENERAL EVENT FORM */}
+              {/* Event Title */}
+              <input
+                type="text"
+                value={eventTitle}
+                onChange={(e) => setEventTitle(e.target.value)}
+                className="text-[40px] font-bold text-[#8faeff] leading-[46px] bg-transparent outline-none w-full placeholder:text-[#8faeff]"
+                placeholder="Event name"
+              />
+
+              {/* Date/Time Section */}
           <div className="flex flex-col gap-2">
             <div className="flex sm:flex-row flex-col gap-2">
               {/* Start/End Date-Time */}
@@ -696,6 +1095,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               "+ Create Event"
             )}
           </button>
+            </>
+          )}
         </div>
       </div>
     </div>
