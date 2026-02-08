@@ -1404,6 +1404,54 @@ function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps)
 function AnalyticsView() {
   const [timeFilter, setTimeFilter] = useState("Last 24 Hours");
 
+  // Generate mock data based on time filter
+  const getChartData = () => {
+    if (timeFilter === "Last 24 Hours") {
+      // Hourly data for 24 hours (0h to 24h)
+      return Array.from({ length: 25 }, (_, i) => ({
+        label: `${i}h`,
+        value: Math.floor(Math.random() * 40) + 10, // Random values between 10-50
+      }));
+    } else if (timeFilter === "Last 7 days") {
+      // Daily data for 7 days
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      return days.map(day => ({
+        label: day,
+        value: Math.floor(Math.random() * 60) + 20,
+      }));
+    } else if (timeFilter === "Last 30 days") {
+      // Weekly data for 30 days (4 weeks)
+      return ["Week 1", "Week 2", "Week 3", "Week 4"].map(week => ({
+        label: week,
+        value: Math.floor(Math.random() * 80) + 30,
+      }));
+    } else {
+      // Monthly data for 60 days (2 months)
+      return ["Month 1", "Month 2"].map(month => ({
+        label: month,
+        value: Math.floor(Math.random() * 100) + 40,
+      }));
+    }
+  };
+
+  const chartData = getChartData();
+  const maxValue = Math.max(...chartData.map(d => d.value));
+  const chartHeight = 280; // Fixed chart height
+
+  // Get footer text based on filter
+  const getFooterText = () => {
+    switch (timeFilter) {
+      case "Last 24 Hours": return "Registrations in the last 24 hours";
+      case "Last 7 days": return "Registrations in the last 7 days";
+      case "Last 30 days": return "Registrations in the last 30 days";
+      case "Last 60 days": return "Registrations in the last 60 days";
+      default: return "Registrations over time";
+    }
+  };
+
+  // Y-axis labels based on max value
+  const yAxisLabels = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10];
+
   return (
     <div className="flex flex-col gap-4 animate-in fade-in duration-300">
       {/* Stats Row - matching Guests tab style with unified border container */}
@@ -1496,28 +1544,64 @@ function AnalyticsView() {
           </Menu>
         </div>
 
-        {/* Chart Area with Y-axis and X-axis labels */}
-        <div className="flex gap-3 items-end w-full">
+        {/* Chart Area */}
+        <div className="flex w-full">
           {/* Y-axis labels */}
-          <div className="flex flex-col gap-4 items-start w-[24px] shrink-0">
-            {[100, 90, 80, 70, 60, 50, 40, 30, 20, 10].map(val => (
+          <div className="flex flex-col justify-between pr-3 shrink-0" style={{ height: chartHeight }}>
+            {yAxisLabels.map(val => (
               <span key={val} className="text-sm font-semibold text-[#859bab] leading-[18px]">{val}</span>
             ))}
           </div>
 
-          {/* X-axis labels */}
-          <div className="flex-1 flex gap-3 items-end">
-            {["0h", "1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h", "13h", "14h", "15h", "16h", "17h", "18h", "19h", "20h", "21h", "22h", "23h", "24h"].map((hour) => (
-              <div key={hour} className="flex-1 flex flex-col items-center justify-end min-w-0">
-                <span className="text-sm font-semibold text-[#859bab] leading-[18px]">{hour}</span>
+          {/* Chart container */}
+          <div className="flex-1 flex flex-col">
+            {/* Bars area */}
+            <div className="flex-1 relative" style={{ height: chartHeight }}>
+              {/* Horizontal grid lines */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                {yAxisLabels.map((_, i) => (
+                  <div key={i} className="border-b border-[#eceff2]" />
+                ))}
               </div>
-            ))}
+
+              {/* Bars */}
+              <div className="absolute inset-0 flex items-end gap-[2px] px-1">
+                {chartData.map((item, index) => {
+                  const barHeight = (item.value / 100) * chartHeight;
+                  return (
+                    <div
+                      key={index}
+                      className="flex-1 flex flex-col items-center justify-end group"
+                    >
+                      {/* Tooltip on hover */}
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-[#22292f] text-white text-xs px-2 py-1 rounded mb-1 whitespace-nowrap">
+                        {item.value}
+                      </div>
+                      {/* Bar */}
+                      <div
+                        className="w-full bg-[#3f52ff] rounded-t-sm transition-all duration-300 hover:bg-[#2a3bcc] min-w-[4px]"
+                        style={{ height: barHeight }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* X-axis labels */}
+            <div className="flex gap-[2px] px-1 mt-2">
+              {chartData.map((item, index) => (
+                <div key={index} className="flex-1 flex justify-center min-w-0">
+                  <span className="text-sm font-semibold text-[#859bab] leading-[18px] truncate">{item.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Footer text */}
         <div className="text-center">
-          <span className="text-sm font-normal text-[#859bab]">Registrations in the last 24 hours</span>
+          <span className="text-sm font-normal text-[#859bab]">{getFooterText()}</span>
         </div>
       </div>
 
