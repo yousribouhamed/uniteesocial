@@ -16,6 +16,8 @@ import {
   Loader2,
   Link,
   CheckCircle,
+  ClipboardPenLine,
+  ArrowUpRight,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
@@ -132,29 +134,36 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   return (
     <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-4 pb-2 flex flex-col gap-4">
       <div className="flex lg:flex-row flex-col gap-4">
-        {/* Left: Cover Image Upload */}
-        <div
-          className="w-full lg:w-[469px] h-[264px] shrink-0 bg-white border border-dashed border-[#668091] rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative group"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          {coverImage ? (
-            <>
+        {/* Left: Event Preview Card */}
+        <div className="w-full lg:w-[493px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-4">
+          {/* Cover Image */}
+          <div
+            className="relative w-full h-[264px] rounded-lg overflow-hidden bg-[#d5dde2] cursor-pointer group"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {coverImage ? (
               <img
                 src={coverImage}
                 alt="Event cover"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div className="w-[69px] h-[69px] bg-[#3f52ff] border-[3.833px] border-white rounded-full flex items-center justify-center">
-                  <Camera className="w-[30px] h-[30px] text-white" />
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="w-[69px] h-[69px] bg-[#3f52ff] border-[3.833px] border-white rounded-full flex items-center justify-center">
-              <Camera className="w-[30px] h-[30px] text-white" />
+            ) : (
+              <div className="w-full h-full bg-[#d5dde2]" />
+            )}
+            {/* Centered User Icon */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="14" cy="5" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
+                <path d="M9 20V18C9 15.7909 10.7909 14 13 14H15C17.2091 14 19 15.7909 19 18V20" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                <circle cx="10" cy="8" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
+                <path d="M5 20V18C5 15.7909 6.79086 14 9 14H11C13.2091 14 15 15.7909 15 18V20" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+              </svg>
             </div>
-          )}
+            {/* Hover overlay for changing image */}
+            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <Camera className="w-8 h-8 text-white" />
+            </div>
+          </div>
           <input
             type="file"
             ref={fileInputRef}
@@ -162,6 +171,98 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             accept="image/*"
             onChange={handleImageUpload}
           />
+
+          {/* Event Info */}
+          <div className="flex flex-col gap-4">
+            {/* Title + Badges */}
+            <div className="flex flex-col gap-2">
+              <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
+                {eventTitle || "Event name"}
+              </h3>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] text-white text-xs font-medium rounded">
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                  </svg>
+                  {chapter}
+                </span>
+                <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
+                  {locationType === "virtual" ? "Online" : "Onsite"}
+                </span>
+              </div>
+            </div>
+
+            {/* Date & Venue Row */}
+            <div className="flex items-start gap-8 flex-wrap">
+              {/* Date Section */}
+              <div className="flex items-center gap-2">
+                {/* Date Box */}
+                <div className="w-10 h-11 border border-[#859bab] rounded-lg overflow-hidden flex flex-col">
+                  <div className="bg-[#859bab] px-0.5 py-1 flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
+                      {startDate ? (() => {
+                        const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
+                        return months[startDate.month - 1];
+                      })() : "OCT."}
+                    </span>
+                  </div>
+                  <div className="flex-1 flex items-center justify-center">
+                    <span className="text-base font-medium text-[#859bab] leading-none">{startDate?.day || "25"}</span>
+                  </div>
+                </div>
+                {/* Date Text */}
+                <div className="flex flex-col gap-px">
+                  <span className="text-base font-medium text-[#22292f] leading-[24px]">
+                    {startDate ? (() => {
+                      const weekdays = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+                      const d = new Date(startDate.year, startDate.month - 1, startDate.day);
+                      const monthsFull = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+                      return `${weekdays[d.getDay()]} ${startDate.day} ${monthsFull[startDate.month - 1]}`;
+                    })() : "samedi 25 octobre"}
+                  </span>
+                  <span className="text-sm font-normal text-[#859bab] leading-[21px]">
+                    {startTime} - {endTime} UTC+4
+                  </span>
+                </div>
+              </div>
+
+              {/* Venue Section */}
+              <div className="flex items-center gap-2">
+                {/* Location Icon Box */}
+                <div className="w-10 h-10 border border-[#859bab] rounded-lg flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-[#859bab]" />
+                </div>
+                {/* Venue Text */}
+                <div className="flex flex-col gap-px">
+                  <div className="flex items-center gap-1">
+                    <span className="text-base font-medium text-[#22292f] leading-[24px]">
+                      {locationMasking && locationMaskName ? locationMaskName : (locationInput ? locationInput.split(",")[0] : "Lieu")}
+                    </span>
+                    <ArrowUpRight className="w-4 h-4 text-[#22292f] opacity-50" />
+                  </div>
+                  <span className="text-sm font-normal text-[#859bab] leading-[21px]">
+                    {locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || "Dubai, Dubai" : "Dubai, Dubai"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Address + Capacity */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
+                <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                  {locationInput || "Dubai World Trade Center, DWC"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
+                <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                  {capacity === "Unlimited" ? "0/∞" : `0/${capacity}`}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Right: Form Content */}
