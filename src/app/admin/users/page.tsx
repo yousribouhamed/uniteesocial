@@ -27,25 +27,42 @@ export default async function UsersAccountManagement() {
   });
 
   // Map auth users to our UserProfile shape
-  const users = (authData?.users || []).map((authUser) => {
-    const meta = authUser.user_metadata || {};
-    const statusValue = (meta.status as string) || "Active";
-    const profileStatusValue = (meta.profile_status as string) || "Verified";
-    return {
-      id: authUser.id,
-      full_name: (meta.full_name as string) || null,
-      avatar_url: (meta.avatar_url as string) || (meta.picture as string) || null,
-      role: (meta.role as string) || "Member",
-      status: (statusValue === "Active" || statusValue === "Inactive" ? statusValue : "Active") as "Active" | "Inactive",
-      profile_status: (["Verified", "Not Verified", "Completed", "Active"].includes(profileStatusValue) ? profileStatusValue : "Verified") as "Verified" | "Not Verified" | "Completed" | "Active",
-      email: authUser.email || null,
-      phone: (meta.phone as string) || null,
-      gender: (meta.gender as string) || null,
-      country: (meta.country as string) || null,
-      nationality: (meta.nationality as string) || null,
-      created_at: authUser.created_at || null,
-    };
-  });
+    const users = (authData?.users || []).map((authUser) => {
+      const meta = authUser.user_metadata || {};
+      const statusValue = (meta.status as string) || "Active";
+      const profileStatusValue = (meta.profile_status as string) || "Verified";
+      const directoryFields = Array.isArray(meta.directory_fields)
+        ? (meta.directory_fields as string[])
+        : [
+            "Full Name",
+            "Profile Picture",
+            "Email",
+            "Phone Number",
+            "Socials",
+            "Industry",
+            "Company",
+            "Role",
+            "Nationality",
+            "Country of Residence",
+            "About me section",
+          ];
+      return {
+        id: authUser.id,
+        full_name: (meta.full_name as string) || null,
+        avatar_url: (meta.avatar_url as string) || (meta.picture as string) || null,
+        role: (meta.role as string) || "Member",
+        status: (statusValue === "Active" || statusValue === "Inactive" ? statusValue : "Active") as "Active" | "Inactive",
+        profile_status: (["Verified", "Not Verified", "Completed", "Active"].includes(profileStatusValue) ? profileStatusValue : "Verified") as "Verified" | "Not Verified" | "Completed" | "Active",
+        email: authUser.email || null,
+        phone: (meta.phone as string) || null,
+        gender: (meta.gender as string) || null,
+        country: (meta.country as string) || null,
+        nationality: (meta.nationality as string) || null,
+        profile_visible: meta.profile_visible === undefined ? true : Boolean(meta.profile_visible),
+        directory_fields: directoryFields,
+        created_at: authUser.created_at || null,
+      };
+    });
 
   // Sort by created_at descending (newest first)
   users.sort((a, b) => {

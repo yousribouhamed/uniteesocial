@@ -3,26 +3,46 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // Helper: Map a Supabase auth user to our UserProfile shape
+const DEFAULT_DIRECTORY_FIELDS = [
+  "Full Name",
+  "Profile Picture",
+  "Email",
+  "Phone Number",
+  "Socials",
+  "Industry",
+  "Company",
+  "Role",
+  "Nationality",
+  "Country of Residence",
+  "About me section",
+];
+
 function mapAuthUserToProfile(authUser: {
   id: string;
   email?: string;
-  user_metadata?: Record<string, string>;
+  user_metadata?: Record<string, unknown>;
   created_at?: string;
   banned_until?: string | null;
 }) {
   const meta = authUser.user_metadata || {};
+  const directoryFields = Array.isArray(meta.directory_fields)
+    ? (meta.directory_fields as string[])
+    : DEFAULT_DIRECTORY_FIELDS;
+
   return {
     id: authUser.id,
-    full_name: meta.full_name || null,
-    avatar_url: meta.avatar_url || null,
-    role: meta.role || "Member",
-    status: meta.status || "Active",
-    profile_status: meta.profile_status || "Verified",
+    full_name: (meta.full_name as string) || null,
+    avatar_url: (meta.avatar_url as string) || null,
+    role: (meta.role as string) || "Member",
+    status: (meta.status as string) || "Active",
+    profile_status: (meta.profile_status as string) || "Verified",
     email: authUser.email || null,
-    phone: meta.phone || null,
-    gender: meta.gender || null,
-    country: meta.country || null,
-    nationality: meta.nationality || null,
+    phone: (meta.phone as string) || null,
+    gender: (meta.gender as string) || null,
+    country: (meta.country as string) || null,
+    nationality: (meta.nationality as string) || null,
+    profile_visible: meta.profile_visible === undefined ? true : Boolean(meta.profile_visible),
+    directory_fields: directoryFields,
     created_at: authUser.created_at || null,
   };
 }
@@ -213,7 +233,19 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { id, full_name, role, status, profile_status, phone, gender, country, nationality } = body;
+    const {
+      id,
+      full_name,
+      role,
+      status,
+      profile_status,
+      phone,
+      gender,
+      country,
+      nationality,
+      profile_visible,
+      directory_fields,
+    } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -225,7 +257,7 @@ export async function PATCH(request: Request) {
     const adminClient = createAdminClient();
 
     // Build metadata update dynamically (only include provided fields)
-    const metadataUpdate: Record<string, string> = {};
+    const metadataUpdate: Record<string, unknown> = {};
     if (full_name !== undefined) metadataUpdate.full_name = full_name;
     if (role !== undefined) metadataUpdate.role = role;
     if (status !== undefined) metadataUpdate.status = status;
@@ -234,6 +266,8 @@ export async function PATCH(request: Request) {
     if (gender !== undefined) metadataUpdate.gender = gender;
     if (country !== undefined) metadataUpdate.country = country;
     if (nationality !== undefined) metadataUpdate.nationality = nationality;
+    if (profile_visible !== undefined) metadataUpdate.profile_visible = Boolean(profile_visible);
+    if (directory_fields !== undefined) metadataUpdate.directory_fields = directory_fields;
 
     // Update auth user metadata
     const { data, error } = await adminClient.auth.admin.updateUserById(id, {

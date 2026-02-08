@@ -38,6 +38,60 @@ import { toastQueue } from "@/components/ui/aria-toast";
 import AdminSidebar from "@/components/admin-sidebar";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 
+const COUNTRY_OPTIONS = [
+  "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan",
+  "Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi",
+  "Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo (Congo-Brazzaville)","Costa Rica","Croatia","Cuba","Cyprus","Czechia",
+  "Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic",
+  "Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia",
+  "Fiji","Finland","France",
+  "Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana",
+  "Haiti","Honduras","Hungary",
+  "Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy",
+  "Jamaica","Japan","Jordan",
+  "Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan",
+  "Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg",
+  "Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar",
+  "Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway",
+  "Oman",
+  "Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal",
+  "Qatar",
+  "Romania","Russia","Rwanda",
+  "Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland","Syria",
+  "Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu",
+  "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan",
+  "Vanuatu","Vatican City","Venezuela","Vietnam",
+  "Yemen",
+  "Zambia","Zimbabwe"
+];
+
+const NATIONALITY_OPTIONS = [
+  "Afghan","Albanian","Algerian","Andorran","Angolan","Antiguan or Barbudan","Argentine","Armenian","Australian","Austrian","Azerbaijani",
+  "Bahamian","Bahraini","Bangladeshi","Barbadian","Belarusian","Belgian","Belizean","Beninese","Bhutanese","Bolivian","Bosnian or Herzegovinian","Botswanan","Brazilian","Bruneian","Bulgarian","Burkinabe","Burundian",
+  "Cabo Verdean","Cambodian","Cameroonian","Canadian","Central African","Chadian","Chilean","Chinese","Colombian","Comoran","Congolese","Costa Rican","Croatian","Cuban","Cypriot","Czech",
+  "Congolese (DRC)","Danish","Djiboutian","Dominican","Dominican (Republic)",
+  "Ecuadorian","Egyptian","Salvadoran","Equatorial Guinean","Eritrean","Estonian","Swazi","Ethiopian",
+  "Fijian","Finnish","French",
+  "Gabonese","Gambian","Georgian","German","Ghanaian","Greek","Grenadian","Guatemalan","Guinean","Bissau-Guinean","Guyanese",
+  "Haitian","Honduran","Hungarian",
+  "Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian",
+  "Jamaican","Japanese","Jordanian",
+  "Kazakh","Kenyan","I-Kiribati","Kuwaiti","Kyrgyz",
+  "Lao","Latvian","Lebanese","Basotho","Liberian","Libyan","Liechtensteiner","Lithuanian","Luxembourgish",
+  "Malagasy","Malawian","Malaysian","Maldivian","Malian","Maltese","Marshallese","Mauritanian","Mauritian","Mexican","Micronesian","Moldovan","Monégasque","Mongolian","Montenegrin","Moroccan","Mozambican","Burmese",
+  "Namibian","Nauruan","Nepali","Dutch","New Zealander","Nicaraguan","Nigerien","Nigerian","North Korean","Macedonian","Norwegian",
+  "Omani",
+  "Pakistani","Palauan","Panamanian","Papua New Guinean","Paraguayan","Peruvian","Filipino","Polish","Portuguese",
+  "Qatari",
+  "Romanian","Russian","Rwandan",
+  "Kittitian or Nevisian","Saint Lucian","Saint Vincentian","Samoan","San Marinese","Sao Tomean","Saudi","Senegalese","Serbian","Seychellois","Sierra Leonean","Singaporean","Slovak","Slovene","Solomon Islander","Somali","South African","South Korean","South Sudanese","Spanish","Sri Lankan","Sudanese","Surinamese","Swedish","Swiss","Syrian",
+  "Taiwanese","Tajik","Tanzanian","Thai","Timorese","Togolese","Tongan","Trinidadian or Tobagonian","Tunisian","Turkish","Turkmen","Tuvaluan",
+  "Ugandan","Ukrainian","Emirati","British","American","Uruguayan","Uzbek",
+  "Vanuatuan","Vatican","Venezuelan","Vietnamese",
+  "Yemeni",
+  "Zambian","Zimbabwean"
+];
+
 // --- Types ---
 export type UserStatus = "Active" | "Inactive";
 export type ProfileStatus = "Verified" | "Not Verified" | "Completed" | "Active";
@@ -54,6 +108,8 @@ export interface UserProfile {
   gender: string | null;
   country: string | null;
   nationality: string | null;
+  profile_visible?: boolean;
+  directory_fields?: string[];
   created_at: string | null;
 }
 
@@ -271,26 +327,36 @@ function EditUserView({
   const [role, setRole] = useState(user.role || "Member");
   const [copied, setCopied] = useState(false);
   const [userActivation, setUserActivation] = useState(user.status === "Active");
-  const [profileVisible, setProfileVisible] = useState(true);
+  const [profileVisible, setProfileVisible] = useState(
+    user.profile_visible === undefined ? true : Boolean(user.profile_visible)
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const directoryFields = [
-    "Full Name",
-    "Profile Picture",
-    "Email",
-    "Phone Number",
-    "Socials",
-    "Industry",
-    "Company",
-    "Role",
-    "Nationality",
-    "Country of Residence",
-    "About me section",
-  ];
-  const [checkedFields, setCheckedFields] = useState<Record<string, boolean>>(
-    () => Object.fromEntries(directoryFields.map((f) => [f, true]))
-  );
+  const directoryFields = user.directory_fields && user.directory_fields.length > 0
+    ? user.directory_fields
+    : [
+        "Full Name",
+        "Profile Picture",
+        "Email",
+        "Phone Number",
+        "Socials",
+        "Industry",
+        "Company",
+        "Role",
+        "Nationality",
+        "Country of Residence",
+        "About me section",
+      ];
+  const [checkedFields, setCheckedFields] = useState<Record<string, boolean>>(() => {
+    const initial = Object.fromEntries(directoryFields.map((f) => [f, true]));
+    if (user.directory_fields && Array.isArray(user.directory_fields)) {
+      directoryFields.forEach((f) => {
+        initial[f] = user.directory_fields?.includes(f);
+      });
+    }
+    return initial;
+  });
 
   const toggleField = (field: string) => {
     setCheckedFields((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -321,6 +387,7 @@ function EditUserView({
     setLoading(true);
     setError(null);
     try {
+      const directory_fields = Object.keys(checkedFields).filter((key) => checkedFields[key]);
       const res = await fetch("/api/users", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -333,6 +400,8 @@ function EditUserView({
           gender,
           country,
           nationality,
+          profile_visible: profileVisible,
+          directory_fields,
         }),
       });
       const data = await res.json();
@@ -464,12 +533,11 @@ function EditUserView({
                 onSelectionChange={(key) => setCountry(key as string)}
                 placeholder="Select"
               >
-                <AriaSelectItem id="Algeria" textValue="Algeria">Algeria</AriaSelectItem>
-                <AriaSelectItem id="UAE" textValue="UAE">UAE</AriaSelectItem>
-                <AriaSelectItem id="USA" textValue="USA">USA</AriaSelectItem>
-                <AriaSelectItem id="Jordan" textValue="Jordan">Jordan</AriaSelectItem>
-                <AriaSelectItem id="Japan" textValue="Japan">Japan</AriaSelectItem>
-                <AriaSelectItem id="United Kingdom" textValue="United Kingdom">United Kingdom</AriaSelectItem>
+                {COUNTRY_OPTIONS.map((c) => (
+                  <AriaSelectItem key={c} id={c} textValue={c}>
+                    {c}
+                  </AriaSelectItem>
+                ))}
               </AriaSelect>
             </div>
             <div className="flex-1 flex flex-col gap-2">
@@ -480,12 +548,11 @@ function EditUserView({
                 onSelectionChange={(key) => setNationality(key as string)}
                 placeholder="Select"
               >
-                <AriaSelectItem id="Algerian" textValue="Algerian">Algerian</AriaSelectItem>
-                <AriaSelectItem id="Emirati" textValue="Emirati">Emirati</AriaSelectItem>
-                <AriaSelectItem id="American" textValue="American">American</AriaSelectItem>
-                <AriaSelectItem id="Jordanian" textValue="Jordanian">Jordanian</AriaSelectItem>
-                <AriaSelectItem id="Japanese" textValue="Japanese">Japanese</AriaSelectItem>
-                <AriaSelectItem id="British" textValue="British">British</AriaSelectItem>
+                {NATIONALITY_OPTIONS.map((n) => (
+                  <AriaSelectItem key={n} id={n} textValue={n}>
+                    {n}
+                  </AriaSelectItem>
+                ))}
               </AriaSelect>
             </div>
           </div>
@@ -1024,12 +1091,11 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
                 onSelectionChange={(key) => setCountry(key as string)}
                 placeholder="Select"
               >
-                <AriaSelectItem id="Algeria" textValue="Algeria">Algeria</AriaSelectItem>
-                <AriaSelectItem id="UAE" textValue="UAE">UAE</AriaSelectItem>
-                <AriaSelectItem id="USA" textValue="USA">USA</AriaSelectItem>
-                <AriaSelectItem id="Jordan" textValue="Jordan">Jordan</AriaSelectItem>
-                <AriaSelectItem id="Japan" textValue="Japan">Japan</AriaSelectItem>
-                <AriaSelectItem id="United Kingdom" textValue="United Kingdom">United Kingdom</AriaSelectItem>
+                {COUNTRY_OPTIONS.map((c) => (
+                  <AriaSelectItem key={c} id={c} textValue={c}>
+                    {c}
+                  </AriaSelectItem>
+                ))}
               </AriaSelect>
             </div>
             <div className="flex-1 flex flex-col gap-2">
@@ -1040,12 +1106,11 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
                 onSelectionChange={(key) => setNationality(key as string)}
                 placeholder="Select"
               >
-                <AriaSelectItem id="Algerian" textValue="Algerian">Algerian</AriaSelectItem>
-                <AriaSelectItem id="Emirati" textValue="Emirati">Emirati</AriaSelectItem>
-                <AriaSelectItem id="American" textValue="American">American</AriaSelectItem>
-                <AriaSelectItem id="Jordanian" textValue="Jordanian">Jordanian</AriaSelectItem>
-                <AriaSelectItem id="Japanese" textValue="Japanese">Japanese</AriaSelectItem>
-                <AriaSelectItem id="British" textValue="British">British</AriaSelectItem>
+                {NATIONALITY_OPTIONS.map((n) => (
+                  <AriaSelectItem key={n} id={n} textValue={n}>
+                    {n}
+                  </AriaSelectItem>
+                ))}
               </AriaSelect>
             </div>
           </div>
