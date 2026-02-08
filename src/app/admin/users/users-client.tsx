@@ -33,8 +33,10 @@ import {
   XCircle,
 } from "lucide-react";
 import { AriaCheckbox } from "@/components/ui/aria-checkbox";
+import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { toastQueue } from "@/components/ui/aria-toast";
 import AdminSidebar from "@/components/admin-sidebar";
+import { AriaSwitch } from "@/components/ui/aria-switch";
 
 // --- Types ---
 export type UserStatus = "Active" | "Inactive";
@@ -247,28 +249,6 @@ function DeleteUserModal({
   );
 }
 
-// --- Toggle Switch (local) ---
-function ToggleSwitch({
-  enabled,
-  onToggle,
-}: {
-  enabled: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      onClick={onToggle}
-      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${enabled ? "bg-[#3f52ff]" : "bg-[#d5dde2]"
-        }`}
-    >
-      <span
-        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ${enabled ? "translate-x-[18px] ml-0.5" : "translate-x-0 ml-0.5"
-          }`}
-      />
-    </button>
-  );
-}
-
 // --- Edit User View (inline page) ---
 function EditUserView({
   user,
@@ -326,6 +306,7 @@ function EditUserView({
   const copyPassword = () => {
     navigator.clipboard.writeText(password);
     setCopied(true);
+    toastQueue.add({ title: "Password copied to clipboard", type: "success" }, { timeout: 2000 });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -460,19 +441,16 @@ function EditUserView({
             </div>
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Gender</label>
-              <div className="relative">
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="w-full h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] transition-colors appearance-none pr-8"
-                >
-                  <option value="">Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-[#859bab] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <AriaSelect
+                aria-label="Gender"
+                selectedKey={gender || undefined}
+                onSelectionChange={(key) => setGender(key as string)}
+                placeholder="Select"
+              >
+                <AriaSelectItem id="Male" textValue="Male">Male</AriaSelectItem>
+                <AriaSelectItem id="Female" textValue="Female">Female</AriaSelectItem>
+                <AriaSelectItem id="Other" textValue="Other">Other</AriaSelectItem>
+              </AriaSelect>
             </div>
           </div>
 
@@ -480,41 +458,35 @@ function EditUserView({
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Country</label>
-              <div className="relative">
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="w-full h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] transition-colors appearance-none pr-8"
-                >
-                  <option value="">Select</option>
-                  <option value="Algeria">Algeria</option>
-                  <option value="UAE">UAE</option>
-                  <option value="USA">USA</option>
-                  <option value="Jordan">Jordan</option>
-                  <option value="Japan">Japan</option>
-                  <option value="United Kingdom">United Kingdom</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-[#859bab] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <AriaSelect
+                aria-label="Country"
+                selectedKey={country || undefined}
+                onSelectionChange={(key) => setCountry(key as string)}
+                placeholder="Select"
+              >
+                <AriaSelectItem id="Algeria" textValue="Algeria">Algeria</AriaSelectItem>
+                <AriaSelectItem id="UAE" textValue="UAE">UAE</AriaSelectItem>
+                <AriaSelectItem id="USA" textValue="USA">USA</AriaSelectItem>
+                <AriaSelectItem id="Jordan" textValue="Jordan">Jordan</AriaSelectItem>
+                <AriaSelectItem id="Japan" textValue="Japan">Japan</AriaSelectItem>
+                <AriaSelectItem id="United Kingdom" textValue="United Kingdom">United Kingdom</AriaSelectItem>
+              </AriaSelect>
             </div>
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Nationality</label>
-              <div className="relative">
-                <select
-                  value={nationality}
-                  onChange={(e) => setNationality(e.target.value)}
-                  className="w-full h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] transition-colors appearance-none pr-8"
-                >
-                  <option value="">Select</option>
-                  <option value="Algerian">Algerian</option>
-                  <option value="Emirati">Emirati</option>
-                  <option value="American">American</option>
-                  <option value="Jordanian">Jordanian</option>
-                  <option value="Japanese">Japanese</option>
-                  <option value="British">British</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-[#859bab] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <AriaSelect
+                aria-label="Nationality"
+                selectedKey={nationality || undefined}
+                onSelectionChange={(key) => setNationality(key as string)}
+                placeholder="Select"
+              >
+                <AriaSelectItem id="Algerian" textValue="Algerian">Algerian</AriaSelectItem>
+                <AriaSelectItem id="Emirati" textValue="Emirati">Emirati</AriaSelectItem>
+                <AriaSelectItem id="American" textValue="American">American</AriaSelectItem>
+                <AriaSelectItem id="Jordanian" textValue="Jordanian">Jordanian</AriaSelectItem>
+                <AriaSelectItem id="Japanese" textValue="Japanese">Japanese</AriaSelectItem>
+                <AriaSelectItem id="British" textValue="British">British</AriaSelectItem>
+              </AriaSelect>
             </div>
           </div>
 
@@ -633,7 +605,7 @@ function EditUserView({
               Control whether this user account is active or inactive.
             </span>
           </div>
-          <ToggleSwitch enabled={userActivation} onToggle={() => setUserActivation(!userActivation)} />
+          <AriaSwitch isSelected={userActivation} onChange={setUserActivation} />
         </div>
 
         {/* Profile Directory Visibility */}
@@ -647,7 +619,7 @@ function EditUserView({
                 Control whether this user account is active or inactive.
               </span>
             </div>
-            <ToggleSwitch enabled={profileVisible} onToggle={() => setProfileVisible(!profileVisible)} />
+            <AriaSwitch isSelected={profileVisible} onChange={setProfileVisible} />
           </div>
 
           {/* Checkboxes */}
@@ -891,6 +863,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
   const copyPassword = () => {
     navigator.clipboard.writeText(password);
     setCopied(true);
+    toastQueue.add({ title: "Password copied to clipboard", type: "success" }, { timeout: 2000 });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1031,19 +1004,16 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
             </div>
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Gender</label>
-              <div className="relative">
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="w-full h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] transition-colors appearance-none pr-8"
-                >
-                  <option value="">Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-[#859bab] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <AriaSelect
+                aria-label="Gender"
+                selectedKey={gender || undefined}
+                onSelectionChange={(key) => setGender(key as string)}
+                placeholder="Select"
+              >
+                <AriaSelectItem id="Male" textValue="Male">Male</AriaSelectItem>
+                <AriaSelectItem id="Female" textValue="Female">Female</AriaSelectItem>
+                <AriaSelectItem id="Other" textValue="Other">Other</AriaSelectItem>
+              </AriaSelect>
             </div>
           </div>
 
@@ -1051,41 +1021,35 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Country</label>
-              <div className="relative">
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="w-full h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] transition-colors appearance-none pr-8"
-                >
-                  <option value="">Select</option>
-                  <option value="Algeria">Algeria</option>
-                  <option value="UAE">UAE</option>
-                  <option value="USA">USA</option>
-                  <option value="Jordan">Jordan</option>
-                  <option value="Japan">Japan</option>
-                  <option value="United Kingdom">United Kingdom</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-[#859bab] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <AriaSelect
+                aria-label="Country"
+                selectedKey={country || undefined}
+                onSelectionChange={(key) => setCountry(key as string)}
+                placeholder="Select"
+              >
+                <AriaSelectItem id="Algeria" textValue="Algeria">Algeria</AriaSelectItem>
+                <AriaSelectItem id="UAE" textValue="UAE">UAE</AriaSelectItem>
+                <AriaSelectItem id="USA" textValue="USA">USA</AriaSelectItem>
+                <AriaSelectItem id="Jordan" textValue="Jordan">Jordan</AriaSelectItem>
+                <AriaSelectItem id="Japan" textValue="Japan">Japan</AriaSelectItem>
+                <AriaSelectItem id="United Kingdom" textValue="United Kingdom">United Kingdom</AriaSelectItem>
+              </AriaSelect>
             </div>
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Nationality</label>
-              <div className="relative">
-                <select
-                  value={nationality}
-                  onChange={(e) => setNationality(e.target.value)}
-                  className="w-full h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] transition-colors appearance-none pr-8"
-                >
-                  <option value="">Select</option>
-                  <option value="Algerian">Algerian</option>
-                  <option value="Emirati">Emirati</option>
-                  <option value="American">American</option>
-                  <option value="Jordanian">Jordanian</option>
-                  <option value="Japanese">Japanese</option>
-                  <option value="British">British</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-[#859bab] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <AriaSelect
+                aria-label="Nationality"
+                selectedKey={nationality || undefined}
+                onSelectionChange={(key) => setNationality(key as string)}
+                placeholder="Select"
+              >
+                <AriaSelectItem id="Algerian" textValue="Algerian">Algerian</AriaSelectItem>
+                <AriaSelectItem id="Emirati" textValue="Emirati">Emirati</AriaSelectItem>
+                <AriaSelectItem id="American" textValue="American">American</AriaSelectItem>
+                <AriaSelectItem id="Jordanian" textValue="Jordanian">Jordanian</AriaSelectItem>
+                <AriaSelectItem id="Japanese" textValue="Japanese">Japanese</AriaSelectItem>
+                <AriaSelectItem id="British" textValue="British">British</AriaSelectItem>
+              </AriaSelect>
             </div>
           </div>
 
@@ -1172,23 +1136,17 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Role</label>
-              <div className="relative">
-                <div className="flex items-center h-9 bg-white border border-[#b0bfc9] rounded-lg">
-                  <CircleUserRound className="w-4 h-4 text-[#859bab] ml-3 shrink-0" />
-                  <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="flex-1 h-full px-2 bg-transparent text-sm text-[#22292f] outline-none appearance-none pr-8"
-                  >
-                    <option value="">Select role</option>
-                    <option value="Organization Admin">Organization Admin</option>
-                    <option value="Chapter Lead">Chapter Lead</option>
-                    <option value="Co-Lead">Co-Lead</option>
-                    <option value="Member">Member</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-[#859bab] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
+              <AriaSelect
+                aria-label="Role"
+                selectedKey={role || undefined}
+                onSelectionChange={(key) => setRole(key as string)}
+                placeholder="Select role"
+              >
+                <AriaSelectItem id="Organization Admin" textValue="Organization Admin">Organization Admin</AriaSelectItem>
+                <AriaSelectItem id="Chapter Lead" textValue="Chapter Lead">Chapter Lead</AriaSelectItem>
+                <AriaSelectItem id="Co-Lead" textValue="Co-Lead">Co-Lead</AriaSelectItem>
+                <AriaSelectItem id="Member" textValue="Member">Member</AriaSelectItem>
+              </AriaSelect>
             </div>
             <div className="flex-1" />
           </div>
