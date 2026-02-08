@@ -348,7 +348,7 @@ function PhoneNumberInput({
   });
 
   return (
-    <div className="flex h-9 bg-white border border-[#b0bfc9] rounded-lg overflow-hidden" ref={containerRef}>
+    <div className="relative flex h-9 bg-white border border-[#b0bfc9] rounded-lg" ref={containerRef}>
       <div className="relative shrink-0">
         <button
           type="button"
