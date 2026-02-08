@@ -301,6 +301,25 @@ const flagFor = (iso2: string) =>
     .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
     .join("");
 
+const COUNTRY_ISO_LOOKUP = Object.fromEntries(
+  PHONE_COUNTRIES.map((c) => [c.name, c.iso2])
+);
+
+const COUNTRY_SELECT_OPTIONS = COUNTRY_OPTIONS.map((name) => ({
+  value: name,
+  label: name,
+  iso2: COUNTRY_ISO_LOOKUP[name],
+}));
+
+const NATIONALITY_SELECT_OPTIONS = NATIONALITY_OPTIONS.map((name, index) => {
+  const countryName = COUNTRY_OPTIONS[index];
+  return {
+    value: name,
+    label: name,
+    iso2: COUNTRY_ISO_LOOKUP[countryName],
+  };
+});
+
 const parsePhoneValue = (value: string) => {
   const trimmed = value.trim();
   if (!trimmed.startsWith("+")) {
@@ -314,6 +333,108 @@ const parsePhoneValue = (value: string) => {
   const number = trimmed.slice(match.dial.length + 1).trim();
   return { country: match, number };
 };
+
+type SelectOption = {
+  value: string;
+  label: string;
+  iso2?: string;
+};
+
+function SearchableSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: SelectOption[];
+  placeholder: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const id = window.setTimeout(() => inputRef.current?.focus(), 0);
+    return () => window.clearTimeout(id);
+  }, [open]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!containerRef.current) return;
+      if (!containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+        setSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selected = options.find((option) => option.value === value);
+  const filtered = options.filter((option) =>
+    option.label.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg flex items-center gap-2 text-sm text-left"
+      >
+        <span className="text-sm">
+          {selected?.iso2 ? flagFor(selected.iso2) : "🏳️"}
+        </span>
+        <span className={selected ? "text-[#22292f]" : "text-[#859bab]"}>
+          {selected?.label || placeholder}
+        </span>
+        <ChevronDown className="ml-auto w-4 h-4 text-[#859bab]" />
+      </button>
+      {open && (
+        <div className="absolute z-50 mt-1 w-full bg-white border border-[#d5dde2] rounded-lg shadow-lg">
+          <div className="p-2 border-b border-[#eceff2]">
+            <div className="flex items-center gap-2 h-8 px-2 border border-[#d5dde2] rounded-md">
+              <Search className="w-4 h-4 text-[#859bab]" />
+              <input
+                ref={inputRef}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search"
+                className="flex-1 text-sm outline-none bg-transparent text-[#22292f] placeholder:text-[#859bab]"
+              />
+            </div>
+          </div>
+          <div className="max-h-56 overflow-y-auto py-1">
+            {filtered.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                  setSearch("");
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] hover:bg-[#f5f5f5] transition-colors"
+              >
+                <span className="w-6">
+                  {option.iso2 ? flagFor(option.iso2) : "🏳️"}
+                </span>
+                <span className="flex-1 text-left">{option.label}</span>
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="px-3 py-2 text-sm text-[#859bab]">No matches</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function PhoneNumberInput({
   phone,
@@ -840,33 +961,21 @@ function EditUserView({
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Country</label>
-              <AriaSelect
-                aria-label="Country"
-                selectedKey={country || undefined}
-                onSelectionChange={(key) => setCountry(key as string)}
+              <SearchableSelect
+                value={country}
+                onChange={setCountry}
+                options={COUNTRY_SELECT_OPTIONS}
                 placeholder="Select"
-              >
-                {COUNTRY_OPTIONS.map((c) => (
-                  <AriaSelectItem key={c} id={c} textValue={c}>
-                    {c}
-                  </AriaSelectItem>
-                ))}
-              </AriaSelect>
+              />
             </div>
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Nationality</label>
-              <AriaSelect
-                aria-label="Nationality"
-                selectedKey={nationality || undefined}
-                onSelectionChange={(key) => setNationality(key as string)}
+              <SearchableSelect
+                value={nationality}
+                onChange={setNationality}
+                options={NATIONALITY_SELECT_OPTIONS}
                 placeholder="Select"
-              >
-                {NATIONALITY_OPTIONS.map((n) => (
-                  <AriaSelectItem key={n} id={n} textValue={n}>
-                    {n}
-                  </AriaSelectItem>
-                ))}
-              </AriaSelect>
+              />
             </div>
           </div>
 
@@ -1393,33 +1502,21 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Country</label>
-              <AriaSelect
-                aria-label="Country"
-                selectedKey={country || undefined}
-                onSelectionChange={(key) => setCountry(key as string)}
+              <SearchableSelect
+                value={country}
+                onChange={setCountry}
+                options={COUNTRY_SELECT_OPTIONS}
                 placeholder="Select"
-              >
-                {COUNTRY_OPTIONS.map((c) => (
-                  <AriaSelectItem key={c} id={c} textValue={c}>
-                    {c}
-                  </AriaSelectItem>
-                ))}
-              </AriaSelect>
+              />
             </div>
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Nationality</label>
-              <AriaSelect
-                aria-label="Nationality"
-                selectedKey={nationality || undefined}
-                onSelectionChange={(key) => setNationality(key as string)}
+              <SearchableSelect
+                value={nationality}
+                onChange={setNationality}
+                options={NATIONALITY_SELECT_OPTIONS}
                 placeholder="Select"
-              >
-                {NATIONALITY_OPTIONS.map((n) => (
-                  <AriaSelectItem key={n} id={n} textValue={n}>
-                    {n}
-                  </AriaSelectItem>
-                ))}
-              </AriaSelect>
+              />
             </div>
           </div>
 
