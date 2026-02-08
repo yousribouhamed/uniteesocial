@@ -150,14 +150,9 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             ) : (
               <div className="w-full h-full bg-[#d5dde2]" />
             )}
-            {/* Centered User Icon */}
+            {/* Centered Camera Icon */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
-              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="14" cy="5" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
-                <path d="M9 20V18C9 15.7909 10.7909 14 13 14H15C17.2091 14 19 15.7909 19 18V20" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                <circle cx="10" cy="8" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
-                <path d="M5 20V18C5 15.7909 6.79086 14 9 14H11C13.2091 14 15 15.7909 15 18V20" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-              </svg>
+              <Camera className="w-6 h-6 text-white" />
             </div>
             {/* Hover overlay for changing image */}
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
