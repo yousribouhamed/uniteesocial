@@ -1449,10 +1449,11 @@ function AnalyticsView() {
   };
 
   const yAxisMax = calculateYAxisMax(maxDataValue);
-  const yAxisStep = yAxisMax / 10; // Always 10 steps for consistency
+  const numLabels = 6; // Show 6 labels (including 0)
+  const yAxisStep = yAxisMax / (numLabels - 1);
 
-  // Generate Y-axis labels (from max to step, descending)
-  const yAxisLabels = Array.from({ length: 10 }, (_, i) => yAxisMax - (i * yAxisStep));
+  // Generate Y-axis labels (from max down to 0, including 0)
+  const yAxisLabels = Array.from({ length: numLabels }, (_, i) => Math.round(yAxisMax - (i * yAxisStep)));
 
   // Get footer text based on filter
   const getFooterText = () => {
