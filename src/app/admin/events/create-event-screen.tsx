@@ -576,7 +576,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         placeholder="Enter lineup for home team (eg. player names, numbers, positions)"
                         value={homeTeamLineup}
                         onChange={(e) => setHomeTeamLineup(e.target.value)}
-                        className="w-full h-[74px] px-3 py-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] resize-none"
+                        className="w-full h-[74px] px-3 py-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] resize-none"
                       />
                     </div>
 
@@ -590,7 +590,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         placeholder="Enter lineup for home team (eg. player names, numbers, positions)"
                         value={awayTeamLineup}
                         onChange={(e) => setAwayTeamLineup(e.target.value)}
-                        className="w-full h-[74px] px-3 py-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] resize-none"
+                        className="w-full h-[74px] px-3 py-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] resize-none"
                       />
                     </div>
                   </>
