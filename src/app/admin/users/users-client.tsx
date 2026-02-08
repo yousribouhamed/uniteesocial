@@ -573,22 +573,17 @@ function EditUserView({
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-[#22292f]">Role</label>
-              <div className="relative">
-                <div className="flex items-center h-9 bg-white border border-[#b0bfc9] rounded-lg">
-                  <CircleUserRound className="w-4 h-4 text-[#859bab] ml-3 shrink-0" />
-                  <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="flex-1 h-full px-2 bg-transparent text-sm text-[#22292f] outline-none appearance-none pr-8"
-                  >
-                    <option value="Organization Admin">Organization Admin</option>
-                    <option value="Chapter Lead">Chapter Lead</option>
-                    <option value="Co-Lead">Co-Lead</option>
-                    <option value="Member">Member</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-[#859bab] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
+              <AriaSelect
+                aria-label="Role"
+                selectedKey={role || undefined}
+                onSelectionChange={(key) => setRole(key as string)}
+                placeholder="Select role"
+              >
+                <AriaSelectItem id="Organization Admin" textValue="Organization Admin">Organization Admin</AriaSelectItem>
+                <AriaSelectItem id="Chapter Lead" textValue="Chapter Lead">Chapter Lead</AriaSelectItem>
+                <AriaSelectItem id="Co-Lead" textValue="Co-Lead">Co-Lead</AriaSelectItem>
+                <AriaSelectItem id="Member" textValue="Member">Member</AriaSelectItem>
+              </AriaSelect>
             </div>
             <div className="flex-1" />
           </div>
