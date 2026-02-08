@@ -31,7 +31,6 @@ import {
   Download,
   CheckCircle2,
   XCircle,
-  FileSpreadsheet,
 } from "lucide-react";
 import { AriaCheckbox } from "@/components/ui/aria-checkbox";
 import { toastQueue } from "@/components/ui/aria-toast";
@@ -1448,31 +1447,37 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                     </div>
                     <div className="flex items-center gap-2">
                       {selectedUserIds.size > 0 && (
-                        <>
-                          {/* Delete Button */}
-                          <button
-                            onClick={handleBulkDelete}
-                            disabled={bulkDeleting}
-                            className="flex items-center gap-1.5 h-8 px-3 bg-[#ffe0e1] text-[#e53935] rounded-lg text-sm font-medium hover:bg-[#fcc] transition-colors disabled:opacity-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            <span className="bg-[#e53935] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                              {selectedUserIds.size}
-                            </span>
-                          </button>
-                          {/* Export CSV Button */}
-                          <button
-                            onClick={handleExportCSV}
-                            className="flex items-center gap-1.5 h-8 px-3 bg-[#22292f] text-white rounded-lg text-sm font-medium hover:bg-[#3a4550] transition-colors"
-                          >
-                            <FileSpreadsheet className="w-4 h-4" />
-                            Export CSV
-                            <span className="bg-white text-[#22292f] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                              {selectedUserIds.size}
-                            </span>
-                          </button>
-                        </>
+                        <button
+                          onClick={handleBulkDelete}
+                          disabled={bulkDeleting}
+                          className="flex items-center gap-1.5 h-8 px-3 bg-[#ffe0e1] text-[#e53935] rounded-lg text-sm font-medium hover:bg-[#fcc] transition-colors disabled:opacity-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span className="bg-[#e53935] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                            {selectedUserIds.size}
+                          </span>
+                        </button>
                       )}
+                      <button
+                        onClick={handleExportCSV}
+                        disabled={selectedUserIds.size === 0}
+                        className={`flex items-center gap-2 h-8 px-3 text-xs font-medium rounded-lg transition-colors ${selectedUserIds.size > 0
+                          ? "bg-[#22292f] text-white hover:bg-[#3a4249]"
+                          : "bg-[#eceff2] text-[#859bab] cursor-not-allowed"
+                          }`}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <path d="M12.25 8.75V11.0833C12.25 11.3928 12.1271 11.6895 11.9083 11.9083C11.6895 12.1271 11.3928 12.25 11.0833 12.25H2.91667C2.60725 12.25 2.3105 12.1271 2.09171 11.9083C1.87292 11.6895 1.75 11.3928 1.75 11.0833V8.75" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M4.66699 5.83301L7.00033 8.16634L9.33366 5.83301" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M7 8.16634V1.74967" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Export CSV
+                        {selectedUserIds.size > 0 && (
+                          <span className="bg-white text-[#22292f] text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                            {selectedUserIds.size}
+                          </span>
+                        )}
+                      </button>
                       <button
                         onClick={() => setShowAddUser(true)}
                         className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] transition-colors"

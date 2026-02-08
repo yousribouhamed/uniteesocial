@@ -2678,16 +2678,16 @@ function ChaptersContent() {
           </div>
 
           {/* Search Input */}
-          <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg focus-within:border-[#3f52ff] transition-colors max-w-md">
-            <Search className="w-4 h-4 text-[#859bab] shrink-0" />
+          <div className="flex items-center gap-2 h-9 px-3 py-1 bg-white border border-[#d5dde2] rounded-lg w-[373px]">
+            <Search className="w-4 h-4 text-[#668091] shrink-0" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by chapter name, city or country"
-              className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+              className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] bg-transparent outline-none border-none p-0 focus:ring-0"
             />
-            <kbd className="text-xs text-[#859bab] bg-[#eceff2] px-1.5 py-0.5 rounded border border-[#d5dde2]">
+            <kbd className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">
               ⌘K
             </kbd>
           </div>

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import {
   Bell,
   Calendar,
+  Filter,
   Users,
   ClipboardPenLine,
   Plus,
@@ -867,26 +868,28 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               </div>
             </div>
 
-            {/* Search + Filter Row */}
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg flex-1 max-w-[320px]" data-node-id="1818:15105">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7.333" cy="7.333" r="4.667" stroke="#859bab" strokeWidth="1.33" /><path d="M14 14L10.667 10.667" stroke="#859bab" strokeWidth="1.33" strokeLinecap="round" /></svg>
+          {/* Search + Filter Row */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 h-9 px-3 py-1 bg-white border border-[#d5dde2] rounded-lg w-[373px]">
+                <Search className="w-4 h-4 text-[#668091]" />
                 <input
                   type="text"
                   placeholder="Search Name, Email"
                   value={guestSearchQuery}
                   onChange={(e) => setGuestSearchQuery(e.target.value)}
-                  className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+                  className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] bg-transparent outline-none border-none p-0 focus:ring-0"
                 />
-                <span className="text-[#859bab] text-xs font-medium">⌘K</span>
+                <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
               </div>
               <Menu>
-                <MenuButton className="h-8 px-3 bg-[#eceff2] rounded-lg flex items-center gap-2 text-sm font-medium text-[#22292f] hover:bg-[#d5dde2] transition-colors">
-                  {guestStatusFilter === "all" ? "All Guests" :
-                    guestStatusFilter === "checked-in" ? "Checked In" :
-                      guestStatusFilter === "not-checked-in" ? "Not Checked In" :
-                        guestStatusFilter === "booked" ? "Booked" : "Cancelled"}
-                  <ChevronDown className="w-4 h-4 text-[#516778]" />
+                <MenuButton className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] transition-colors">
+                  <Filter className="w-4 h-4" />
+                  {guestStatusFilter !== "all" && (
+                    <span className="bg-white text-[#3f52ff] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                      1
+                    </span>
+                  )}
                 </MenuButton>
                 <Portal>
                   <MenuItems
@@ -938,6 +941,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 </Portal>
               </Menu>
             </div>
+          </div>
 
             {/* Guest Table */}
             <div className="w-full overflow-x-auto">
