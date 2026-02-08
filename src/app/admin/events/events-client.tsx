@@ -1739,24 +1739,6 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
 
-  // Parse date for display
-  const getDateParts = () => {
-    if (!event.dateIso) return { month: "OCT", day: "25", weekday: "samedi", fullDate: "25 octobre", time: "12:00 - 14:00 UTC+4" };
-    const date = new Date(event.dateIso);
-    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    const monthsFull = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
-    const weekdays = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-    return {
-      month: months[date.getMonth()],
-      day: date.getDate().toString(),
-      weekday: weekdays[date.getDay()],
-      fullDate: `${date.getDate()} ${monthsFull[date.getMonth()]}`,
-      time: "12:00 - 14:00 UTC+4"
-    };
-  };
-
-  const dateParts = getDateParts();
-
   return (
     <div
       onClick={onClick}
@@ -1764,7 +1746,7 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
     >
       <div className="flex flex-col gap-4">
         {/* Cover Image */}
-        <div className="relative w-full h-[200px] rounded-lg overflow-hidden bg-[#d5dde2]">
+        <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d9d9d9]">
           {event.coverImage?.startsWith("data:") || event.coverImage?.startsWith("http") ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -1788,23 +1770,19 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
               }}
             />
           ) : null}
-          {/* Centered User Icon */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] rounded-full border-[3px] border-white flex items-center justify-center">
-            <Users className="w-6 h-6 text-white" />
-          </div>
           {/* 3-dot menu */}
-          <div className="absolute top-2 right-2" ref={menuRef}>
+          <div className="absolute top-1.5 right-1.5" ref={menuRef}>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuOpen(!menuOpen);
               }}
-              className="w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors"
+              className="w-6 h-6 bg-[#d8e6ff] rounded-full flex items-center justify-center hover:bg-[#c5d8f7] transition-colors"
             >
-              <MoreVertical className="w-4 h-4 text-[#22292f]" />
+              <MoreVertical className="w-3.5 h-3.5 text-white" />
             </button>
             {menuOpen && (
-              <div className="absolute top-9 right-0 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg z-50 min-w-[100px]">
+              <div className="absolute top-8 right-0 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg z-50">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1840,68 +1818,33 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
               {event.title}
             </h3>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] text-white text-xs font-medium rounded">
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
+                <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
                 </svg>
                 {event.chapter}
               </span>
-              <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
+              <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
                 {event.type}
               </span>
-            </div>
-          </div>
-
-          {/* Date & Venue Row */}
-          <div className="flex items-start gap-8 flex-wrap">
-            {/* Date Section */}
-            <div className="flex items-center gap-2">
-              {/* Date Box */}
-              <div className="w-10 h-11 border border-[#859bab] rounded-lg overflow-hidden flex flex-col">
-                <div className="bg-[#859bab] px-1 py-1 flex items-center justify-center">
-                  <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">{dateParts.month}</span>
-                </div>
-                <div className="flex-1 flex items-center justify-center">
-                  <span className="text-base font-medium text-[#859bab] leading-none">{dateParts.day}</span>
-                </div>
-              </div>
-              {/* Date Text */}
-              <div className="flex flex-col gap-0.5">
-                <span className="text-base font-medium text-[#22292f] leading-6">{dateParts.weekday} {dateParts.fullDate}</span>
-                <span className="text-sm font-normal text-[#859bab] leading-[21px]">{dateParts.time}</span>
-              </div>
-            </div>
-
-            {/* Venue Section */}
-            <div className="flex items-center gap-2">
-              {/* Venue Icon Box */}
-              <div className="w-10 h-10 border border-[#859bab] rounded-lg flex items-center justify-center">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 10.625C11.3807 10.625 12.5 9.50571 12.5 8.125C12.5 6.74429 11.3807 5.625 10 5.625C8.61929 5.625 7.5 6.74429 7.5 8.125C7.5 9.50571 8.61929 10.625 10 10.625Z" stroke="#859bab" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M10 18.125C13.125 15 16.25 11.6421 16.25 8.125C16.25 4.60786 13.5171 1.875 10 1.875C6.48286 1.875 3.75 4.60786 3.75 8.125C3.75 11.6421 6.875 15 10 18.125Z" stroke="#859bab" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              {/* Venue Text */}
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-1">
-                  <span className="text-base font-medium text-[#22292f] leading-6">Alura</span>
-                  <ArrowUp className="w-4 h-4 text-[#22292f]/50 rotate-45" />
-                </div>
-                <span className="text-sm font-normal text-[#859bab] leading-[21px]">Dubai, Dubai</span>
-              </div>
+              {event.date && (
+                <span className="text-sm font-normal text-[#516778] leading-[18px]">
+                  {event.date}
+                </span>
+              )}
             </div>
           </div>
 
           {/* Location + Signups */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#22292f] shrink-0" />
+              <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
               <span className="text-sm font-normal text-[#22292f] leading-[18px]">
                 {event.location}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <ClipboardPenLine className="w-4 h-4 text-[#22292f] shrink-0" />
+              <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
               <span className="text-sm font-normal text-[#22292f] leading-[18px]">
                 {event.signups}/{event.maxSignups}
               </span>
