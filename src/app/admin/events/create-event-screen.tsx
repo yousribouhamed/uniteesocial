@@ -15,6 +15,7 @@ import {
   Pencil,
   Loader2,
 } from "lucide-react";
+import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
 import { AriaSlider } from "@/components/ui/aria-slider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
@@ -62,7 +63,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [locationMasking, setLocationMasking] = useState(false);
   const [locationMaskName, setLocationMaskName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
-  const [chapter, setChapter] = useState("Dubai");
+  const [chapter, setChapter] = useState("Dubai Chapter");
   const [ticketGoLive, setTicketGoLive] = useState("Custom Date");
   const [capacity, setCapacity] = useState("Unlimited");
   const [coverImage, setCoverImage] = useState<string>("");
@@ -442,34 +443,106 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             <span className="text-sm font-medium text-[#3f52ff]">Additional Options</span>
             <div className="bg-white rounded-lg overflow-hidden">
               {/* Event Chapter */}
-              <div className="px-3 py-2 flex items-center gap-2 border-b border-[#f0f2f4]">
-                <Tag className="w-4 h-4 text-[#22292f]" />
-                <span className="text-base font-medium text-[#22292f] flex-1">Event Chapter</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium text-[#668091]">{chapter}</span>
-                  <ChevronDown className="w-4 h-4 text-[#668091]" />
-                </div>
-              </div>
+              <Menu as="div" className="relative">
+                <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-[#f0f2f4] hover:bg-[#f9fafb] transition-colors">
+                  <Tag className="w-4 h-4 text-[#22292f]" />
+                  <span className="text-base font-medium text-[#22292f] flex-1 text-left">Event Chapter</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-medium text-[#668091]">{chapter}</span>
+                    <ChevronDown className="w-4 h-4 text-[#668091]" />
+                  </div>
+                </MenuButton>
+                <Portal>
+                  <MenuItems
+                    anchor="bottom end"
+                    transition
+                    className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                  >
+                    {DEFAULT_CHAPTERS.map((ch) => (
+                      <MenuItem key={ch.code}>
+                        <button
+                          onClick={() => setChapter(ch.name)}
+                          className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                            chapter === ch.name
+                              ? "bg-[#d8e6ff] text-[#3f52ff]"
+                              : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                          }`}
+                        >
+                          {ch.name}
+                        </button>
+                      </MenuItem>
+                    ))}
+                  </MenuItems>
+                </Portal>
+              </Menu>
 
               {/* Tickets Go Live */}
-              <div className="px-3 py-2 flex items-center gap-2 border-b border-[#f0f2f4]">
-                <Ticket className="w-4 h-4 text-[#22292f]" />
-                <span className="text-base font-medium text-[#22292f] flex-1">When tickets should go live?</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium text-[#668091]">{ticketGoLive}</span>
-                  <ChevronDown className="w-4 h-4 text-[#668091]" />
-                </div>
-              </div>
+              <Menu as="div" className="relative">
+                <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-[#f0f2f4] hover:bg-[#f9fafb] transition-colors">
+                  <Ticket className="w-4 h-4 text-[#22292f]" />
+                  <span className="text-base font-medium text-[#22292f] flex-1 text-left">When tickets should go live?</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-medium text-[#668091]">{ticketGoLive}</span>
+                    <ChevronDown className="w-4 h-4 text-[#668091]" />
+                  </div>
+                </MenuButton>
+                <Portal>
+                  <MenuItems
+                    anchor="bottom end"
+                    transition
+                    className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                  >
+                    {["Immediately", "One Day Before", "Three Days Before", "One Week Before", "Custom Date"].map((option) => (
+                      <MenuItem key={option}>
+                        <button
+                          onClick={() => setTicketGoLive(option)}
+                          className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                            ticketGoLive === option
+                              ? "bg-[#d8e6ff] text-[#3f52ff]"
+                              : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      </MenuItem>
+                    ))}
+                  </MenuItems>
+                </Portal>
+              </Menu>
 
               {/* Capacity */}
-              <div className="px-3 py-2 flex items-center gap-2">
-                <Users className="w-4 h-4 text-[#22292f]" />
-                <span className="text-base font-medium text-[#22292f] flex-1">Capacity</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium text-[#668091]">{capacity}</span>
-                  <Pencil className="w-4 h-4 text-[#668091]" />
-                </div>
-              </div>
+              <Menu as="div" className="relative">
+                <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-[#f9fafb] transition-colors">
+                  <Users className="w-4 h-4 text-[#22292f]" />
+                  <span className="text-base font-medium text-[#22292f] flex-1 text-left">Capacity</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-medium text-[#668091]">{capacity}</span>
+                    <ChevronDown className="w-4 h-4 text-[#668091]" />
+                  </div>
+                </MenuButton>
+                <Portal>
+                  <MenuItems
+                    anchor="bottom end"
+                    transition
+                    className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                  >
+                    {["Unlimited", "50", "100", "200", "300", "500", "1000"].map((option) => (
+                      <MenuItem key={option}>
+                        <button
+                          onClick={() => setCapacity(option)}
+                          className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
+                            capacity === option
+                              ? "bg-[#d8e6ff] text-[#3f52ff]"
+                              : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      </MenuItem>
+                    ))}
+                  </MenuItems>
+                </Portal>
+              </Menu>
             </div>
           </div>
 
