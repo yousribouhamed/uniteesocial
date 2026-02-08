@@ -668,9 +668,10 @@ function EditUserView({
       ];
   const [checkedFields, setCheckedFields] = useState<Record<string, boolean>>(() => {
     const initial = Object.fromEntries(directoryFields.map((f) => [f, true]));
-    if (user.directory_fields && Array.isArray(user.directory_fields)) {
+    const directoryFieldsValue = user.directory_fields;
+    if (directoryFieldsValue && Array.isArray(directoryFieldsValue)) {
       directoryFields.forEach((f) => {
-        initial[f] = user.directory_fields.includes(f);
+        initial[f] = directoryFieldsValue.includes(f);
       });
     }
     return initial;
