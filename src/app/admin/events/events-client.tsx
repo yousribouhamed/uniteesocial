@@ -2343,11 +2343,11 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                     { key: "general", label: "General Event" },
                     { key: "match", label: "Match" },
                   ] as const).map((tab) => {
-                    const isActive = eventTab === tab.key;
+                    const isActive = filterCategory === tab.key;
                     return (
                       <button
                         key={tab.key}
-                        onClick={() => setEventTab(tab.key)}
+                        onClick={() => setFilterCategory(tab.key)}
                         className={`relative px-5 py-2 rounded-[26px] text-sm font-semibold transition-colors ${isActive
                           ? "bg-white text-[#3f52ff] shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
                           : "text-[#516778]"
@@ -2360,10 +2360,10 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 </div>
                 <div className="flex flex-col items-end">
                   <span className="text-base font-semibold text-[#22292f] leading-[18px]">
-                    {eventTab === "general" ? generalCount : matchCount}
+                    {filterCategory === "general" ? generalCount : matchCount}
                   </span>
                   <span className="text-xs font-normal text-[#516778] leading-[18px]">
-                    {eventTab === "general" ? `${generalPercent}% of total` : `${matchPercent}% of total`}
+                    {filterCategory === "general" ? `${generalPercent}% of total` : `${matchPercent}% of total`}
                   </span>
                 </div>
               </div>
