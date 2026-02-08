@@ -1442,7 +1442,6 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                       </div>
                       <button className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] transition-colors">
                         <Filter className="w-4 h-4" />
-                        <span className="bg-white text-[#3f52ff] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">2</span>
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
