@@ -152,7 +152,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
                 {/* Inner Tabs - General Setting, Branding, Modules */}
                 <div className="flex flex-col gap-2">
-                  <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative">
+                  <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative self-start w-max">
                     {innerTabs.map((tab) => (
                       <button
                         key={tab}
