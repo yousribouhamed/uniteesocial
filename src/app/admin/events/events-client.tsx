@@ -885,16 +885,16 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
 
             {/* Search + Filter Row */}
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg flex-1 max-w-[320px]">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7.333" cy="7.333" r="4.667" stroke="#668091" strokeWidth="1.33" /><path d="M14 14L10.667 10.667" stroke="#668091" strokeWidth="1.33" strokeLinecap="round" /></svg>
+              <div className="flex items-center gap-2 h-9 px-3 bg-white border border-[#d5dde2] rounded-lg flex-1 max-w-[320px]" data-node-id="1818:15105">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7.333" cy="7.333" r="4.667" stroke="#859bab" strokeWidth="1.33" /><path d="M14 14L10.667 10.667" stroke="#859bab" strokeWidth="1.33" strokeLinecap="round" /></svg>
                 <input
                   type="text"
                   placeholder="Search Name, Email"
                   value={guestSearchQuery}
                   onChange={(e) => setGuestSearchQuery(e.target.value)}
-                  className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] outline-none bg-transparent"
+                  className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
                 />
-                <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
+                <span className="text-[#859bab] text-xs font-medium">⌘K</span>
               </div>
               <Menu>
                 <MenuButton className="h-8 px-3 bg-[#eceff2] rounded-lg flex items-center gap-2 text-sm font-medium text-[#22292f] hover:bg-[#d5dde2] transition-colors">
