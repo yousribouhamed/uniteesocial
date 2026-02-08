@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import {
   Search,
@@ -16,8 +16,11 @@ import {
   Shield,
   UserRound,
   Trophy,
+  Moon,
+  Settings,
 } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
+import { AriaSwitch } from "@/components/ui/aria-switch";
 
 interface SidebarItem {
   icon: React.ElementType;
@@ -60,7 +63,9 @@ export interface CurrentUser {
 
 export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -167,16 +172,74 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
         </div>
 
         {showLogoutMenu && (
-          <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-[#d5dde2] rounded-lg shadow-lg p-1">
-            <form action={signOut}>
+          <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl shadow-lg pt-2 pb-4 px-2 flex flex-col gap-4">
+            {/* Menu Options */}
+            <div className="flex flex-col gap-3">
+              {/* Dark Mode */}
+              <div className="flex items-center justify-between h-9 px-2 py-1.5 rounded hover:bg-[#f0f2f5] transition-colors">
+                <div className="flex items-center gap-2 flex-1">
+                  <Moon className="w-4 h-4 text-[#22292f]" />
+                  <span className="text-sm font-medium text-[#22292f]">Dark Mode</span>
+                </div>
+                <AriaSwitch
+                  isSelected={darkMode}
+                  onChange={setDarkMode}
+                  aria-label="Toggle dark mode"
+                />
+              </div>
+
+              {/* View Profile */}
               <button
-                type="submit"
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded transition-colors"
+                onClick={() => {
+                  setShowLogoutMenu(false);
+                  // Navigate to profile if needed
+                }}
+                className="flex items-center justify-between h-9 px-2 py-1.5 rounded hover:bg-[#f0f2f5] transition-colors"
               >
-                <LogOut className="w-4 h-4" />
-                Sign out
+                <div className="flex items-center gap-2 flex-1">
+                  <UserRound className="w-4 h-4 text-[#22292f]" />
+                  <span className="text-sm font-medium text-[#22292f]">View Profile</span>
+                </div>
+                <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded h-5 flex items-center">⌘KP</span>
               </button>
-            </form>
+
+              {/* Account Setting */}
+              <button
+                onClick={() => {
+                  setShowLogoutMenu(false);
+                  // Navigate to settings if needed
+                }}
+                className="flex items-center justify-between h-9 px-2 py-1.5 rounded hover:bg-[#f0f2f5] transition-colors"
+              >
+                <div className="flex items-center gap-2 flex-1">
+                  <Settings className="w-4 h-4 text-[#22292f]" />
+                  <span className="text-sm font-medium text-[#22292f]">Account Setting</span>
+                </div>
+                <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded h-5 flex items-center">⌘S</span>
+              </button>
+
+              {/* Divider */}
+              <div className="h-px bg-[#eceff2] w-full" />
+
+              {/* Sign Out */}
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="flex items-center justify-between h-9 px-2 py-1.5 rounded hover:bg-red-50 transition-colors w-full"
+                >
+                  <div className="flex items-center gap-2 flex-1">
+                    <LogOut className="w-4 h-4 text-[#e22023]" />
+                    <span className="text-sm font-medium text-[#e22023]">Sign Out</span>
+                  </div>
+                  <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded h-5 flex items-center">⌥⇧Q</span>
+                </button>
+              </form>
+            </div>
+
+            {/* Footer: Version & Terms */}
+            <div className="px-2">
+              <span className="text-sm font-medium text-[#859bab]">v1.0 - Terms & Conditions</span>
+            </div>
           </div>
         )}
       </div>
