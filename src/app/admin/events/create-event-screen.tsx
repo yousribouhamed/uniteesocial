@@ -14,6 +14,8 @@ import {
   ChevronDown,
   Pencil,
   Loader2,
+  Link,
+  CheckCircle,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
@@ -62,6 +64,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [geoFenceRadius, setGeoFenceRadius] = useState(650);
   const [locationMasking, setLocationMasking] = useState(false);
   const [locationMaskName, setLocationMaskName] = useState("");
+  const [virtualMeetingUrl, setVirtualMeetingUrl] = useState("");
+  const [virtualAdditionalInfo, setVirtualAdditionalInfo] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [chapter, setChapter] = useState("Dubai Chapter");
   const [ticketGoLive, setTicketGoLive] = useState("Custom Date");
@@ -337,81 +341,116 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 <span className="text-base font-medium text-[#22292f]">Add event location</span>
               </div>
 
-              {/* Location Input */}
-              <div className="flex flex-col gap-1">
-                <input
-                  type="text"
-                  placeholder="Enter the location"
-                  value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
-                  className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff]"
-                />
-                <div className="flex items-center gap-2 text-xs text-[#859bab]">
-                  <div className="w-3 h-3 border border-[#859bab] rounded-full" />
-                  <span>Type to search (Google Typeahead Search integration)</span>
-                </div>
-              </div>
-
-              {/* Map Placeholder */}
-              <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#e5e5e5]">
-                <Image
-                  src="/img/map-placeholder.jpg"
-                  alt="Map"
-                  fill
-                  className="object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-                {/* Map Pin Icon Overlay */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full">
-                  <div className="relative">
-                    <div className="w-8 h-8 bg-[#3f52ff] rounded-full flex items-center justify-center">
-                      <div className="w-3 h-3 bg-white rounded-full" />
-                    </div>
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-transparent border-t-[#3f52ff]" />
-                  </div>
-                </div>
-                {/* Radius Circle */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-[#3f52ff] rounded-full bg-[#3f52ff]/10" />
-              </div>
-
-              {/* Geo-Fence Radius */}
-              <div className="flex flex-col gap-2">
-                <AriaSlider
-                  label="Geo-Fence Radius"
-                  unit="meters"
-                  minValue={0}
-                  maxValue={1000}
-                  value={geoFenceRadius}
-                  onChange={(v) => setGeoFenceRadius(v as number)}
-                />
-                <p className="text-xs text-[#859bab] text-center">
-                  Define the radius for location-based check-in verification
-                </p>
-              </div>
-
-              {/* Location Masking */}
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
+              {locationType === "onsite" ? (
+                <>
+                  {/* Location Input */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-semibold text-[#22292f]">Location Masking</span>
-                    <span className="text-xs text-[#859bab]">Hide real location and show custom name</span>
+                    <input
+                      type="text"
+                      placeholder="Enter the location"
+                      value={locationInput}
+                      onChange={(e) => setLocationInput(e.target.value)}
+                      className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff]"
+                    />
+                    <div className="flex items-center gap-2 text-xs text-[#859bab]">
+                      <div className="w-3 h-3 border border-[#859bab] rounded-full" />
+                      <span>Type to search (Google Typeahead Search integration)</span>
+                    </div>
                   </div>
-                  <AriaSwitch
-                    isSelected={locationMasking}
-                    onChange={setLocationMasking}
-                  />
-                </div>
 
-                {/* Additional Info Textarea */}
-                <textarea
-                  placeholder="Additional Informations"
-                  value={locationMaskName}
-                  onChange={(e) => setLocationMaskName(e.target.value)}
-                  className="w-full h-[72px] px-3 py-2 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] resize-none"
-                />
-              </div>
+                  {/* Map Placeholder */}
+                  <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#e5e5e5]">
+                    <Image
+                      src="/img/map-placeholder.jpg"
+                      alt="Map"
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                    {/* Map Pin Icon Overlay */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full">
+                      <div className="relative">
+                        <div className="w-8 h-8 bg-[#3f52ff] rounded-full flex items-center justify-center">
+                          <div className="w-3 h-3 bg-white rounded-full" />
+                        </div>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-transparent border-t-[#3f52ff]" />
+                      </div>
+                    </div>
+                    {/* Radius Circle */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-[#3f52ff] rounded-full bg-[#3f52ff]/10" />
+                  </div>
+
+                  {/* Geo-Fence Radius */}
+                  <div className="flex flex-col gap-2">
+                    <AriaSlider
+                      label="Geo-Fence Radius"
+                      unit="meters"
+                      minValue={0}
+                      maxValue={1000}
+                      value={geoFenceRadius}
+                      onChange={(v) => setGeoFenceRadius(v as number)}
+                    />
+                    <p className="text-xs text-[#859bab] text-center">
+                      Define the radius for location-based check-in verification
+                    </p>
+                  </div>
+
+                  {/* Location Masking */}
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm font-semibold text-[#22292f]">Location Name</span>
+                        <span className="text-xs text-[#859bab]">Enter the location name to display on the event</span>
+                      </div>
+                      <AriaSwitch
+                        isSelected={locationMasking}
+                        onChange={setLocationMasking}
+                      />
+                    </div>
+
+                    {/* Additional Info Textarea */}
+                    <textarea
+                      placeholder="Additional Informations"
+                      value={locationMaskName}
+                      onChange={(e) => setLocationMaskName(e.target.value)}
+                      className="w-full h-[72px] px-3 py-2 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] resize-none"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Virtual Meeting URL Input */}
+                  <div className="flex flex-col gap-2">
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                        <Link className="w-4 h-4 text-[#859bab]" />
+                      </div>
+                      <input
+                        type="url"
+                        placeholder="https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-"
+                        value={virtualMeetingUrl}
+                        onChange={(e) => setVirtualMeetingUrl(e.target.value)}
+                        className="w-full h-10 pl-10 pr-10 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff]"
+                      />
+                      {virtualMeetingUrl && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <CheckCircle className="w-5 h-5 text-[#22892e]" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Additional Info Textarea */}
+                    <textarea
+                      placeholder="Additional Informations"
+                      value={virtualAdditionalInfo}
+                      onChange={(e) => setVirtualAdditionalInfo(e.target.value)}
+                      className="w-full h-[72px] px-3 py-2 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] resize-none"
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
