@@ -1793,15 +1793,17 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
             />
           ) : null}
           {/* 3-dot menu */}
-          <div className="absolute top-1.5 right-1.5" ref={menuRef}>
+          <div className="absolute top-2 right-2" ref={menuRef}>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuOpen(!menuOpen);
               }}
-              className="w-6 h-6 bg-[#d8e6ff] rounded-full flex items-center justify-center hover:bg-[#c5d8f7] transition-colors"
+              className="h-6 px-3 bg-[#d8e6ff] rounded-full flex items-center justify-center gap-[3px] hover:bg-[#c5d8f7] transition-colors"
             >
-              <MoreVertical className="w-3.5 h-3.5 text-white" />
+              <div className="w-[5px] h-[5px] bg-[#516778] rounded-full" />
+              <div className="w-[5px] h-[5px] bg-[#516778] rounded-full" />
+              <div className="w-[5px] h-[5px] bg-[#516778] rounded-full" />
             </button>
             {menuOpen && (
               <div className="absolute top-8 right-0 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg z-50">
