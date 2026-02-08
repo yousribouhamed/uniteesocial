@@ -861,7 +861,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     placeholder="https://ticketing-url.com"
                     value={ticketsUrl}
                     onChange={(e) => setTicketsUrl(e.target.value)}
-                    className="w-full h-9 pl-10 pr-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                    className="w-full h-9 pl-10 pr-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
                   />
                 </div>
                 <div className="flex items-center gap-2 text-[#859bab]">
