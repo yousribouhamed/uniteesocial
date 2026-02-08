@@ -406,10 +406,10 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {detailTab === "overview" && (
         <div className="flex lg:flex-row flex-col gap-4 items-start">
           {/* Left: Event Preview Card */}
-          <div className="w-full lg:w-[417px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3">
+          <div className="w-full lg:w-[417px] shrink-0 bg-white border border-[#d5dde2] rounded-2xl p-4">
             <div className="flex flex-col gap-4">
               {/* Cover Image Preview */}
-              <div className="relative w-full h-[200px] rounded-lg overflow-hidden bg-[#d5dde2]">
+              <div className="relative w-full h-[280px] rounded-xl overflow-hidden bg-[#d5dde2]">
                 {coverImage ? (
                   coverImage.startsWith("data:") ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -436,8 +436,13 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   </div>
                 )}
                 {/* Centered User Icon */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] rounded-full border-[3px] border-white flex items-center justify-center">
-                  <Users className="w-6 h-6 text-white" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60px] h-[60px] bg-[#3f52ff] rounded-full border-[3px] border-white flex items-center justify-center">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="9" cy="7" r="4" stroke="white" strokeWidth="2"/>
+                    <path d="M3 21V19C3 16.7909 4.79086 15 7 15H11C13.2091 15 15 16.7909 15 19V21" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="17" cy="10" r="3" stroke="white" strokeWidth="2"/>
+                    <path d="M21 21V19.5C21 17.567 19.433 16 17.5 16H17" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
                 </div>
               </div>
 
