@@ -2448,30 +2448,28 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                   </span>
                 </div>
 
-                {/* Filter Tabs + Percentage */}
+                {/* General Event */}
                 <div className="flex-1 flex items-center justify-between p-4">
-                  <div className="inline-flex items-center bg-[#dfe3e8] rounded-full p-1">
-                    {([
-                      { key: "general", label: "General Event" },
-                      { key: "match", label: "Match" },
-                    ] as const).map((tab) => {
-                      const isActive = filterCategory === tab.key;
-                      return (
-                        <button
-                          key={tab.key}
-                          onClick={() => setFilterCategory(tab.key)}
-                          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${isActive
-                            ? "bg-white text-[#3f52ff] shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
-                            : "text-[#516778]"
-                            }`}
-                        >
-                          {tab.label}
-                        </button>
-                      );
-                    })}
+                  <div className="flex items-center gap-2">
+                    <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-base font-semibold text-[#3f52ff] leading-[18px]">
+                        General Event
+                      </span>
+                      <span className="text-xs font-normal text-[#516778] leading-[18px]">
+                        {generalPercent}% of total
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-xs font-normal text-[#516778] leading-[18px]">
-                    {filterCategory === "general" ? `${generalPercent}% of total` : `${matchPercent}% of total`}
+                  <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+                    {generalCount}
                   </span>
                 </div>
               </div>
