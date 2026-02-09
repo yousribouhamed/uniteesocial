@@ -1302,29 +1302,21 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             <div className="px-4 py-4 flex flex-col gap-4">
               {/* League Name Inputs - Side by Side */}
               <div className="flex gap-4">
-                {/* English Name Input */}
-                <div className="flex-1 flex flex-col gap-1">
-                  <span className="text-sm font-semibold text-[#22292f]">League Name</span>
-                  <input
-                    type="text"
-                    placeholder="Enter league name"
-                    value={newLeagueName}
-                    onChange={(e) => setNewLeagueName(e.target.value)}
-                    className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
-                  />
-                </div>
-                {/* Arabic Name Input */}
-                <div className="flex-1 flex flex-col gap-1">
-                  <span className="text-sm font-semibold text-[#22292f] text-right" dir="rtl">أسم الليجا</span>
-                  <input
-                    type="text"
-                    placeholder="أدخل اسم الدوري"
-                    dir="rtl"
-                    value={newLeagueNameAr}
-                    onChange={(e) => setNewLeagueNameAr(e.target.value)}
-                    className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] text-right"
-                  />
-                </div>
+                <input
+                  type="text"
+                  placeholder="Enter league name"
+                  value={newLeagueName}
+                  onChange={(e) => setNewLeagueName(e.target.value)}
+                  className="flex-1 h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]"
+                />
+                <input
+                  type="text"
+                  placeholder="أدخل اسم الدوري"
+                  dir="rtl"
+                  value={newLeagueNameAr}
+                  onChange={(e) => setNewLeagueNameAr(e.target.value)}
+                  className="flex-1 h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] font-ko-sans-ar"
+                />
               </div>
 
               {/* League Logo */}

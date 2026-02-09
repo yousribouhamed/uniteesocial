@@ -10,9 +10,70 @@
   font-display: swap;
 }
 
+/* KO Sans Arabic */
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/fonts/ko-sans/KOSans-Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/fonts/ko-sans/KOSans-ExtraLight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/fonts/ko-sans/KOSans-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/fonts/ko-sans/KOSans-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/fonts/ko-sans/KOSans-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/fonts/ko-sans/KOSans-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/fonts/ko-sans/KOSans-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Ensure font-ghapter class works */
 .font-ghapter {
   font-family: 'Ghapter', system-ui, -apple-system, sans-serif !important;
+}
+
+.font-ko-sans-ar {
+  font-family: 'KO Sans', system-ui, -apple-system, sans-serif !important;
 }
 
 @keyframes spotlight {
