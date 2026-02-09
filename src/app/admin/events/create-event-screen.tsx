@@ -470,7 +470,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     </MenuButton>
                     <Portal>
                       <MenuItems
-                        anchor="bottom end"
+                        anchor={isArabic ? "bottom start" : "bottom end"}
                         transition
                         className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                       >
@@ -1343,7 +1343,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </MenuButton>
                 <Portal>
                   <MenuItems
-                    anchor="bottom end"
+                    anchor={isArabic ? "bottom start" : "bottom end"}
                     transition
                     className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                   >
@@ -1381,7 +1381,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               </MenuButton>
                 <Portal>
                   <MenuItems
-                    anchor="bottom end"
+                    anchor={isArabic ? "bottom start" : "bottom end"}
                     transition
                     className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                   >
@@ -1417,7 +1417,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               </MenuButton>
                 <Portal>
                   <MenuItems
-                    anchor="bottom end"
+                    anchor={isArabic ? "bottom start" : "bottom end"}
                     transition
                     className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                   >
