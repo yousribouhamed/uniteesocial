@@ -384,27 +384,27 @@ function SearchableSelect({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg flex items-center gap-2 text-sm text-left"
+        className="w-full h-9 px-3 bg-card border border-border rounded-lg flex items-center gap-2 text-sm text-left"
       >
         <span className="text-sm">
           {selected?.iso2 ? flagFor(selected.iso2) : "🏳️"}
         </span>
-        <span className={selected ? "text-[#22292f]" : "text-[#859bab]"}>
+        <span className={selected ? "text-foreground" : "text-muted-foreground"}>
           {selected?.label || placeholder}
         </span>
-        <ChevronDown className="ml-auto w-4 h-4 text-[#859bab]" />
+        <ChevronDown className="ml-auto w-4 h-4 text-muted-foreground" />
       </button>
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-[#d5dde2] rounded-lg shadow-lg">
-          <div className="p-2 border-b border-[#eceff2]">
-            <div className="flex items-center gap-2 h-8 px-2 border border-[#d5dde2] rounded-md">
-              <Search className="w-4 h-4 text-[#859bab]" />
+        <div className="absolute z-50 mt-1 w-full bg-card border border-border rounded-lg shadow-lg">
+          <div className="p-2 border-b border-border">
+            <div className="flex items-center gap-2 h-8 px-2 border border-border rounded-md">
+              <Search className="w-4 h-4 text-muted-foreground" />
               <input
                 ref={inputRef}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search"
-                className="flex-1 text-sm outline-none bg-transparent text-[#22292f] placeholder:text-[#859bab]"
+                className="flex-1 text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </div>
@@ -418,7 +418,7 @@ function SearchableSelect({
                   setOpen(false);
                   setSearch("");
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] hover:bg-[#f5f5f5] transition-colors"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted/70 transition-colors"
               >
                 <span className="w-6">
                   {option.iso2 ? flagFor(option.iso2) : "🏳️"}
@@ -427,7 +427,7 @@ function SearchableSelect({
               </button>
             ))}
             {filtered.length === 0 && (
-              <div className="px-3 py-2 text-sm text-[#859bab]">No matches</div>
+              <div className="px-3 py-2 text-sm text-muted-foreground">No matches</div>
             )}
           </div>
         </div>
@@ -469,27 +469,27 @@ function PhoneNumberInput({
   });
 
   return (
-    <div className="relative flex h-9 bg-white border border-[#b0bfc9] rounded-lg" ref={containerRef}>
+    <div className="relative flex h-9 bg-card border border-border rounded-lg" ref={containerRef}>
       <div className="relative shrink-0">
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="flex items-center gap-2 px-3 h-9 hover:bg-[#f5f5f5] transition-colors"
+          className="flex items-center gap-2 px-3 h-9 hover:bg-muted/70 transition-colors"
         >
           <span className="text-sm">{flagFor(country.iso2)}</span>
-          <span className="text-sm font-semibold text-[#22292f]">+{country.dial}</span>
-          <ChevronDown className="w-4 h-4 text-[#859bab]" />
+          <span className="text-sm font-semibold text-foreground">+{country.dial}</span>
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
         </button>
         {open && (
-          <div className="absolute z-50 mt-1 w-72 bg-white border border-[#d5dde2] rounded-lg shadow-lg">
-            <div className="p-2 border-b border-[#eceff2]">
-              <div className="flex items-center gap-2 h-8 px-2 border border-[#d5dde2] rounded-md">
-                <Search className="w-4 h-4 text-[#859bab]" />
+          <div className="absolute z-50 mt-1 w-72 bg-card border border-border rounded-lg shadow-lg">
+            <div className="p-2 border-b border-border">
+              <div className="flex items-center gap-2 h-8 px-2 border border-border rounded-md">
+                <Search className="w-4 h-4 text-muted-foreground" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search country or code"
-                  className="flex-1 text-sm outline-none bg-transparent text-[#22292f] placeholder:text-[#859bab]"
+                  className="flex-1 text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             </div>
@@ -503,27 +503,27 @@ function PhoneNumberInput({
                     setOpen(false);
                     setSearch("");
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] hover:bg-[#f5f5f5] transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted/70 transition-colors"
                 >
                   <span className="w-6">{flagFor(c.iso2)}</span>
                   <span className="flex-1 text-left">{c.name}</span>
-                  <span className="text-[#668091]">+{c.dial}</span>
+                  <span className="text-muted-foreground">+{c.dial}</span>
                 </button>
               ))}
               {filtered.length === 0 && (
-                <div className="px-3 py-2 text-sm text-[#859bab]">No matches</div>
+                <div className="px-3 py-2 text-sm text-muted-foreground">No matches</div>
               )}
             </div>
           </div>
         )}
       </div>
-      <div className="w-px bg-[#d1d1d1]" />
+      <div className="w-px bg-border" />
       <input
         type="text"
         value={phone}
         onChange={(e) => onPhoneChange(e.target.value)}
         placeholder="(555) 000-0000"
-        className="flex-1 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+        className="flex-1 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
       />
     </div>
   );
@@ -564,23 +564,23 @@ interface UsersPageClientProps {
 function StatusBadge({ status }: { status: UserStatus | null }) {
   const isActive = status === "Active";
   return (
-    <div className="inline-flex items-center gap-2 bg-white border border-[#e4e4e4] rounded-full px-3 py-1">
+    <div className="inline-flex items-center gap-2 bg-card border border-border rounded-full px-3 py-1">
       {isActive ? (
-        <CheckCircle2 className="w-[18px] h-[18px] text-[#22c55e] fill-[#22c55e] stroke-white" />
+        <CheckCircle2 className="w-[18px] h-[18px] text-emerald-600 fill-emerald-600 stroke-white dark:text-emerald-300 dark:fill-emerald-300" />
       ) : (
-        <XCircle className="w-[18px] h-[18px] text-[#ef4444] fill-[#ef4444] stroke-white" />
+        <XCircle className="w-[18px] h-[18px] text-red-500 fill-red-500 stroke-white dark:text-red-300 dark:fill-red-300" />
       )}
-      <span className="text-sm font-medium text-[#1f232c] leading-[18px]">{status || "Unknown"}</span>
+      <span className="text-sm font-medium text-foreground leading-[18px]">{status || "Unknown"}</span>
     </div>
   );
 }
 
 function ProfileStatusBadge({ status }: { status: ProfileStatus | null }) {
   const config: Record<ProfileStatus, { bg: string; text: string; border: string; dot: string }> = {
-    Verified: { bg: "bg-[#f0fdf4]", text: "text-[#16a34a]", border: "border-[#bbf7d0]", dot: "bg-[#22c55e]" },
-    "Not Verified": { bg: "bg-[#fef2f2]", text: "text-[#e16767]", border: "border-[#fecaca]", dot: "bg-[#e16767]" },
-    Completed: { bg: "bg-[#ffebcc]", text: "text-[#fe9a00]", border: "border-[#fdd889]", dot: "bg-[#fe9a00]" },
-    Active: { bg: "bg-[#f0fdf4]", text: "text-[#16a34a]", border: "border-[#bbf7d0]", dot: "bg-[#22c55e]" },
+    Verified: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-800/60", dot: "bg-emerald-500 dark:bg-emerald-300" },
+    "Not Verified": { bg: "bg-red-50 dark:bg-red-900/30", text: "text-red-600 dark:text-red-300", border: "border-red-200 dark:border-red-800/60", dot: "bg-red-500 dark:bg-red-300" },
+    Completed: { bg: "bg-amber-50 dark:bg-amber-900/30", text: "text-amber-700 dark:text-amber-300", border: "border-amber-200 dark:border-amber-800/60", dot: "bg-amber-500 dark:bg-amber-300" },
+    Active: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-800/60", dot: "bg-emerald-500 dark:bg-emerald-300" },
   };
   const c = config[status || "Not Verified"];
   return (
@@ -602,20 +602,20 @@ function ActionMenu({
 }) {
   return (
     <Menu>
-      <MenuButton className="p-1.5 rounded-lg hover:bg-[#eceff2] transition-colors focus:outline-none">
-        <MoreVertical className="w-4 h-4 text-[#516778]" />
+      <MenuButton className="p-1.5 rounded-lg hover:bg-muted transition-colors focus:outline-none">
+        <MoreVertical className="w-4 h-4 text-muted-foreground" />
       </MenuButton>
 
       <Portal>
         <MenuItems
           anchor="bottom end"
           transition
-          className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[165px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+          className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[165px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
         >
           <MenuItem>
             <button
               onClick={onViewActivity}
-              className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-[#d8e6ff] hover:bg-[#d8e6ff] transition-colors text-[#22292f] group focus:outline-none"
+              className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-blue-100 dark:data-[focus]:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors text-foreground group focus:outline-none"
             >
               <Eye className="w-4 h-4" />
               View Activity
@@ -624,7 +624,7 @@ function ActionMenu({
           <MenuItem>
             <button
               onClick={onEdit}
-              className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-[#d8e6ff] hover:bg-[#d8e6ff] transition-colors text-[#22292f] focus:outline-none"
+              className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-blue-100 dark:data-[focus]:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors text-foreground focus:outline-none"
             >
               <Pencil className="w-4 h-4" />
               Edit
@@ -633,9 +633,9 @@ function ActionMenu({
           <MenuItem>
             <button
               onClick={onDelete}
-              className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-red-50 hover:bg-red-50 transition-colors text-[#E22023] focus:outline-none"
+              className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-destructive/10 hover:bg-destructive/10 transition-colors text-destructive focus:outline-none"
             >
-              <Trash2 className="w-4 h-4 text-[#E22023]" />
+              <Trash2 className="w-4 h-4 text-destructive" />
               Delete
             </button>
           </MenuItem>
@@ -679,29 +679,29 @@ function DeleteUserModal({
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white border border-[#d5dde2] rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
+      <div className="relative bg-card border border-border rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-[#d5dde2]">
+        <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-border">
           <div className="flex items-center gap-4">
-            <div className="bg-[#ffe0e1] rounded-md p-2">
-              <AlertCircle className="w-4 h-4 text-[#e53935]" />
+            <div className="bg-destructive/10 rounded-md p-2">
+              <AlertCircle className="w-4 h-4 text-destructive" />
             </div>
-            <span className="text-base font-semibold text-[#22292f]">
+            <span className="text-base font-semibold text-foreground">
               Delete User
             </span>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+            className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted transition-colors"
           >
-            <X className="w-3.5 h-3.5 text-[#516778]" />
+            <X className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         </div>
         {/* Modal Body */}
         <div className="px-4">
-          <p className="text-sm font-semibold text-[#859bab] leading-[20px]">
+          <p className="text-sm font-semibold text-muted-foreground leading-[20px]">
             Are you sure you want to delete{" "}
-            <span className="font-bold text-[#22292f]">
+            <span className="font-bold text-foreground">
               &quot;{user.full_name || "this user"}&quot;
             </span>
             ? This action cannot be undone and will permanently remove the user
@@ -714,18 +714,18 @@ function DeleteUserModal({
           )}
         </div>
         {/* Modal Footer */}
-        <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-[#d5dde2]">
+        <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-border">
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 h-10 px-4 text-sm font-medium text-[#22292f] bg-white border border-[#d5dde2] rounded-lg hover:bg-[#f5f5f5] transition-colors disabled:opacity-50"
+            className="flex-1 h-10 px-4 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted/70 transition-colors disabled:opacity-50"
           >
             Dismiss
           </button>
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="flex-1 h-10 px-4 text-sm font-medium text-white bg-[#e53935] rounded-lg hover:bg-[#c62828] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 h-10 px-4 text-sm font-medium text-white bg-destructive rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -873,11 +873,11 @@ function EditUserView({
   return (
     <div className="flex flex-col gap-8 px-8 py-6">
       {/* Edit Header Bar */}
-      <div className="bg-[#edf8ff] rounded-xl flex items-center justify-between p-2">
+      <div className="bg-blue-50 dark:bg-blue-950/40 rounded-xl flex items-center justify-between p-2">
         <div className="flex items-center gap-2">
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-[#d8e6ff] flex items-center justify-center hover:bg-[#c4d8fc] transition-colors"
+            className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors"
           >
             <RotateCcw className="w-4 h-4 text-[#3f52ff]" />
           </button>
@@ -902,31 +902,31 @@ function EditUserView({
       </div>
 
       {/* Separator */}
-      <div className="h-px bg-[#eceff2]" />
+      <div className="h-px bg-muted" />
 
       {/* Form Card */}
-      <div className="bg-white border border-[#d5dde2] rounded-xl p-3 flex flex-col gap-4">
+      <div className="bg-card border border-border rounded-xl p-3 flex flex-col gap-4">
         <div className="flex flex-col gap-4">
           {/* Row 1: First Name + Last Name */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">First Name</label>
+              <label className="text-sm font-semibold text-foreground">First Name</label>
               <input
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Kobe"
-                className="h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] transition-colors"
+                className="h-9 px-3 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] transition-colors"
               />
             </div>
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Last Name</label>
+              <label className="text-sm font-semibold text-foreground">Last Name</label>
               <input
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Paras"
-                className="h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] transition-colors"
+                className="h-9 px-3 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] transition-colors"
               />
             </div>
           </div>
@@ -934,7 +934,7 @@ function EditUserView({
           {/* Row 2: Phone Number + Gender */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Phone Number</label>
+              <label className="text-sm font-semibold text-foreground">Phone Number</label>
               <PhoneNumberInput
                 phone={phone}
                 onPhoneChange={setPhone}
@@ -943,7 +943,7 @@ function EditUserView({
               />
             </div>
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Gender</label>
+              <label className="text-sm font-semibold text-foreground">Gender</label>
               <AriaSelect
                 aria-label="Gender"
                 selectedKey={gender || undefined}
@@ -960,7 +960,7 @@ function EditUserView({
           {/* Row 3: Country + Nationality */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Country</label>
+              <label className="text-sm font-semibold text-foreground">Country</label>
               <SearchableSelect
                 value={country}
                 onChange={setCountry}
@@ -969,7 +969,7 @@ function EditUserView({
               />
             </div>
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Nationality</label>
+              <label className="text-sm font-semibold text-foreground">Nationality</label>
               <SearchableSelect
                 value={nationality}
                 onChange={setNationality}
@@ -982,43 +982,43 @@ function EditUserView({
           {/* Row 4: Email + Password + Re-generate */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Email</label>
-              <div className="flex items-center h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg gap-2">
-                <Mail className="w-4 h-4 text-[#859bab] shrink-0" />
+              <label className="text-sm font-semibold text-foreground">Email</label>
+              <div className="flex items-center h-9 px-3 bg-card border border-border rounded-lg gap-2">
+                <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="yybouhamed@gmail.com"
-                  className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+                  className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
                 />
               </div>
             </div>
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Password</label>
+              <label className="text-sm font-semibold text-foreground">Password</label>
               <div className="flex gap-4 items-start">
-                <div className="flex items-center h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg gap-2 flex-1">
+                <div className="flex items-center h-9 px-3 bg-card border border-border rounded-lg gap-2 flex-1">
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password"
-                    className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+                    className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
                   />
                   <button
                     onClick={copyPassword}
-                    className="shrink-0 p-0.5 hover:bg-[#f5f5f5] rounded transition-colors"
+                    className="shrink-0 p-0.5 hover:bg-muted/70 rounded transition-colors"
                   >
                     {copied ? (
-                      <Check className="w-4 h-4 text-[#22c55e]" />
+                      <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-300" />
                     ) : (
-                      <Copy className="w-4 h-4 text-[#859bab]" />
+                      <Copy className="w-4 h-4 text-muted-foreground" />
                     )}
                   </button>
                 </div>
                 <button
                   onClick={generatePassword}
-                  className="h-9 px-3 bg-[#22292f] text-white text-sm font-medium rounded-lg hover:bg-[#3a4550] transition-colors shrink-0"
+                  className="h-9 px-3 bg-foreground text-background text-sm font-medium rounded-lg hover:bg-foreground/90 transition-colors shrink-0"
                 >
                   Re-generate
                 </button>
@@ -1028,7 +1028,7 @@ function EditUserView({
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className={`flex-1 h-1 rounded-full ${i < passedChecks ? "bg-[#22c55e]" : "bg-[#d5dde2]"
+                    className={`flex-1 h-1 rounded-full ${i < passedChecks ? "bg-emerald-500 dark:bg-emerald-300" : "bg-muted"
                       }`}
                   />
                 ))}
@@ -1043,11 +1043,11 @@ function EditUserView({
                 ].map((check) => (
                   <div key={check.label} className="flex items-center gap-1.5">
                     <Check
-                      className={`w-3.5 h-3.5 ${check.passed ? "text-[#22c55e]" : "text-[#d5dde2]"
+                      className={`w-3.5 h-3.5 ${check.passed ? "text-emerald-600 dark:text-emerald-300" : "text-muted-foreground"
                         }`}
                     />
                     <span
-                      className={`text-xs ${check.passed ? "text-[#22c55e]" : "text-[#859bab]"
+                      className={`text-xs ${check.passed ? "text-emerald-600 dark:text-emerald-300" : "text-muted-foreground"
                         }`}
                     >
                       {check.label}
@@ -1061,7 +1061,7 @@ function EditUserView({
           {/* Row 5: Role */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Role</label>
+              <label className="text-sm font-semibold text-foreground">Role</label>
               <AriaSelect
                 aria-label="Role"
                 selectedKey={role || undefined}
@@ -1079,13 +1079,13 @@ function EditUserView({
         </div>
 
         {/* Separator */}
-        <div className="h-px bg-[#d5dde2]" />
+        <div className="h-px bg-muted" />
 
         {/* User Activation */}
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-semibold text-[#22292f]">User Activation</span>
-            <span className="text-xs font-semibold text-[#859bab]">
+            <span className="text-sm font-semibold text-foreground">User Activation</span>
+            <span className="text-xs font-semibold text-muted-foreground">
               Control whether this user account is active or inactive.
             </span>
           </div>
@@ -1096,10 +1096,10 @@ function EditUserView({
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-[#22292f]">
+              <span className="text-sm font-semibold text-foreground">
                 Profile to be viewed in member directory section
               </span>
-              <span className="text-xs font-semibold text-[#859bab]">
+              <span className="text-xs font-semibold text-muted-foreground">
                 Control whether this user account is active or inactive.
               </span>
             </div>
@@ -1108,14 +1108,14 @@ function EditUserView({
 
           {/* Checkboxes */}
           {profileVisible && (
-            <div className="bg-[#eceff2] rounded-lg p-2 flex flex-col gap-2">
+            <div className="bg-muted rounded-lg p-2 flex flex-col gap-2">
               {directoryFields.map((field) => (
                 <AriaCheckbox
                   key={field}
                   isSelected={checkedFields[field]}
                   onChange={() => toggleField(field)}
                 >
-                  <span className="font-medium text-[#22292f]">{field}</span>
+                  <span className="font-medium text-foreground">{field}</span>
                 </AriaCheckbox>
               ))}
             </div>
@@ -1215,10 +1215,10 @@ function ViewActivityView({
   return (
     <div className="flex flex-col gap-8 px-8 py-6">
       {/* View Activity Header Bar */}
-      <div className="bg-[#edf8ff] rounded-xl flex items-center gap-2 p-2">
+      <div className="bg-blue-50 dark:bg-blue-950/40 rounded-xl flex items-center gap-2 p-2">
         <button
           onClick={onClose}
-          className="w-8 h-8 rounded-lg bg-[#d8e6ff] flex items-center justify-center hover:bg-[#c4d8fc] transition-colors"
+          className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors"
         >
           <RotateCcw className="w-4 h-4 text-[#3f52ff]" />
         </button>
@@ -1228,7 +1228,7 @@ function ViewActivityView({
       </div>
 
       {/* Activity Feed Card */}
-      <div className="bg-white border border-[#d5dde2] rounded-lg pt-3 px-3 flex flex-col">
+      <div className="bg-card border border-border rounded-lg pt-3 px-3 flex flex-col">
         {activities.map((activity, index) => (
           <div key={activity.id}>
             <div className="flex items-start justify-between py-3">
@@ -1242,19 +1242,19 @@ function ViewActivityView({
                   className="rounded-[11px] object-cover shrink-0"
                 />
                 <div className="flex flex-col gap-2">
-                  <p className="text-base font-medium text-[#22292f]">
+                  <p className="text-base font-medium text-foreground">
                     {activity.userName}{" "}
-                    <span className="text-[#859bab]">{activity.action}</span>
+                    <span className="text-muted-foreground">{activity.action}</span>
                     {activity.highlight && (
-                      <span className="text-[#22292f]"> {activity.highlight}</span>
+                      <span className="text-foreground"> {activity.highlight}</span>
                     )}
                   </p>
 
                   {/* Badge: Completed */}
                   {activity.badge && (
-                    <div className="inline-flex items-center gap-2 px-4 py-1 border border-[#d1d1d1] rounded-md w-fit">
-                      <CheckCircle2 className="w-3 h-3 text-[#22c55e]" />
-                      <span className="text-sm font-medium text-[#859bab]">
+                    <div className="inline-flex items-center gap-2 px-4 py-1 border border-border rounded-md w-fit">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-300" />
+                      <span className="text-sm font-medium text-muted-foreground">
                         {activity.badge.label}
                       </span>
                     </div>
@@ -1262,7 +1262,7 @@ function ViewActivityView({
 
                   {/* Avatar group */}
                   {activity.avatarGroup && (
-                    <div className="inline-flex items-center gap-[9px] border border-[#d5dde2] rounded-full px-2 py-1.5 w-fit">
+                    <div className="inline-flex items-center gap-[9px] border border-border rounded-full px-2 py-1.5 w-fit">
                       <div className="flex items-center">
                         {activity.avatarGroup.avatars.map((av, i) => (
                           <Image
@@ -1275,7 +1275,7 @@ function ViewActivityView({
                           />
                         ))}
                       </div>
-                      <span className="text-[13px] font-normal text-[#22292f]">
+                      <span className="text-[13px] font-normal text-foreground">
                         +{activity.avatarGroup.extra}
                       </span>
                     </div>
@@ -1283,14 +1283,14 @@ function ViewActivityView({
 
                   {/* File attachment */}
                   {activity.file && (
-                    <div className="inline-flex items-center gap-6 px-4 py-1 border border-[#d1d1d1] rounded-md w-fit">
+                    <div className="inline-flex items-center gap-6 px-4 py-1 border border-border rounded-md w-fit">
                       <div className="flex items-center gap-2">
-                        <FileText className="w-[10px] h-[12.5px] text-[#859bab]" />
-                        <span className="text-sm font-medium text-[#859bab]">
+                        <FileText className="w-[10px] h-[12.5px] text-muted-foreground" />
+                        <span className="text-sm font-medium text-muted-foreground">
                           {activity.file.name}
                         </span>
                       </div>
-                      <Download className="w-[8.75px] h-[11.25px] text-[#859bab]" />
+                      <Download className="w-[8.75px] h-[11.25px] text-muted-foreground" />
                     </div>
                   )}
                 </div>
@@ -1298,10 +1298,10 @@ function ViewActivityView({
 
               {/* Right: Timestamp + Menu */}
               <div className="flex items-center gap-1 shrink-0">
-                <span className="text-base font-medium text-[#859bab]">
+                <span className="text-base font-medium text-muted-foreground">
                   {activity.timeAgo}
                 </span>
-                <button className="text-[#859bab] text-[15px] font-medium leading-[18px] rotate-90 -scale-y-100">
+                <button className="text-muted-foreground text-[15px] font-medium leading-[18px] rotate-90 -scale-y-100">
                   ...
                 </button>
               </div>
@@ -1309,13 +1309,13 @@ function ViewActivityView({
 
             {/* Separator between items */}
             {index < activities.length - 1 && (
-              <div className="h-px bg-[#eceff2]" />
+              <div className="h-px bg-muted" />
             )}
           </div>
         ))}
 
         {/* Bottom separator */}
-        <div className="h-px bg-[#d5dde2]" />
+        <div className="h-px bg-muted" />
       </div>
     </div>
   );
@@ -1420,9 +1420,9 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white border border-[#d5dde2] rounded-xl w-[800px] max-h-[90vh] overflow-y-auto flex flex-col shadow-xl">
+      <div className="relative bg-card border border-border rounded-xl w-[800px] max-h-[90vh] overflow-y-auto flex flex-col shadow-xl">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-[#d5dde2]">
+        <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-border">
           <div className="flex items-center gap-4">
             <div className="bg-[#3f52ff] border-[3px] border-white rounded-full w-10 h-10 flex items-center justify-center shadow-[0_0_0_1px_#3f52ff]" data-node-id="2868:13090">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -1430,19 +1430,19 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-semibold text-[#22292f] leading-[25px]">
+              <span className="text-base font-semibold text-foreground leading-[25px]">
                 Add User
               </span>
-              <span className="text-sm font-medium text-[#668091] leading-[18px]">
+              <span className="text-sm font-medium text-muted-foreground leading-[18px]">
                 Add users to your organisation
               </span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+            className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted transition-colors"
           >
-            <X className="w-3.5 h-3.5 text-[#516778]" />
+            <X className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         </div>
 
@@ -1451,23 +1451,23 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           {/* Row 1: First Name + Last Name */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">First Name</label>
+              <label className="text-sm font-semibold text-foreground">First Name</label>
               <input
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Kobe"
-                className="h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] transition-colors"
+                className="h-9 px-3 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] transition-colors"
               />
             </div>
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Last Name</label>
+              <label className="text-sm font-semibold text-foreground">Last Name</label>
               <input
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Paras"
-                className="h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] transition-colors"
+                className="h-9 px-3 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] transition-colors"
               />
             </div>
           </div>
@@ -1475,7 +1475,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           {/* Row 2: Phone Number + Gender */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Phone Number</label>
+              <label className="text-sm font-semibold text-foreground">Phone Number</label>
               <PhoneNumberInput
                 phone={phone}
                 onPhoneChange={setPhone}
@@ -1484,7 +1484,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
               />
             </div>
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Gender</label>
+              <label className="text-sm font-semibold text-foreground">Gender</label>
               <AriaSelect
                 aria-label="Gender"
                 selectedKey={gender || undefined}
@@ -1501,7 +1501,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           {/* Row 3: Country + Nationality */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Country</label>
+              <label className="text-sm font-semibold text-foreground">Country</label>
               <SearchableSelect
                 value={country}
                 onChange={setCountry}
@@ -1510,7 +1510,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
               />
             </div>
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Nationality</label>
+              <label className="text-sm font-semibold text-foreground">Nationality</label>
               <SearchableSelect
                 value={nationality}
                 onChange={setNationality}
@@ -1523,43 +1523,43 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           {/* Row 4: Email + Password (with Re-generate) */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Email</label>
-              <div className="flex items-center h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg gap-2">
-                <Mail className="w-4 h-4 text-[#859bab] shrink-0" />
+              <label className="text-sm font-semibold text-foreground">Email</label>
+              <div className="flex items-center h-9 px-3 bg-card border border-border rounded-lg gap-2">
+                <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="yybouhamed@gmail.com"
-                  className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+                  className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
                 />
               </div>
             </div>
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Password</label>
+              <label className="text-sm font-semibold text-foreground">Password</label>
               <div className="flex gap-4 items-start">
-                <div className="flex items-center h-9 px-3 bg-white border border-[#b0bfc9] rounded-lg gap-2 flex-1">
+                <div className="flex items-center h-9 px-3 bg-card border border-border rounded-lg gap-2 flex-1">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password"
-                    className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+                    className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
                   />
                   <button
                     onClick={copyPassword}
-                    className="shrink-0 p-0.5 hover:bg-[#f5f5f5] rounded transition-colors"
+                    className="shrink-0 p-0.5 hover:bg-muted/70 rounded transition-colors"
                   >
                     {copied ? (
-                      <Check className="w-4 h-4 text-[#22c55e]" />
+                      <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-300" />
                     ) : (
-                      <Copy className="w-4 h-4 text-[#859bab]" />
+                      <Copy className="w-4 h-4 text-muted-foreground" />
                     )}
                   </button>
                 </div>
                 <button
                   onClick={generatePassword}
-                  className="h-9 px-3 bg-[#22292f] text-white text-sm font-medium rounded-lg hover:bg-[#3a4550] transition-colors shrink-0"
+                  className="h-9 px-3 bg-foreground text-background text-sm font-medium rounded-lg hover:bg-foreground/90 transition-colors shrink-0"
                 >
                   Re-generate
                 </button>
@@ -1569,7 +1569,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className={`flex-1 h-1 rounded-full ${i < passedChecks ? "bg-[#22c55e]" : "bg-[#d5dde2]"
+                    className={`flex-1 h-1 rounded-full ${i < passedChecks ? "bg-emerald-500 dark:bg-emerald-300" : "bg-muted"
                       }`}
                   />
                 ))}
@@ -1584,11 +1584,11 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
                 ].map((check) => (
                   <div key={check.label} className="flex items-center gap-1.5">
                     <Check
-                      className={`w-3.5 h-3.5 ${check.passed ? "text-[#22c55e]" : "text-[#d5dde2]"
+                      className={`w-3.5 h-3.5 ${check.passed ? "text-emerald-600 dark:text-emerald-300" : "text-muted-foreground"
                         }`}
                     />
                     <span
-                      className={`text-xs ${check.passed ? "text-[#22c55e]" : "text-[#859bab]"
+                      className={`text-xs ${check.passed ? "text-emerald-600 dark:text-emerald-300" : "text-muted-foreground"
                         }`}
                     >
                       {check.label}
@@ -1602,7 +1602,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           {/* Row 5: Role */}
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-semibold text-[#22292f]">Role</label>
+              <label className="text-sm font-semibold text-foreground">Role</label>
               <AriaSelect
                 aria-label="Role"
                 selectedKey={role || undefined}
@@ -1627,11 +1627,11 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between px-4 py-4 border-t border-[#d5dde2]">
+        <div className="flex items-center justify-between px-4 py-4 border-t border-border">
           <button
             onClick={onClose}
             disabled={loading}
-            className="text-sm font-medium text-[#22292f] underline underline-offset-2 hover:text-[#516778] transition-colors disabled:opacity-50"
+            className="text-sm font-medium text-foreground underline underline-offset-2 hover:text-muted-foreground transition-colors disabled:opacity-50"
           >
             Dismiss
           </button>
@@ -1759,35 +1759,35 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
 
   return (
     <>
-      <div className="flex min-h-screen bg-[#f9fafb] font-[family-name:'Instrument_Sans',sans-serif]">
+      <div className="flex min-h-screen bg-background font-[family-name:'Instrument_Sans',sans-serif]">
         <AdminSidebar currentUser={currentUser} />
 
         <div className="flex-1 flex flex-col">
           {/* Navbar */}
-          <header className="flex items-center justify-between px-8 py-3 bg-white border-b border-[#eceff2]">
+          <header className="flex items-center justify-between px-8 py-3 bg-card border-b border-border">
             <nav className="flex items-center gap-0.5 text-sm">
-              <span className="text-[#859bab] font-medium px-1 py-0.5">
+              <span className="text-muted-foreground font-medium px-1 py-0.5">
                 <CircleUserRound className="w-4 h-4 inline mr-1" />
               </span>
               {editUser || viewActivityUser ? (
                 <>
                   <button
                     onClick={() => { setEditUser(null); setViewActivityUser(null); }}
-                    className="text-[#859bab] font-medium px-1 py-0.5 hover:text-[#516778] transition-colors"
+                    className="text-muted-foreground font-medium px-1 py-0.5 hover:text-muted-foreground transition-colors"
                   >
                     Users Account Management
                   </button>
-                  <ChevronRight className="w-4 h-4 text-[#859bab]" />
-                  <span className="text-[#22292f] font-medium px-1 py-0.5">
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-foreground font-medium px-1 py-0.5">
                     {editUser ? "Edit" : "View Activity"}
                   </span>
                 </>
               ) : (
-                <span className="text-[#859bab] font-medium px-1 py-0.5">Users Account Management</span>
+                <span className="text-muted-foreground font-medium px-1 py-0.5">Users Account Management</span>
               )}
             </nav>
-            <div className="bg-[#d5dde2] rounded-full p-[7px] relative">
-              <Bell className="w-[17px] h-[17px] text-[#22292f]" />
+            <div className="bg-muted rounded-full p-[7px] relative">
+              <Bell className="w-[17px] h-[17px] text-foreground" />
               {(editUser || viewActivityUser) && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#3f52ff] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                   2
@@ -1815,18 +1815,18 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                 <div className="flex items-start justify-between mb-6">
                   <div>
                     <h1 className="text-lg font-semibold text-[#3f52ff]">Users Account Management</h1>
-                    <p className="text-sm text-[#668091] mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       This section enables you to manage your app members and Teams
                     </p>
                   </div>
-                  <button className="flex items-center gap-1 px-3 py-1.5 border border-[#d5dde2] rounded-lg text-sm font-medium text-[#22292f] bg-white hover:bg-gray-50">
+                  <button className="flex items-center gap-1 px-3 py-1.5 border border-border rounded-lg text-sm font-medium text-foreground bg-card hover:bg-muted/70">
                     Members
                     <ChevronDown className="w-4 h-4" />
                   </button>
                 </div>
 
                 {/* Stats cards */}
-                <div className="grid grid-cols-3 border border-[#d5dde2] rounded-xl mb-6 bg-white">
+                <div className="grid grid-cols-3 border border-border rounded-xl mb-6 bg-card">
                   {[
                     { label: "Total Users", sub: "All registered users", value: totalUsers, color: "text-[#3f52ff]", Icon: Users },
                     { label: "Active Users", sub: totalUsers > 0 ? `${((activeUsers / totalUsers) * 100).toFixed(1)}% of total` : "0%", value: activeUsers, color: "text-[#3f52ff]", Icon: Users },
@@ -1834,36 +1834,36 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                   ].map((card, i) => (
                     <div
                       key={card.label}
-                      className={`flex items-center justify-between px-4 py-4 ${i < 2 ? "border-r border-[#d5dde2]" : ""}`}
+                      className={`flex items-center justify-between px-4 py-4 ${i < 2 ? "border-r border-border" : ""}`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-[30px] h-[30px] rounded-full bg-[#eef1ff] flex items-center justify-center">
+                        <div className="w-[30px] h-[30px] rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
                           <card.Icon className="w-4 h-4 text-[#3f52ff]" />
                         </div>
                         <div>
                           <p className={`text-sm font-semibold ${card.color}`}>{card.label}</p>
-                          <p className="text-xs text-[#859bab]">{card.sub}</p>
+                          <p className="text-xs text-muted-foreground">{card.sub}</p>
                         </div>
                       </div>
-                      <span className="text-lg font-semibold text-[#22292f]">{card.value}</span>
+                      <span className="text-lg font-semibold text-foreground">{card.value}</span>
                     </div>
                   ))}
                 </div>
 
                 {/* Search + Filter + Add User */}
-                <div className="bg-white border border-[#d5dde2] rounded-xl">
+                <div className="bg-card border border-border rounded-xl">
                   <div className="flex items-center justify-between px-4 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 h-9 px-3 py-1 bg-white border border-[#d5dde2] rounded-lg w-[373px]">
-                        <Search className="w-4 h-4 text-[#668091]" />
+                      <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-[373px]">
+                        <Search className="w-4 h-4 text-muted-foreground" />
                         <input
                           type="text"
                           placeholder="Search Users"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] bg-transparent outline-none border-none p-0 focus:ring-0"
+                          className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none border-none p-0 focus:ring-0"
                         />
-                        <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
+                        <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
                       </div>
                       <button className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] transition-colors">
                         <Filter className="w-4 h-4" />
@@ -1874,10 +1874,10 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                         <button
                           onClick={handleBulkDelete}
                           disabled={bulkDeleting}
-                          className="flex items-center gap-1.5 h-8 px-3 bg-[#ffe0e1] text-[#e53935] rounded-lg text-sm font-medium hover:bg-[#fcc] transition-colors disabled:opacity-50"
+                          className="flex items-center gap-1.5 h-8 px-3 bg-destructive/10 text-destructive rounded-lg text-sm font-medium hover:bg-destructive/20 transition-colors disabled:opacity-50"
                         >
                           <Trash2 className="w-4 h-4" />
-                          <span className="bg-[#e53935] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                          <span className="bg-destructive text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                             {selectedUserIds.size}
                           </span>
                         </button>
@@ -1886,8 +1886,8 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                         onClick={handleExportCSV}
                         disabled={selectedUserIds.size === 0}
                         className={`flex items-center gap-2 h-8 px-3 text-xs font-medium rounded-lg transition-colors ${selectedUserIds.size > 0
-                          ? "bg-[#22292f] text-white hover:bg-[#3a4249]"
-                          : "bg-[#eceff2] text-[#859bab] cursor-not-allowed"
+                          ? "bg-foreground text-background hover:bg-foreground/90"
+                          : "bg-muted text-muted-foreground cursor-not-allowed"
                           }`}
                       >
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -1897,7 +1897,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                         </svg>
                         Export CSV
                         {selectedUserIds.size > 0 && (
-                          <span className="bg-white text-[#22292f] text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                          <span className="bg-card text-foreground text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
                             {selectedUserIds.size}
                           </span>
                         )}
@@ -1914,20 +1914,20 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
 
                   {/* Tabs - Design System Tablist with Framer Motion */}
                   <div className="px-4 py-3">
-                    <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative">
+                    <div className="inline-flex items-center bg-muted rounded-lg p-1 relative">
                       {(["all", "active", "inactive"] as const).map((tab) => (
                         <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
                           className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
-                            ? "text-[#3f52ff]"
-                            : "text-[#516778] hover:text-[#22292f]"
+                            ? "text-[#3f52ff] dark:text-white"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                         >
                           {activeTab === tab && (
                             <motion.div
                               layoutId="activeTabIndicator"
-                              className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                              className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
                               initial={false}
                               transition={{
                                 type: "spring",
@@ -1958,7 +1958,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                       </colgroup>
                       {/* Table Header */}
                       <thead>
-                        <tr className="[&>th]:bg-[#eceff2]">
+                        <tr className="[&>th]:bg-muted">
                           <th className="h-9 px-3 py-2 text-left rounded-l-lg">
                             <AriaCheckbox
                               isSelected={filteredUsers.length > 0 && selectedUserIds.size === filteredUsers.length}
@@ -1972,10 +1972,10 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                               className={`h-9 px-3 py-2 text-left ${i === arr.length - 1 ? "rounded-r-lg" : ""}`}
                             >
                               <div className="flex items-center gap-1">
-                                <span className="text-sm font-medium text-[#22292f] leading-5 whitespace-nowrap">
+                                <span className="text-sm font-medium text-foreground leading-5 whitespace-nowrap">
                                   {h}
                                 </span>
-                                <ChevronsUpDown className="w-4 h-4 text-[#859bab] shrink-0" />
+                                <ChevronsUpDown className="w-4 h-4 text-muted-foreground shrink-0" />
                               </div>
                             </th>
                           ))}
@@ -1985,7 +1985,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                       <tbody>
                         {filteredUsers.length === 0 ? (
                           <tr>
-                            <td colSpan={7} className="px-3 py-8 text-center text-[#859bab] text-sm">
+                            <td colSpan={7} className="px-3 py-8 text-center text-muted-foreground text-sm">
                               No users found
                             </td>
                           </tr>
@@ -1993,7 +1993,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                           filteredUsers.map((user, index) => (
                             <tr
                               key={user.id}
-                              className={`bg-white hover:bg-[#f9fafb] transition-colors ${index < filteredUsers.length - 1 ? "border-b border-[#eceff2]" : ""
+                              className={`bg-card hover:bg-background transition-colors ${index < filteredUsers.length - 1 ? "border-b border-border" : ""
                                 }`}
                             >
                               <td className="h-[46px] px-3 py-2">
@@ -2011,18 +2011,18 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                                     height={32}
                                     className="rounded-full object-cover"
                                   />
-                                  <span className="text-sm font-medium text-[#22292f] leading-5">
+                                  <span className="text-sm font-medium text-foreground leading-5">
                                     {user.full_name || "Unknown"}
                                   </span>
                                 </div>
                               </td>
                               <td className="h-[46px] px-3 py-2">
-                                <span className="text-sm text-[#22292f] leading-5">
+                                <span className="text-sm text-foreground leading-5">
                                   {user.role || "Member"}
                                 </span>
                               </td>
                               <td className="h-[46px] px-3 py-2">
-                                <span className="text-sm text-[#22292f] leading-5">
+                                <span className="text-sm text-foreground leading-5">
                                   {formatDate(user.created_at)}
                                 </span>
                               </td>
@@ -2049,15 +2049,15 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                   </div>
 
                   {/* Pagination */}
-                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#eceff2]">
-                    <button className="w-8 h-8 flex items-center justify-center border border-[#d5dde2] rounded-lg text-[#516778] hover:bg-[#f0f2f5] transition-colors">
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                    <button className="w-8 h-8 flex items-center justify-center border border-border rounded-lg text-muted-foreground hover:bg-muted/70 transition-colors">
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="text-sm font-medium text-[#516778]">
-                      Page <span className="font-semibold text-[#22292f]">1</span> of{" "}
-                      <span className="font-semibold text-[#22292f]">{Math.max(1, Math.ceil(filteredUsers.length / 10))}</span>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Page <span className="font-semibold text-foreground">1</span> of{" "}
+                      <span className="font-semibold text-foreground">{Math.max(1, Math.ceil(filteredUsers.length / 10))}</span>
                     </span>
-                    <button className="w-8 h-8 flex items-center justify-center border border-[#d5dde2] rounded-lg text-[#516778] hover:bg-[#f0f2f5] transition-colors">
+                    <button className="w-8 h-8 flex items-center justify-center border border-border rounded-lg text-muted-foreground hover:bg-muted/70 transition-colors">
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
