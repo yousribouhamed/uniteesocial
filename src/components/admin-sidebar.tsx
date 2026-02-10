@@ -19,6 +19,7 @@ import {
   Trophy,
   Moon,
   Settings,
+  X,
 } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 import { AriaSwitch } from "@/components/ui/aria-switch";
