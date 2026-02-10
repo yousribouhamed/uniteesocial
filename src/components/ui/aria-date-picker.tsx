@@ -38,7 +38,7 @@ export function AriaDatePicker<T extends DateValue>({
                         />
                     )}
                 </DateInput>
-                <Button className="outline-none text-muted-foreground group-focus-within:text-[#3f52ff] dark:group-focus-within:text-white">
+                <Button className="outline-none text-muted-foreground group-focus-within:text-[#3f52ff] dark:text-white dark:group-focus-within:text-white">
                     <CalendarIcon className="w-4 h-4 cursor-pointer" />
                 </Button>
             </Group>

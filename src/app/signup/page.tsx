@@ -122,7 +122,7 @@ function SignupForm() {
           </p>
           <Link
             href="/login"
-            className="text-[#3f52ff] text-sm font-semibold hover:underline"
+            className="text-[#3f52ff] dark:text-white text-sm font-semibold hover:underline"
           >
             Back to Login
           </Link>
@@ -349,7 +349,7 @@ export default function SignupPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen w-full bg-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#3f52ff]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#3f52ff] dark:text-white" />
       </div>
     }>
       <SignupForm />

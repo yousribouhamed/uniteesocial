@@ -879,9 +879,9 @@ function EditUserView({
             onClick={onClose}
             className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors"
           >
-            <RotateCcw className="w-4 h-4 text-[#3f52ff]" />
+            <RotateCcw className="w-4 h-4 text-[#3f52ff] dark:text-white" />
           </button>
-          <span className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+          <span className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             Edit
           </span>
         </div>
@@ -1220,9 +1220,9 @@ function ViewActivityView({
           onClick={onClose}
           className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors"
         >
-          <RotateCcw className="w-4 h-4 text-[#3f52ff]" />
+          <RotateCcw className="w-4 h-4 text-[#3f52ff] dark:text-white" />
         </button>
-        <span className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+        <span className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
           View Activity
         </span>
       </div>
@@ -1814,7 +1814,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                 {/* Page header */}
                 <div className="flex items-start justify-between mb-6">
                   <div>
-                    <h1 className="text-lg font-semibold text-[#3f52ff]">Users Account Management</h1>
+                    <h1 className="text-lg font-semibold text-[#3f52ff] dark:text-white">Users Account Management</h1>
                     <p className="text-sm text-muted-foreground mt-1">
                       This section enables you to manage your app members and Teams
                     </p>
@@ -1828,9 +1828,9 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                 {/* Stats cards */}
                 <div className="grid grid-cols-3 border border-border rounded-xl mb-6 bg-card">
                   {[
-                    { label: "Total Users", sub: "All registered users", value: totalUsers, color: "text-[#3f52ff]", Icon: Users },
-                    { label: "Active Users", sub: totalUsers > 0 ? `${((activeUsers / totalUsers) * 100).toFixed(1)}% of total` : "0%", value: activeUsers, color: "text-[#3f52ff]", Icon: Users },
-                    { label: "Inactive Users", sub: totalUsers > 0 ? `${((inactiveUsers / totalUsers) * 100).toFixed(1)}% of total` : "0%", value: inactiveUsers, color: "text-[#3f52ff]", Icon: Users },
+                    { label: "Total Users", sub: "All registered users", value: totalUsers, color: "text-[#3f52ff] dark:text-white", Icon: Users },
+                    { label: "Active Users", sub: totalUsers > 0 ? `${((activeUsers / totalUsers) * 100).toFixed(1)}% of total` : "0%", value: activeUsers, color: "text-[#3f52ff] dark:text-white", Icon: Users },
+                    { label: "Inactive Users", sub: totalUsers > 0 ? `${((inactiveUsers / totalUsers) * 100).toFixed(1)}% of total` : "0%", value: inactiveUsers, color: "text-[#3f52ff] dark:text-white", Icon: Users },
                   ].map((card, i) => (
                     <div
                       key={card.label}
@@ -1838,7 +1838,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-[30px] h-[30px] rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
-                          <card.Icon className="w-4 h-4 text-[#3f52ff]" />
+                          <card.Icon className="w-4 h-4 text-[#3f52ff] dark:text-white" />
                         </div>
                         <div>
                           <p className={`text-sm font-semibold ${card.color}`}>{card.label}</p>

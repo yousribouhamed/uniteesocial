@@ -122,8 +122,8 @@ export function CloneEventModal({ isOpen, onClose, onClone, eventTitle }: CloneE
                     <div className="flex items-center justify-between gap-4 pt-2 border-t border-[#e3e8ed]">
                         {/* Duration Info Pill */}
                         <div className="flex items-center gap-2 bg-[#d8e6ff] rounded-full px-3 py-1.5">
-                            <Info className="w-4 h-4 text-[#3f52ff]" />
-                            <span className="text-[13px] font-medium text-[#3f52ff]">
+                            <Info className="w-4 h-4 text-[#3f52ff] dark:text-white" />
+                            <span className="text-[13px] font-medium text-[#3f52ff] dark:text-white">
                                 The event duration (8 hours) will be preserved
                             </span>
                         </div>

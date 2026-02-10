@@ -142,7 +142,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
               <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
                 {/* Section Header */}
                 <div className="flex flex-col gap-2 px-2">
-                  <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+                  <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
                     About Business
                   </h1>
                   <p className="text-base font-semibold text-muted-foreground leading-[18px]">
@@ -672,7 +672,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
       {/* Header with Edit Button */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">General Settings</span>
+          <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">General Settings</span>
           <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Manage your business profile information
           </span>
@@ -766,7 +766,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
       {/* Domains Section */}
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Domains</span>
+          <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Domains</span>
           <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Add and verify custom domains for your platform
           </span>
@@ -967,9 +967,9 @@ function ImageUploadArea({
         ) : (
           <>
             <div className={`w-11 h-11 rounded-full border border-border flex items-center justify-center mb-2 ${isDragging ? "bg-card" : ""}`}>
-              <Upload className={`w-4 h-4 ${isDragging ? "text-[#3f52ff] dark:text-[#8faeff]" : "text-muted-foreground opacity-60"}`} />
+              <Upload className={`w-4 h-4 ${isDragging ? "text-[#3f52ff] dark:text-white dark:text-[#8faeff]" : "text-muted-foreground opacity-60"}`} />
             </div>
-            <span className={`text-sm font-medium ${isDragging ? "text-[#3f52ff] dark:text-[#8faeff]" : "text-foreground"}`}>
+            <span className={`text-sm font-medium ${isDragging ? "text-[#3f52ff] dark:text-white dark:text-[#8faeff]" : "text-foreground"}`}>
               {isDragging ? "Drop to upload" : "Upload image"}
             </span>
             <span className="text-xs text-muted-foreground/70 mt-1">All files · Up to 10MB</span>
@@ -1091,7 +1091,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       {/* Header with Edit Button */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Branding</span>
+          <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Branding</span>
           <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Customize your app&apos;s visual appearance
           </span>
@@ -1364,7 +1364,7 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
       {/* Section Header */}
       <div className="flex items-center justify-between px-2">
         <div className="flex flex-col gap-2">
-          <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+          <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             Social Links
           </h1>
           <p className="text-base font-semibold text-muted-foreground leading-[18px]">
@@ -1500,7 +1500,7 @@ function LegalAndTCContent({ initialData, refreshProfile }: { initialData?: any;
       {/* Section Header */}
       <div className="flex items-center justify-between px-2">
         <div className="flex flex-col gap-2">
-          <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+          <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             Legal &amp; T&amp;C
           </h1>
           <p className="text-base font-semibold text-muted-foreground leading-[18px]">
@@ -1645,7 +1645,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
       {/* Header with Edit Button */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Modules</span>
+          <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Modules</span>
           <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Enable or disable features for your platform
           </span>
@@ -1779,7 +1779,7 @@ function StatCard({
           {icon}
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
+          <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             {title}
           </span>
           <span className="text-xs text-muted-foreground leading-[18px]">
@@ -1931,7 +1931,7 @@ function TeamTabContent() {
                         setShowRoleDropdown(false);
                       }}
                       className={`w-full text-left px-3 py-2 text-sm hover:bg-muted/70 transition-colors first:rounded-t-lg last:rounded-b-lg ${selectedRole === role
-                        ? "text-[#3f52ff] font-medium"
+                        ? "text-[#3f52ff] dark:text-white font-medium"
                         : "text-foreground"
                         }`}
                     >
@@ -1988,7 +1988,7 @@ function TeamMemberCard({
     <div className="bg-card border border-border rounded-xl p-2 flex items-center justify-between max-w-[564px]">
       <div className="flex items-center gap-2">
         <div className="bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 flex items-center justify-center">
-          <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-[#8faeff]" />
+          <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-white dark:text-[#8faeff]" />
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1">
@@ -2026,7 +2026,7 @@ function TeamMemberCard({
                       setShowDropdown(false);
                     }}
                     className={`w-full text-left px-3 py-2 text-sm hover:bg-muted/70 transition-colors first:rounded-t-lg last:rounded-b-lg ${member.role === role
-                      ? "text-[#3f52ff] font-medium"
+                      ? "text-[#3f52ff] dark:text-white font-medium"
                       : "text-foreground"
                       }`}
                   >
@@ -2066,7 +2066,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
     <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
       <div className="flex flex-col gap-2 px-2">
-        <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+        <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
           Create New Chapter
         </h1>
         <p className="text-base font-semibold text-muted-foreground leading-[18px]">
@@ -2428,7 +2428,7 @@ function ViewChapterPanel({
               >
                 <div className="flex items-center gap-2">
                   <div className="bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 flex items-center justify-center">
-                    <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-[#8faeff]" />
+                    <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-white dark:text-[#8faeff]" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-base font-semibold text-foreground leading-[18px]">
@@ -2623,7 +2623,7 @@ function ChaptersContent() {
       <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
         {/* Section Header */}
         <div className="flex flex-col gap-2 px-2">
-          <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+          <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             Chapters Management
           </h1>
           <p className="text-base font-semibold text-muted-foreground leading-[18px]">
