@@ -66,6 +66,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
   const pathname = usePathname();
   const router = useRouter();
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -84,8 +85,8 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showLogoutMenu]);
 
-  return (
-    <aside className="hidden lg:flex flex-col justify-between lg:w-[325px] min-h-screen bg-sidebar border-r border-sidebar-border rounded-tr-xl rounded-br-xl p-4 text-sidebar-foreground">
+  const SidebarBody = (
+    <>
       <div className="flex flex-col gap-8">
         {/* Logo */}
         <div className="flex items-center gap-2.5">
@@ -249,6 +250,52 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
           </div>
         )}
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile trigger */}
+      <button
+        type="button"
+        aria-label="Open sidebar"
+        className="lg:hidden fixed top-4 left-4 z-50 h-10 w-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center text-foreground"
+        onClick={() => setMobileOpen(true)}
+      >
+        <div className="flex flex-col gap-1.5">
+          <span className="block h-0.5 w-5 bg-foreground" />
+          <span className="block h-0.5 w-5 bg-foreground" />
+        </div>
+      </button>
+
+      {/* Mobile drawer */}
+      <div className={`lg:hidden fixed inset-0 z-40 ${mobileOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
+        <div
+          className={`absolute inset-0 bg-black/40 transition-opacity ${mobileOpen ? "opacity-100" : "opacity-0"}`}
+          onClick={() => setMobileOpen(false)}
+        />
+        <div
+          className={`absolute inset-y-0 left-0 w-[85%] max-w-[320px] bg-sidebar border-r border-sidebar-border p-4 text-sidebar-foreground transform transition-transform ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-semibold text-muted-foreground">Menu</span>
+            <button
+              type="button"
+              aria-label="Close sidebar"
+              className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"
+              onClick={() => setMobileOpen(false)}
+            >
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+          {SidebarBody}
+        </div>
+      </div>
+
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex flex-col justify-between lg:w-[325px] min-h-screen bg-sidebar border-r border-sidebar-border rounded-tr-xl rounded-br-xl p-4 text-sidebar-foreground">
+        {SidebarBody}
+      </aside>
+    </>
   );
 }
