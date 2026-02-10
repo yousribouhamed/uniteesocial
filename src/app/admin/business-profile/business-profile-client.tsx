@@ -116,7 +116,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
                   key={tab}
                   onClick={() => setActiveTopTab(tab)}
                   className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTopTab === tab
-                    ? "text-[#3f52ff]"
+                    ? "text-[#3f52ff] dark:text-white"
                     : "text-muted-foreground hover:text-foreground"
                     }`}
                 >
@@ -158,7 +158,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
                         key={tab}
                         onClick={() => setActiveInnerTab(tab)}
                         className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeInnerTab === tab
-                          ? "text-[#3f52ff]"
+                          ? "text-[#3f52ff] dark:text-white"
                           : "text-muted-foreground hover:text-foreground"
                           }`}
                       >
@@ -2082,7 +2082,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
-              ? "text-[#3f52ff]"
+              ? "text-[#3f52ff] dark:text-white"
               : "text-muted-foreground hover:text-foreground"
               }`}
           >
