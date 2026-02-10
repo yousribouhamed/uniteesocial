@@ -871,7 +871,7 @@ function EditUserView({
   };
 
   return (
-    <div className="flex flex-col gap-8 px-8 py-6">
+    <div className="flex flex-col gap-8 px-4 md:px-8 py-6">
       {/* Edit Header Bar */}
       <div className="bg-blue-50 dark:bg-blue-950/40 rounded-xl flex items-center justify-between p-2">
         <div className="flex items-center gap-2">
@@ -1213,7 +1213,7 @@ function ViewActivityView({
   ];
 
   return (
-    <div className="flex flex-col gap-8 px-8 py-6">
+    <div className="flex flex-col gap-8 px-4 md:px-8 py-6">
       {/* View Activity Header Bar */}
       <div className="bg-blue-50 dark:bg-blue-950/40 rounded-xl flex items-center gap-2 p-2">
         <button
@@ -1764,7 +1764,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
 
         <div className="flex-1 flex flex-col">
           {/* Navbar */}
-          <header className="flex items-center justify-between px-8 py-3 bg-card border-b border-border">
+          <header className="flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
             <nav className="flex items-center gap-0.5 text-sm">
               <span className="text-muted-foreground font-medium px-1 py-0.5">
                 <CircleUserRound className="w-4 h-4 inline mr-1" />
@@ -1810,7 +1810,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                 onClose={() => setViewActivityUser(null)}
               />
             ) : (
-              <div className="px-10 py-6">
+              <div className="px-4 md:px-10 py-6">
                 {/* Page header */}
                 <div className="flex items-start justify-between mb-6">
                   <div>

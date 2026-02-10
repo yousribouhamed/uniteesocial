@@ -92,7 +92,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <header className="flex items-center justify-between px-8 py-3 bg-card border-b border-border">
+        <header className="flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
           <nav className="flex items-center gap-0.5 text-sm">
             <span className="text-muted-foreground font-medium px-1 py-0.5">
               <Building2 className="w-4 h-4 inline mr-1" />
@@ -107,7 +107,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
         </header>
 
         {/* Content */}
-        <main className="flex-1 px-8 py-6">
+        <main className="flex-1 px-4 md:px-8 py-6">
           <div className="flex flex-col gap-2">
             {/* Top Tabs - Tenant Setup, Social Links, Legal and T&C, Chapters */}
             <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">
@@ -670,7 +670,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
   return (
     <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
       {/* Header with Edit Button */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">General Settings</span>
           <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
@@ -680,7 +680,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
         {!isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors w-full sm:w-auto"
           >
             Edit
           </button>
@@ -688,7 +688,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
       </div>
 
       {/* Business Info Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-muted-foreground">Business Name</label>
           {isEditing ? (
@@ -780,10 +780,10 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
               value={formData.domain}
               onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
               placeholder="www.eventy.com"
-              className={inputEditClass + " w-full max-w-md"}
+              className={inputEditClass + " w-full sm:max-w-md"}
             />
           ) : (
-            <div className={inputReadOnlyClass + " flex items-center w-full max-w-md"}>
+            <div className={inputReadOnlyClass + " flex items-center w-full sm:max-w-md"}>
               {formData.domain || <span className="text-muted-foreground">Not set</span>}
             </div>
           )}
@@ -792,16 +792,16 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
 
       {/* Save/Cancel Buttons - only shown when editing */}
       {isEditing && (
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
           <button
             onClick={handleCancel}
-            className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors"
+            className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors w-full sm:w-auto"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors w-full sm:w-auto"
           >
             Save changes
           </button>
