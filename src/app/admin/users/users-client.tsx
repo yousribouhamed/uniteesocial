@@ -1945,7 +1945,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                   </div>
 
                   {/* Table - Design System */}
-                  <div className="overflow-x-auto px-4">
+                  <div className="overflow-x-auto -mx-4 px-4 sm:mx-0">
                     <table className="w-full table-fixed">
                       <colgroup>
                         <col className="w-12" />

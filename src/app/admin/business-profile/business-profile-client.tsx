@@ -2693,7 +2693,7 @@ function ChaptersContent() {
           </div>
 
           {/* Table */}
-          <div className="w-full overflow-x-auto">
+          <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0">
             <table className="w-full table-fixed">
               <colgroup>
                 <col className="w-[14%]" />
