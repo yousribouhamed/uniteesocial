@@ -242,13 +242,13 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   };
 
   return (
-    <div className={`bg-[#eceff2] border border-[#d5dde2] rounded-lg p-4 pb-2 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}>
+    <div className={`bg-muted border border-border rounded-lg p-4 pb-2 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}>
       <div className="flex lg:flex-row flex-col gap-4 items-start">
         {/* Left: Event Preview Card */}
-        <div className="w-full lg:w-[493px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-4 h-fit">
+        <div className="w-full lg:w-[493px] shrink-0 bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
           {/* Cover Image */}
           <div
-            className="relative w-full h-[264px] rounded-lg overflow-hidden bg-[#d5dde2] cursor-pointer group"
+            className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
             onClick={() => fileInputRef.current?.click()}
           >
             {coverImage ? (
@@ -258,10 +258,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-[#d5dde2]" />
+              <div className="w-full h-full bg-muted" />
             )}
             {/* Centered Camera Icon */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
               <Camera className="w-6 h-6 text-white" />
             </div>
             {/* Hover overlay for changing image */}
@@ -281,27 +281,27 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
           <div className="flex flex-col gap-4">
             {/* Title + Badges */}
             <div className="flex flex-col gap-2">
-              <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
+              <h3 className="text-lg font-semibold text-foreground leading-[18px]">
                 {eventCategory === "match"
                   ? (homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : t("Team A Vs Team B", "الفريق أ ضد الفريق ب", "Équipe A vs Équipe B"))
                   : (eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement"))}
               </h3>
               <div className="flex items-center gap-2">
                 {eventCategory === "match" ? (
-                  <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
+                  <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
                     {matchLocationType === "virtual"
                       ? t("Virtual", "افتراضي", "Virtuel")
                       : t("Onsite", "حضوري", "Sur site")}
                   </span>
                 ) : (
                   <>
-                    <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] text-white text-xs font-medium rounded">
+                    <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
                       <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
                       </svg>
                       {chapter}
                     </span>
-                    <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
+                    <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
                       {locationType === "virtual"
                         ? t("Online", "عبر الإنترنت", "En ligne")
                         : t("Onsite", "حضوري", "Sur site")}
@@ -316,8 +316,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               {/* Date Section */}
               <div className="flex items-center gap-2">
                 {/* Date Box */}
-                <div className="w-10 h-11 border border-[#859bab] rounded-lg overflow-hidden flex flex-col">
-                  <div className="bg-[#859bab] px-0.5 py-1 flex items-center justify-center">
+                <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
+                  <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
                     <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
                       {startDate ? (() => {
                         const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
@@ -326,12 +326,12 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     </span>
                   </div>
                   <div className="flex-1 flex items-center justify-center">
-                    <span className="text-base font-medium text-[#859bab] leading-none">{startDate?.day || "25"}</span>
+                    <span className="text-base font-medium text-muted-foreground leading-none">{startDate?.day || "25"}</span>
                   </div>
                 </div>
                 {/* Date Text */}
                 <div className="flex flex-col gap-px">
-                  <span className="text-base font-medium text-[#22292f] leading-[24px]">
+                  <span className="text-base font-medium text-foreground leading-[24px]">
                     {startDate ? (() => {
                       const weekdays = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
                       const d = new Date(startDate.year, startDate.month - 1, startDate.day);
@@ -339,7 +339,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       return `${weekdays[d.getDay()]} ${startDate.day} ${monthsFull[startDate.month - 1]}`;
                     })() : "samedi 25 octobre"}
                   </span>
-                  <span className="text-sm font-normal text-[#859bab] leading-[21px]">
+                  <span className="text-sm font-normal text-muted-foreground leading-[21px]">
                     {startTime} - {endTime} UTC+4
                   </span>
                 </div>
@@ -348,18 +348,18 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               {/* Venue Section */}
               <div className="flex items-center gap-2">
                 {/* Location Icon Box */}
-                <div className="w-10 h-10 border border-[#859bab] rounded-lg flex items-center justify-center">
-                  <Globe className="w-5 h-5 text-[#859bab]" />
+                <div className="w-10 h-10 border border-border rounded-lg flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-muted-foreground" />
                 </div>
                 {/* Venue Text */}
                 <div className="flex flex-col gap-px">
                   <div className="flex items-center gap-1">
-                    <span className="text-base font-medium text-[#22292f] leading-[24px]">
+                    <span className="text-base font-medium text-foreground leading-[24px]">
                       {locationMasking && locationMaskName ? locationMaskName : (locationInput ? locationInput.split(",")[0] : "Lieu")}
                     </span>
-                    <ArrowUpRight className="w-4 h-4 text-[#22292f] opacity-50" />
+                    <ArrowUpRight className="w-4 h-4 text-foreground opacity-50" />
                   </div>
-                  <span className="text-sm font-normal text-[#859bab] leading-[21px]">
+                  <span className="text-sm font-normal text-muted-foreground leading-[21px]">
                     {locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || "Dubai, Dubai" : "Dubai, Dubai"}
                   </span>
                 </div>
@@ -369,14 +369,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             {/* Address + Capacity */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
-                <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="text-sm font-normal text-foreground leading-[18px]">
                   {locationInput || "Dubai World Trade Center, DWC"}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
-                <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                <ClipboardPenLine className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="text-sm font-normal text-foreground leading-[18px]">
                   {capacity === "Unlimited" ? "0/∞" : `0/${capacity}`}
                 </span>
               </div>
@@ -392,18 +392,18 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
           {/* Header Row: Event Type Tabs + Language Selector */}
           <div className="flex items-center justify-between">
             {/* Event Type Tabs */}
-            <div className="flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg">
+            <div className="flex items-center gap-1 bg-muted p-1 rounded-lg">
               <button
                 onClick={() => setEventCategory("general")}
                 className={`relative h-9 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${eventCategory === "general"
-                    ? "text-[#3f52ff]"
-                    : "text-[#516778] hover:text-[#22292f]"
+                    ? "text-[#3f52ff] dark:text-white"
+                    : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 {eventCategory === "general" && (
                   <motion.div
                     layoutId="eventTypeIndicator"
-                    className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                    className="absolute inset-0 bg-card rounded-lg shadow-sm"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
@@ -415,14 +415,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <button
                 onClick={() => setEventCategory("match")}
                 className={`relative h-9 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${eventCategory === "match"
-                    ? "text-[#3f52ff]"
-                    : "text-[#516778] hover:text-[#22292f]"
+                    ? "text-[#3f52ff] dark:text-white"
+                    : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 {eventCategory === "match" && (
                   <motion.div
                     layoutId="eventTypeIndicator"
-                    className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                    className="absolute inset-0 bg-card rounded-lg shadow-sm"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
@@ -452,33 +452,33 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             <div className="flex flex-col gap-4">
               {/* Match Setup Section */}
               <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">
+                <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
                   {t("Match Setup", "إعداد المباراة", "Configuration du match")}
                 </span>
 
                 {/* League Dropdown - Full Width with top rounded corners */}
-                <div className="bg-white rounded-t-lg px-3 py-2 flex items-center justify-between">
-                  <span className="text-base font-medium text-[#22292f]">
-                    {t("League", "الدوري", "Ligue")}<span className="text-[#f43f42]">*</span>
+                <div className="bg-card rounded-t-lg px-3 py-2 flex items-center justify-between">
+                  <span className="text-base font-medium text-foreground">
+                    {t("League", "الدوري", "Ligue")}<span className="text-destructive">*</span>
                   </span>
                   <Menu as="div" className="relative">
                     <MenuButton className="flex items-center gap-1">
-                      <span className="text-sm font-medium text-[#668091]">
+                      <span className="text-sm font-medium text-muted-foreground">
                         {league || t("Select League", "اختر الدوري", "Sélectionner une ligue")}
                       </span>
-                      <ChevronDown className="w-4 h-4 text-[#668091]" />
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
                     </MenuButton>
                     <Portal>
                       <MenuItems
                         anchor="bottom end"
                         transition
-                        className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                        className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                       >
                         {/* Create League Option */}
                         <MenuItem>
                           <button
                             onClick={() => setShowCreateLeagueModal(true)}
-                            className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-[#d8e6ff] text-sm font-medium text-[#3f52ff] transition-colors focus:outline-none hover:bg-[#c8daff]"
+                            className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
                           >
                             {t("+ Create League", "+ إنشاء دوري", "+ Créer une ligue")}
                           </button>
@@ -489,8 +489,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                               onClick={() => setLeague(l)}
                               className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
                                 league === l
-                                  ? "bg-[#d8e6ff] text-[#3f52ff]"
-                                  : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                               }`}
                             >
                               {l}
@@ -505,28 +505,28 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 {/* Home Team & Away Team Row */}
                 <div className="flex gap-2">
                   {/* Home Team */}
-                  <div className="flex-1 bg-white rounded-lg px-3 py-2 flex items-center justify-between">
-                    <span className="text-base font-medium text-[#22292f]">
-                      {t("Home Team", "الفريق المضيف", "Équipe à domicile")}<span className="text-[#f43f42]">*</span>
+                  <div className="flex-1 bg-card rounded-lg px-3 py-2 flex items-center justify-between">
+                    <span className="text-base font-medium text-foreground">
+                      {t("Home Team", "الفريق المضيف", "Équipe à domicile")}<span className="text-destructive">*</span>
                     </span>
                     <Menu as="div" className="relative">
                       <MenuButton className="flex items-center gap-1">
-                        <span className="text-sm font-medium text-[#668091]">
+                        <span className="text-sm font-medium text-muted-foreground">
                           {homeTeam || t("Select Team", "اختر الفريق", "Sélectionner une équipe")}
                         </span>
-                        <ChevronDown className="w-4 h-4 text-[#668091]" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
                       </MenuButton>
                       <Portal>
                         <MenuItems
                           anchor="bottom end"
                           transition
-                          className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                          className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                         >
                           {/* Create Team Option */}
                           <MenuItem>
                             <button
                               onClick={() => {/* Handle create team */}}
-                              className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-[#d8e6ff] text-sm font-medium text-[#3f52ff] transition-colors focus:outline-none hover:bg-[#c8daff]"
+                              className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
                             >
                               {t("+ Create Team", "+ إنشاء فريق", "+ Créer une équipe")}
                             </button>
@@ -537,8 +537,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                                 onClick={() => setHomeTeam(t)}
                                 className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
                                   homeTeam === t
-                                    ? "bg-[#d8e6ff] text-[#3f52ff]"
-                                    : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                 }`}
                               >
                                 {t}
@@ -551,28 +551,28 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   </div>
 
                   {/* Away Team */}
-                  <div className="flex-1 bg-white rounded-lg px-3 py-2 flex items-center justify-between">
-                    <span className="text-base font-medium text-[#22292f]">
-                      {t("Away Team", "الفريق الضيف", "Équipe à l'extérieur")}<span className="text-[#f43f42]">*</span>
+                  <div className="flex-1 bg-card rounded-lg px-3 py-2 flex items-center justify-between">
+                    <span className="text-base font-medium text-foreground">
+                      {t("Away Team", "الفريق الضيف", "Équipe à l'extérieur")}<span className="text-destructive">*</span>
                     </span>
                     <Menu as="div" className="relative">
                       <MenuButton className="flex items-center gap-1">
-                        <span className="text-sm font-medium text-[#668091]">
+                        <span className="text-sm font-medium text-muted-foreground">
                           {awayTeam || t("Select Team", "اختر الفريق", "Sélectionner une équipe")}
                         </span>
-                        <ChevronDown className="w-4 h-4 text-[#668091]" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
                       </MenuButton>
                       <Portal>
                         <MenuItems
                           anchor="bottom end"
                           transition
-                          className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                          className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                         >
                           {/* Create Team Option */}
                           <MenuItem>
                             <button
                               onClick={() => {/* Handle create team */}}
-                              className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-[#d8e6ff] text-sm font-medium text-[#3f52ff] transition-colors focus:outline-none hover:bg-[#c8daff]"
+                              className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
                             >
                               {t("+ Create Team", "+ إنشاء فريق", "+ Créer une équipe")}
                             </button>
@@ -583,8 +583,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                                 onClick={() => setAwayTeam(t)}
                                 className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
                                   awayTeam === t
-                                    ? "bg-[#d8e6ff] text-[#3f52ff]"
-                                    : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                 }`}
                               >
                                 {t}
@@ -601,26 +601,26 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               {/* Date/Time Section */}
               <div className="flex gap-2">
                 {/* Start/End Date-Time */}
-                <div className="flex-1 bg-white rounded-lg p-1 flex flex-col">
+                <div className="flex-1 bg-card rounded-lg p-1 flex flex-col">
                   {/* Start Row */}
                   <div className="flex items-center justify-between p-1">
                     <div className="flex items-center gap-2">
                       <div className="w-5 flex flex-col items-center justify-center px-1">
-                        <div className="w-[10px] h-[10px] bg-[#3f52ff] rounded-full" />
+                        <div className="w-[10px] h-[10px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full" />
                       </div>
-                      <span className="text-sm font-normal text-[#22292f]">
+                      <span className="text-sm font-normal text-foreground">
                         {t("Start", "البداية", "Début")}
                       </span>
                     </div>
                     <div className="flex gap-[2px] items-center">
-                      <div className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg flex items-center justify-center">
-                        <span className="text-base font-normal text-[#22292f]">{formatDateForDisplay(startDate)}</span>
+                      <div className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg flex items-center justify-center">
+                        <span className="text-base font-normal text-foreground">{formatDateForDisplay(startDate)}</span>
                       </div>
                       <input
                         type="text"
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
-                        className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg text-base font-normal text-[#22292f] w-[70px] text-center outline-none"
+                        className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
                       />
                     </div>
                   </div>
@@ -634,44 +634,44 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       <div className="w-5 flex flex-col items-center justify-center px-1">
                         <div className="w-[10px] h-[10px] border border-[#3f52ff] rounded-full" />
                       </div>
-                      <span className="text-sm font-normal text-[#22292f]">
+                      <span className="text-sm font-normal text-foreground">
                         {t("End", "النهاية", "Fin")}
                       </span>
                     </div>
                     <div className="flex gap-[2px] items-center">
-                      <div className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg flex items-center justify-center">
-                        <span className="text-base font-normal text-[#22292f]">{formatDateForDisplay(endDate)}</span>
+                      <div className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg flex items-center justify-center">
+                        <span className="text-base font-normal text-foreground">{formatDateForDisplay(endDate)}</span>
                       </div>
                       <input
                         type="text"
                         value={endTime}
                         onChange={(e) => setEndTime(e.target.value)}
-                        className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg text-base font-normal text-[#22292f] w-[70px] text-center outline-none"
+                        className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Timezone */}
-                <div className="bg-white rounded-lg w-[140px] p-2 flex flex-col gap-1 shrink-0">
-                  <Globe className="w-4 h-4 text-[#22292f]" />
-                  <span className="text-sm font-medium text-[#22292f]">GMT+01:00</span>
-                  <span className="text-xs font-normal text-[#668091]">Algiers</span>
+                <div className="bg-card rounded-lg w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                  <Globe className="w-4 h-4 text-foreground" />
+                  <span className="text-sm font-medium text-foreground">GMT+01:00</span>
+                  <span className="text-xs font-normal text-muted-foreground">Algiers</span>
                 </div>
               </div>
 
               {/* Line-Up Announcement Settings */}
               <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">
+                <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
                   {t("Line-Up Announcement Settings", "إعدادات إعلان التشكيلة", "Paramètres d'annonce de composition")}
                 </span>
-                <div className="bg-white rounded-lg px-3 py-2 flex items-center gap-2">
+                <div className="bg-card rounded-lg px-3 py-2 flex items-center gap-2">
                   <button
                     onClick={() => setEnableLineUpAnnouncement(!enableLineUpAnnouncement)}
                     className={`w-4 h-4 border rounded shrink-0 flex items-center justify-center ${
                       enableLineUpAnnouncement
-                        ? "bg-[#3f52ff] border-[#3f52ff]"
-                        : "bg-white border-[#d5dde2]"
+                        ? "bg-[#3f52ff] dark:bg-[#3f52ff] border-[#3f52ff]"
+                        : "bg-card border-border"
                     }`}
                   >
                     {enableLineUpAnnouncement && (
@@ -680,7 +680,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       </svg>
                     )}
                   </button>
-                  <span className="text-base font-medium text-[#22292f] flex-1">
+                  <span className="text-base font-medium text-foreground flex-1">
                     {t("Enable Line-Up Announcement", "تفعيل إعلان التشكيلة", "Activer l'annonce de composition")}
                   </span>
 
@@ -688,16 +688,16 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   {enableLineUpAnnouncement && (
                     <Menu as="div" className="relative">
                       <MenuButton className="flex items-center gap-1">
-                        <span className="text-sm font-medium text-[#668091]">
+                        <span className="text-sm font-medium text-muted-foreground">
                           {translateLineupTime(lineUpAnnouncementTime)}
                         </span>
-                        <ChevronDown className="w-4 h-4 text-[#668091]" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
                       </MenuButton>
                       <Portal>
                         <MenuItems
                           anchor="bottom end"
                           transition
-                          className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                          className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                         >
                         {lineupOptions.map((time) => (
                           <MenuItem key={time}>
@@ -705,8 +705,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                               onClick={() => setLineUpAnnouncementTime(time)}
                               className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
                                 lineUpAnnouncementTime === time
-                                  ? "bg-[#d8e6ff] text-[#3f52ff]"
-                                  : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                 }`}
                             >
                               {translateLineupTime(time)}
@@ -725,10 +725,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     {/* Home Team Lineup */}
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-[#22292f]">
+                        <span className="text-sm font-semibold text-foreground">
                           {t("Home Team Lineup", "تشكيلة الفريق المضيف", "Composition de l'équipe à domicile")}
                         </span>
-                        <span className="text-sm font-medium text-[#859bab]">
+                        <span className="text-sm font-medium text-muted-foreground">
                           {t("Optional", "اختياري", "Optionnel")}
                         </span>
                       </div>
@@ -740,17 +740,17 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         )}
                         value={homeTeamLineup}
                         onChange={(e) => setHomeTeamLineup(e.target.value)}
-                        className="w-full h-[74px] px-3 py-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] resize-none"
+                        className="w-full h-[74px] px-3 py-3 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none"
                       />
                     </div>
 
                     {/* Away Team Lineup */}
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-[#22292f]">
+                        <span className="text-sm font-semibold text-foreground">
                           {t("Away Team Lineup", "تشكيلة الفريق الضيف", "Composition de l'équipe extérieure")}
                         </span>
-                        <span className="text-sm font-medium text-[#859bab]">
+                        <span className="text-sm font-medium text-muted-foreground">
                           {t("Optional", "اختياري", "Optionnel")}
                         </span>
                       </div>
@@ -762,7 +762,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         )}
                         value={awayTeamLineup}
                         onChange={(e) => setAwayTeamLineup(e.target.value)}
-                        className="w-full h-[74px] px-3 py-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] resize-none"
+                        className="w-full h-[74px] px-3 py-3 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none"
                       />
                     </div>
                   </>
@@ -771,23 +771,23 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
               {/* Match Location */}
               <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">
+                <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
                   {t("Match Location", "موقع المباراة", "Lieu du match")}
                 </span>
 
                 {/* Location Type Tabs */}
-                <div className="flex items-center bg-[#dfe3e8] rounded-lg p-[6px] w-full">
+                <div className="flex items-center bg-muted rounded-lg p-[6px] w-full">
                   <button
                     onClick={() => setMatchLocationType("onsite")}
                     className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "onsite"
-                        ? "text-[#3f52ff]"
-                        : "text-[#516778] hover:text-[#22292f]"
+                        ? "text-[#3f52ff] dark:text-white"
+                        : "text-muted-foreground hover:text-foreground"
                       }`}
                   >
                     {matchLocationType === "onsite" && (
                       <motion.div
                         layoutId="matchLocationTypeIndicator"
-                        className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                        className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
                         initial={false}
                         transition={{ type: "spring", stiffness: 500, damping: 35 }}
                       />
@@ -799,14 +799,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   <button
                     onClick={() => setMatchLocationType("virtual")}
                     className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "virtual"
-                        ? "text-[#3f52ff]"
-                        : "text-[#516778] hover:text-[#22292f]"
+                        ? "text-[#3f52ff] dark:text-white"
+                        : "text-muted-foreground hover:text-foreground"
                       }`}
                   >
                     {matchLocationType === "virtual" && (
                       <motion.div
                         layoutId="matchLocationTypeIndicator"
-                        className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                        className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
                         initial={false}
                         transition={{ type: "spring", stiffness: 500, damping: 35 }}
                       />
@@ -819,43 +819,43 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
                 {/* Location Content based on selected tab */}
                 {matchLocationType === "onsite" ? (
-                  <div className="bg-white rounded-lg p-3 flex flex-col gap-3">
-                    <span className="text-base font-medium text-[#22292f]">
+                  <div className="bg-card rounded-lg p-3 flex flex-col gap-3">
+                    <span className="text-base font-medium text-foreground">
                       {t("Stadium/Venue Name", "اسم الملعب/المكان", "Nom du stade/lieu")}
                     </span>
                     <div className="flex flex-col gap-3">
                       {/* Stadium/Venue Input */}
                       <div className="relative">
                         <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
-                          <MapPin className="w-4 h-4 text-[#859bab]" />
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
                         </div>
                         <input
                           type="text"
                           placeholder={t("Enter stadium/venue name", "أدخل اسم الملعب/المكان", "Entrez le nom du stade/lieu")}
                           value={stadiumVenueName}
                           onChange={(e) => setStadiumVenueName(e.target.value)}
-                          className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]`}
+                          className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
                         />
                       </div>
 
                       {/* Location Masking Toggle */}
                       <div className="flex items-center justify-between">
                         <div className="flex flex-col gap-1">
-                          <span className="text-sm font-semibold text-[#22292f]">
+                          <span className="text-sm font-semibold text-foreground">
                             {t("Location Masking", "إخفاء الموقع", "Masquage du lieu")}
                           </span>
-                          <span className="text-xs text-[#859bab]">
+                          <span className="text-xs text-muted-foreground">
                             {t("Hide real location and show custom name", "إخفاء الموقع الحقيقي وإظهار اسم مخصص", "Masquer le lieu réel et afficher un nom personnalisé")}
                           </span>
                         </div>
                         <button
                           onClick={() => setMatchLocationMasking(!matchLocationMasking)}
                           className={`relative w-[42px] h-[24px] rounded-full transition-colors ${
-                            matchLocationMasking ? "bg-[#3f52ff]" : "bg-[#d5dde2]"
+                            matchLocationMasking ? "bg-[#3f52ff] dark:bg-[#3f52ff]" : "bg-muted"
                           }`}
                         >
                           <div
-                            className={`absolute top-1 w-[16px] h-[16px] bg-white rounded-full shadow transition-all ${
+                            className={`absolute top-1 w-[16px] h-[16px] bg-card rounded-full shadow transition-all ${
                               matchLocationMasking ? "left-[22px]" : "left-1"
                             }`}
                           />
@@ -864,23 +864,23 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-lg p-3 flex flex-col gap-3">
-                    <span className="text-base font-medium text-[#22292f]">
+                  <div className="bg-card rounded-lg p-3 flex flex-col gap-3">
+                    <span className="text-base font-medium text-foreground">
                       {t("Livestream URL", "رابط البث المباشر", "URL de diffusion")}
                     </span>
                     <div className="relative">
                       <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
-                        <Link className="w-4 h-4 text-[#859bab]" />
+                        <Link className="w-4 h-4 text-muted-foreground" />
                       </div>
                       <input
                         type="url"
                         placeholder={t("Enter the location URL", "أدخل رابط الموقع", "Entrez l'URL du lieu")}
                         value={livestreamUrl}
                         onChange={(e) => setLivestreamUrl(e.target.value)}
-                        className={`w-full h-9 ${isArabic ? "pr-10 pl-10 text-right" : "pl-10 pr-10"} border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]`}
+                        className={`w-full h-9 ${isArabic ? "pr-10 pl-10 text-right" : "pl-10 pr-10"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
                       />
                       <div className={`absolute ${isArabic ? "left-3" : "right-3"} top-1/2 -translate-y-1/2`}>
-                        <Loader2 className="w-4 h-4 text-[#859bab] animate-spin" />
+                        <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
                       </div>
                     </div>
                   </div>
@@ -890,26 +890,26 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               {/* Match Description */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">
+                  <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
                     {t("Match Description", "وصف المباراة", "Description du match")}
                   </span>
-                  <span className="text-sm font-medium text-[#859bab]">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {t("Optional", "اختياري", "Optionnel")}
                   </span>
                 </div>
-                <div className="bg-white border border-[#d5dde2] rounded-lg p-3 flex flex-col gap-2">
+                <div className="bg-card border border-border rounded-lg p-3 flex flex-col gap-2">
                   <textarea
                     placeholder={t("Placeholder", "اكتب وصفاً", "Saisir une description")}
                     value={matchDescription}
                     onChange={(e) => setMatchDescription(e.target.value)}
                     maxLength={280}
-                    className="w-full h-[100px] text-sm text-[#22292f] placeholder:text-[#859bab] outline-none resize-none"
+                    className="w-full h-[100px] text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none"
                   />
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-white bg-[#3f52ff] px-2 py-0.5 rounded">
+                    <span className="text-xs text-white bg-[#3f52ff] dark:bg-[#3f52ff] px-2 py-0.5 rounded">
                       {matchDescription.length}/280 {t("characters", "حرفًا", "caractères")}
                     </span>
-                    <button className="text-[#859bab] hover:text-[#516778]">
+                    <button className="text-muted-foreground hover:text-muted-foreground">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M13.333 8.667V12.667C13.333 13.0203 13.1927 13.3594 12.9426 13.6095C12.6925 13.8595 12.3536 14 12 14H3.333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.667V4C2 3.64638 2.14048 3.30724 2.39052 3.05719C2.64057 2.80714 2.97971 2.667 3.333 2.667H7.333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M11.333 1.333L14.666 4.666L8 11.333H4.667V8L11.333 1.333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
@@ -921,41 +921,41 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
               {/* Additional Options */}
               <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-[#3f52ff] leading-[21px]">
+                <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
                   {t("Additional Options", "خيارات إضافية", "Options supplémentaires")}
                 </span>
-                <div className="bg-white rounded-lg overflow-hidden">
+                <div className="bg-card rounded-lg overflow-hidden">
                   {/* Capacity */}
-                  <div className="px-3 py-2 flex items-center gap-2 border-b border-[#f0f2f4]">
-                    <Users className="w-4 h-4 text-[#22292f]" />
-                    <span className="text-base font-medium text-[#22292f] flex-1">
+                  <div className="px-3 py-2 flex items-center gap-2 border-b border-border">
+                    <Users className="w-4 h-4 text-foreground" />
+                    <span className="text-base font-medium text-foreground flex-1">
                       {t("Capacity", "السعة", "Capacité")}
                     </span>
                     <div className="flex items-center gap-1">
-                      <span className="text-sm font-medium text-[#668091]">{capacity}</span>
-                      <Pencil className="w-4 h-4 text-[#668091]" />
+                      <span className="text-sm font-medium text-muted-foreground">{capacity}</span>
+                      <Pencil className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
 
                   {/* Tickets Go Live */}
                   <Menu as="div" className="relative">
-                    <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-[#f9fafb] transition-colors">
-                      <Ticket className="w-4 h-4 text-[#22292f]" />
-                      <span className={`text-base font-medium text-[#22292f] flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                    <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-background transition-colors">
+                      <Ticket className="w-4 h-4 text-foreground" />
+                      <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
                         {t("When tickets should go live?", "متى يجب تفعيل بيع التذاكر؟", "Quand les billets doivent-ils être en vente ?")}
                       </span>
                       <div className="flex items-center gap-1">
-                        <span className="text-sm font-medium text-[#668091]">
+                        <span className="text-sm font-medium text-muted-foreground">
                           {translateTicketGoLive(ticketGoLive === "Custom Date" ? "Immediately" : ticketGoLive)}
                         </span>
-                        <ChevronDown className="w-4 h-4 text-[#668091]" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </MenuButton>
                     <Portal>
                       <MenuItems
                         anchor="bottom end"
                         transition
-                        className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                        className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                       >
                         {ticketGoLiveOptions.map((option) => (
                           <MenuItem key={option}>
@@ -963,8 +963,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                               onClick={() => setTicketGoLive(option)}
                               className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
                                 ticketGoLive === option
-                                  ? "bg-[#d8e6ff] text-[#3f52ff]"
-                                  : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                               }`}
                             >
                               {translateTicketGoLive(option)}
@@ -980,26 +980,26 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               {/* Tickets URL */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-[#22292f]">
+                  <span className="text-sm font-semibold text-foreground">
                     {t("Tickets URL", "رابط التذاكر", "URL des billets")}
                   </span>
-                  <span className="text-sm font-medium text-[#859bab]">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {t("Optional", "اختياري", "Optionnel")}
                   </span>
                 </div>
                 <div className="relative">
                   <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
-                    <Ticket className="w-4 h-4 text-[#859bab]" />
+                    <Ticket className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <input
                     type="url"
                     placeholder={t("https://ticketing-url.com", "https://ticketing-url.com", "https://ticketing-url.com")}
                     value={ticketsUrl}
                     onChange={(e) => setTicketsUrl(e.target.value)}
-                    className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]`}
+                    className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
                   />
                 </div>
-                <div className="flex items-center gap-2 text-[#859bab]">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Info className="w-4 h-4" />
                   <span className="text-sm font-normal">
                     {t("External ticketing link for fans to purchase tickets", "رابط خارجي لشراء التذاكر", "Lien externe pour acheter des billets")}
@@ -1011,7 +1011,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <button
                 onClick={handleSubmit}
                 disabled={isSaving}
-                className="w-full h-10 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full h-10 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSaving ? (
                   <>
@@ -1039,26 +1039,26 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
           <div className="flex flex-col gap-2">
             <div className="flex sm:flex-row flex-col gap-2">
               {/* Start/End Date-Time */}
-              <div className="flex-1 bg-white rounded-lg p-1 flex flex-col">
+              <div className="flex-1 bg-card rounded-lg p-1 flex flex-col">
                 {/* Start Row */}
                 <div className="flex items-center justify-between p-1">
                   <div className="flex items-center gap-2">
                     <div className="w-5 flex flex-col items-center justify-center px-1">
-                      <div className="w-[10px] h-[10px] bg-[#3f52ff] rounded-full" />
+                      <div className="w-[10px] h-[10px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full" />
                     </div>
-                    <span className="text-sm font-normal text-[#22292f]">
+                    <span className="text-sm font-normal text-foreground">
                       {t("Start", "البداية", "Début")}
                     </span>
                   </div>
                   <div className="flex gap-[2px] items-center">
-                    <div className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg flex items-center justify-center">
-                      <span className="text-base font-normal text-[#22292f]">{formatDateForDisplay(startDate)}</span>
+                    <div className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg flex items-center justify-center">
+                      <span className="text-base font-normal text-foreground">{formatDateForDisplay(startDate)}</span>
                     </div>
                     <input
                       type="text"
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
-                      className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg text-base font-normal text-[#22292f] w-[70px] text-center outline-none"
+                      className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
                     />
                   </div>
                 </div>
@@ -1072,61 +1072,61 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     <div className="w-5 flex flex-col items-center justify-center px-1">
                       <div className="w-[10px] h-[10px] border border-[#3f52ff] rounded-full" />
                     </div>
-                    <span className="text-sm font-normal text-[#22292f]">
+                    <span className="text-sm font-normal text-foreground">
                       {t("End", "النهاية", "Fin")}
                     </span>
                   </div>
                   <div className="flex gap-[2px] items-center">
-                    <div className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg flex items-center justify-center">
-                      <span className="text-base font-normal text-[#22292f]">{formatDateForDisplay(endDate)}</span>
+                    <div className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg flex items-center justify-center">
+                      <span className="text-base font-normal text-foreground">{formatDateForDisplay(endDate)}</span>
                     </div>
                     <input
                       type="text"
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
-                      className="bg-[#dbeaff] h-9 px-3 py-2 rounded-lg text-base font-normal text-[#22292f] w-[70px] text-center outline-none"
+                      className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Timezone */}
-              <div className="bg-white rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
-                <Globe className="w-4 h-4 text-[#22292f]" />
-                  <span className="text-sm font-medium text-[#22292f]">GMT+01:00</span>
-                  <span className="text-xs font-normal text-[#668091]">Algiers</span>
+              <div className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                <Globe className="w-4 h-4 text-foreground" />
+                  <span className="text-sm font-medium text-foreground">GMT+01:00</span>
+                  <span className="text-xs font-normal text-muted-foreground">Algiers</span>
                 </div>
             </div>
 
             {/* Duration */}
-            <div className="bg-white rounded-lg px-3 py-2 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[#22292f]" />
-              <span className="text-base font-medium text-[#22292f] flex-1">
+            <div className="bg-card rounded-lg px-3 py-2 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-foreground" />
+              <span className="text-base font-medium text-foreground flex-1">
                 {t("Duration", "المدة", "Durée")}
               </span>
-              <span className="text-base font-medium text-[#668091]">{calculateDuration()}</span>
+              <span className="text-base font-medium text-muted-foreground">{calculateDuration()}</span>
             </div>
           </div>
 
           {/* Event Location Section */}
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff]">
+            <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
               {t("Event Location", "موقع الحدث", "Lieu de l'événement")}
             </span>
 
             {/* Location Type Tabs */}
-            <div className="flex items-center bg-[#dfe3e8] rounded-lg p-[6px] w-full">
+            <div className="flex items-center bg-muted rounded-lg p-[6px] w-full">
               <button
                 onClick={() => setLocationType("onsite")}
                 className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${locationType === "onsite"
-                    ? "text-[#3f52ff]"
-                    : "text-[#516778] hover:text-[#22292f]"
+                    ? "text-[#3f52ff] dark:text-white"
+                    : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 {locationType === "onsite" && (
                   <motion.div
                     layoutId="locationTypeIndicator"
-                    className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                    className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
@@ -1138,14 +1138,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <button
                 onClick={() => setLocationType("virtual")}
                 className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${locationType === "virtual"
-                    ? "text-[#3f52ff]"
-                    : "text-[#516778] hover:text-[#22292f]"
+                    ? "text-[#3f52ff] dark:text-white"
+                    : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 {locationType === "virtual" && (
                   <motion.div
                     layoutId="locationTypeIndicator"
-                    className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                    className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
@@ -1157,10 +1157,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             </div>
 
             {/* Location Content */}
-            <div className="bg-white rounded-lg p-3 flex flex-col gap-6">
+            <div className="bg-card rounded-lg p-3 flex flex-col gap-6">
               <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-[#22292f] mt-0.5" />
-                <span className="text-base font-medium text-[#22292f]">
+                <MapPin className="w-4 h-4 text-foreground mt-0.5" />
+                <span className="text-base font-medium text-foreground">
                   {t("Add event location", "إضافة موقع الحدث", "Ajouter un lieu")}
                 </span>
               </div>
@@ -1174,10 +1174,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       placeholder={t("Enter the location", "أدخل الموقع", "Entrez le lieu")}
                       value={locationInput}
                       onChange={(e) => setLocationInput(e.target.value)}
-                      className={`h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] ${isArabic ? "text-right" : ""}`}
+                      className={`h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right" : ""}`}
                     />
-                    <div className="flex items-center gap-2 text-xs text-[#859bab]">
-                      <div className="w-3 h-3 border border-[#859bab] rounded-full" />
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="w-3 h-3 border border-border rounded-full" />
                       <span>
                         {t(
                           "Type to search (Google Typeahead Search integration)",
@@ -1189,7 +1189,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   </div>
 
                   {/* Map Placeholder */}
-                  <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#e5e5e5]">
+                  <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-muted">
                     <Image
                       src="/img/map-placeholder.jpg"
                       alt="Map"
@@ -1202,14 +1202,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     {/* Map Pin Icon Overlay */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full">
                       <div className="relative">
-                        <div className="w-8 h-8 bg-[#3f52ff] rounded-full flex items-center justify-center">
-                          <div className="w-3 h-3 bg-white rounded-full" />
+                        <div className="w-8 h-8 bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full flex items-center justify-center">
+                          <div className="w-3 h-3 bg-card rounded-full" />
                         </div>
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-transparent border-t-[#3f52ff]" />
                       </div>
                     </div>
                     {/* Radius Circle */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-[#3f52ff] rounded-full bg-[#3f52ff]/10" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-[#3f52ff] rounded-full bg-[#3f52ff] dark:bg-[#3f52ff]/10" />
                   </div>
 
                   {/* Geo-Fence Radius */}
@@ -1222,7 +1222,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       value={geoFenceRadius}
                       onChange={(v) => setGeoFenceRadius(v as number)}
                     />
-                    <p className="text-xs text-[#859bab] text-center">
+                    <p className="text-xs text-muted-foreground text-center">
                       {t(
                         "Define the radius for location-based check-in verification",
                         "حدد النطاق للتحقق من الحضور حسب الموقع",
@@ -1235,10 +1235,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm font-semibold text-[#22292f]">
+                        <span className="text-sm font-semibold text-foreground">
                           {t("Location Name", "اسم الموقع", "Nom du lieu")}
                         </span>
-                        <span className="text-xs text-[#859bab]">
+                        <span className="text-xs text-muted-foreground">
                           {t(
                             "Enter the location name to display on the event",
                             "أدخل اسم الموقع لعرضه في الحدث",
@@ -1257,7 +1257,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       placeholder={t("Additional Informations", "معلومات إضافية", "Informations supplémentaires")}
                       value={locationMaskName}
                       onChange={(e) => setLocationMaskName(e.target.value)}
-                      className={`w-full h-[72px] px-3 py-2 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] resize-none ${isArabic ? "text-right" : ""}`}
+                      className={`w-full h-[72px] px-3 py-2 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none ${isArabic ? "text-right" : ""}`}
                     />
                   </div>
                 </>
@@ -1267,18 +1267,18 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   <div className="flex flex-col gap-2">
                     <div className="relative">
                       <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
-                        <Link className="w-4 h-4 text-[#859bab]" />
+                        <Link className="w-4 h-4 text-muted-foreground" />
                       </div>
                       <input
                         type="url"
                         placeholder={t("https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-", "https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-", "https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-")}
                         value={virtualMeetingUrl}
                         onChange={(e) => setVirtualMeetingUrl(e.target.value)}
-                        className={`w-full h-10 ${isArabic ? "pr-10 pl-10 text-right" : "pl-10 pr-10"} border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff]`}
+                        className={`w-full h-10 ${isArabic ? "pr-10 pl-10 text-right" : "pl-10 pr-10"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
                       />
                       {virtualMeetingUrl && (
                         <div className={`absolute ${isArabic ? "left-3" : "right-3"} top-1/2 -translate-y-1/2`}>
-                          <CheckCircle className="w-5 h-5 text-[#22892e]" />
+                          <CheckCircle className="w-5 h-5 text-emerald-700 dark:text-emerald-300" />
                         </div>
                       )}
                     </div>
@@ -1288,7 +1288,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       placeholder={t("Additional Informations", "معلومات إضافية", "Informations supplémentaires")}
                       value={virtualAdditionalInfo}
                       onChange={(e) => setVirtualAdditionalInfo(e.target.value)}
-                      className={`w-full h-[72px] px-3 py-2 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#859bab] outline-none focus:border-[#3f52ff] resize-none ${isArabic ? "text-right" : ""}`}
+                      className={`w-full h-[72px] px-3 py-2 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none ${isArabic ? "text-right" : ""}`}
                     />
                   </div>
                 </>
@@ -1298,22 +1298,22 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
           {/* Event Description */}
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff]">
+            <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
               {t("Event Description", "وصف الحدث", "Description de l'événement")}
             </span>
-            <div className="bg-white border border-[#d5dde2] rounded-lg p-3 flex flex-col gap-2">
+            <div className="bg-card border border-border rounded-lg p-3 flex flex-col gap-2">
               <textarea
                 placeholder={t("Placeholder", "اكتب وصفاً", "Saisir une description")}
                 value={eventDescription}
                 onChange={(e) => setEventDescription(e.target.value)}
                 maxLength={280}
-                className="w-full h-[100px] text-sm text-[#22292f] placeholder:text-[#859bab] outline-none resize-none"
+                className="w-full h-[100px] text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none"
               />
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[#859bab]">
+                <span className="text-xs text-muted-foreground">
                   {eventDescription.length}/280 {t("characters", "حرفًا", "caractères")}
                 </span>
-                <button className="text-[#859bab] hover:text-[#516778]">
+                <button className="text-muted-foreground hover:text-muted-foreground">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M13.333 8.667V12.667C13.333 13.0203 13.1927 13.3594 12.9426 13.6095C12.6925 13.8595 12.3536 14 12 14H3.333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.667V4C2 3.64638 2.14048 3.30724 2.39052 3.05719C2.64057 2.80714 2.97971 2.667 3.333 2.667H7.333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M11.333 1.333L14.666 4.666L8 11.333H4.667V8L11.333 1.333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
@@ -1325,27 +1325,27 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
           {/* Additional Options */}
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff]">
+            <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
               {t("Additional Options", "خيارات إضافية", "Options supplémentaires")}
             </span>
-            <div className="bg-white rounded-lg overflow-hidden">
+            <div className="bg-card rounded-lg overflow-hidden">
               {/* Event Chapter */}
               <Menu as="div" className="relative">
-                <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-[#f0f2f4] hover:bg-[#f9fafb] transition-colors">
-                  <Tag className="w-4 h-4 text-[#22292f]" />
-                  <span className={`text-base font-medium text-[#22292f] flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-border hover:bg-background transition-colors">
+                  <Tag className="w-4 h-4 text-foreground" />
+                  <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
                     {t("Event Chapter", "الفصل", "Chapitre")}
                   </span>
                   <div className="flex items-center gap-1">
-                    <span className="text-sm font-medium text-[#668091]">{chapter}</span>
-                    <ChevronDown className="w-4 h-4 text-[#668091]" />
+                    <span className="text-sm font-medium text-muted-foreground">{chapter}</span>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </MenuButton>
                 <Portal>
                   <MenuItems
                     anchor="bottom end"
                     transition
-                    className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                    className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                   >
                     {DEFAULT_CHAPTERS.map((ch) => (
                       <MenuItem key={ch.code}>
@@ -1353,8 +1353,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           onClick={() => setChapter(ch.name)}
                           className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
                             chapter === ch.name
-                              ? "bg-[#d8e6ff] text-[#3f52ff]"
-                              : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                              ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                              : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                           }`}
                         >
                           {ch.name}
@@ -1367,23 +1367,23 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
               {/* Tickets Go Live */}
               <Menu as="div" className="relative">
-              <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-[#f0f2f4] hover:bg-[#f9fafb] transition-colors">
-                <Ticket className="w-4 h-4 text-[#22292f]" />
-                <span className={`text-base font-medium text-[#22292f] flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+              <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-border hover:bg-background transition-colors">
+                <Ticket className="w-4 h-4 text-foreground" />
+                <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
                   {t("When tickets should go live?", "متى يجب تفعيل بيع التذاكر؟", "Quand les billets doivent-ils être en vente ?")}
                 </span>
                 <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium text-[#668091]">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {translateTicketGoLive(ticketGoLive)}
                   </span>
-                  <ChevronDown className="w-4 h-4 text-[#668091]" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
                 </div>
               </MenuButton>
                 <Portal>
                   <MenuItems
                     anchor="bottom end"
                     transition
-                    className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                    className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                   >
                   {ticketGoLiveOptions.map((option) => (
                     <MenuItem key={option}>
@@ -1391,8 +1391,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         onClick={() => setTicketGoLive(option)}
                         className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
                           ticketGoLive === option
-                            ? "bg-[#d8e6ff] text-[#3f52ff]"
-                            : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                            ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                            : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                         }`}
                       >
                         {translateTicketGoLive(option)}
@@ -1405,21 +1405,21 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
               {/* Capacity */}
               <Menu as="div" className="relative">
-              <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-[#f9fafb] transition-colors">
-                <Users className="w-4 h-4 text-[#22292f]" />
-                <span className={`text-base font-medium text-[#22292f] flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+              <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-background transition-colors">
+                <Users className="w-4 h-4 text-foreground" />
+                <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
                   {t("Capacity", "السعة", "Capacité")}
                 </span>
                 <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium text-[#668091]">{capacity}</span>
-                  <ChevronDown className="w-4 h-4 text-[#668091]" />
+                  <span className="text-sm font-medium text-muted-foreground">{capacity}</span>
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
                 </div>
               </MenuButton>
                 <Portal>
                   <MenuItems
                     anchor="bottom end"
                     transition
-                    className="z-[100] mt-1 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                    className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                   >
                     {["Unlimited", "50", "100", "200", "300", "500", "1000"].map((option) => (
                       <MenuItem key={option}>
@@ -1427,8 +1427,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           onClick={() => setCapacity(option)}
                           className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
                             capacity === option
-                              ? "bg-[#d8e6ff] text-[#3f52ff]"
-                              : "text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2]"
+                              ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                              : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                           }`}
                         >
                           {option}
@@ -1445,7 +1445,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
           <button
             onClick={handleSubmit}
             disabled={isSaving}
-            className="w-full h-10 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full h-10 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isSaving ? (
               <>
@@ -1465,17 +1465,17 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       {showCreateLeagueModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]">
           <div
-            className={`bg-white border border-[#d5dde2] rounded-xl w-[493px] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
+            className={`bg-card border border-border rounded-xl w-[493px] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
             dir={isArabic ? "rtl" : "ltr"}
           >
             {/* Modal Header */}
-            <div className="bg-white border-b border-[#d5dde2] rounded-t-xl px-4 pt-4 pb-4">
+            <div className="bg-card border-b border-border rounded-t-xl px-4 pt-4 pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex flex-col gap-1 flex-1">
-                  <h3 className="text-base font-semibold text-[#22292f] leading-[25.2px]">
+                  <h3 className="text-base font-semibold text-foreground leading-[25.2px]">
                     {t("Create League", "إنشاء دوري", "Créer une ligue")}
                   </h3>
-                  <p className="text-sm font-medium text-[#668091] leading-[18px]">
+                  <p className="text-sm font-medium text-muted-foreground leading-[18px]">
                     {t(
                       "Enter the league details below to create a new league.",
                       "أدخل تفاصيل الدوري أدناه لإنشاء دوري جديد.",
@@ -1485,9 +1485,9 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </div>
                 <button
                   onClick={() => setShowCreateLeagueModal(false)}
-                  className="w-[26px] h-[26px] bg-[#eceff2] rounded-full flex items-center justify-center hover:bg-[#dfe3e8] transition-colors"
+                  className="w-[26px] h-[26px] bg-muted rounded-full flex items-center justify-center hover:bg-muted transition-colors"
                 >
-                  <X className="w-3.5 h-3.5 text-[#425462]" />
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
                 </button>
               </div>
             </div>
@@ -1501,7 +1501,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   placeholder={t("Enter league name", "أدخل اسم الدوري", "Entrez le nom de la ligue")}
                   value={newLeagueName}
                   onChange={(e) => setNewLeagueName(e.target.value)}
-                  className={`flex-1 h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] ${isArabic ? "text-right font-ko-sans-ar" : ""}`}
+                  className={`flex-1 h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right font-ko-sans-ar" : ""}`}
                 />
                 <input
                   type="text"
@@ -1509,24 +1509,24 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   dir="rtl"
                   value={newLeagueNameAr}
                   onChange={(e) => setNewLeagueNameAr(e.target.value)}
-                  className="flex-1 h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff] font-ko-sans-ar"
+                  className="flex-1 h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] font-ko-sans-ar"
                 />
               </div>
 
               {/* League Logo */}
               <div className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-[#22292f]">
+                <span className="text-sm font-semibold text-foreground">
                   {t("League Logo", "شعار الدوري", "Logo de la ligue")}
                 </span>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => leagueLogoInputRef.current?.click()}
-                    className="w-20 h-20 border border-black/10 rounded-lg flex items-center justify-center bg-white hover:bg-[#f9fafb] transition-colors overflow-hidden"
+                    className="w-20 h-20 border border-black/10 rounded-lg flex items-center justify-center bg-card hover:bg-background transition-colors overflow-hidden"
                   >
                     {newLeagueLogo ? (
                       <img src={newLeagueLogo} alt="League logo" className="w-full h-full object-cover" />
                     ) : (
-                      <Upload className="w-4 h-4 text-[#668091]" />
+                      <Upload className="w-4 h-4 text-muted-foreground" />
                     )}
                   </button>
                   <input
@@ -1537,10 +1537,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     onChange={handleLeagueLogoUpload}
                   />
                   <div className="flex flex-col">
-                    <span className="text-base font-semibold text-[#525252]">
+                    <span className="text-base font-semibold text-muted-foreground">
                       {t("Upload league logo", "تحميل شعار الدوري", "Télécharger le logo")}
                     </span>
-                    <span className="text-sm font-normal text-[#668091]">
+                    <span className="text-sm font-normal text-muted-foreground">
                       {t("Recommended: 400x400px", "مقاس موصى به: 400×400", "Recommandé : 400x400")}
                     </span>
                   </div>
@@ -1549,14 +1549,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 {/* Website URL */}
                 <div className="relative">
                   <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
-                    <Link2 className="w-4 h-4 text-[#668091]" />
+                    <Link2 className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <input
                     type="url"
                     placeholder="https://league-website.com"
                     value={newLeagueWebsite}
                     onChange={(e) => setNewLeagueWebsite(e.target.value)}
-                    className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-[#d5dde2] rounded-lg text-sm text-[#22292f] placeholder:text-[#668091] outline-none focus:border-[#3f52ff]`}
+                    className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
                   />
                 </div>
               </div>
@@ -1567,8 +1567,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   onClick={() => setNewLeagueVisible(!newLeagueVisible)}
                   className={`w-4 h-4 rounded shrink-0 flex items-center justify-center shadow-sm ${
                     newLeagueVisible
-                      ? "bg-[#3f52ff]"
-                      : "bg-white border border-[#d5dde2]"
+                      ? "bg-[#3f52ff] dark:bg-[#3f52ff]"
+                      : "bg-card border border-border"
                   }`}
                 >
                   {newLeagueVisible && (
@@ -1577,24 +1577,24 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     </svg>
                   )}
                 </button>
-                <span className="text-sm font-medium text-[#22292f]">
+                <span className="text-sm font-medium text-foreground">
                   {t("Visible in league selection", "مرئي في اختيار الدوري", "Visible dans la sélection de ligue")}
                 </span>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="px-4 py-4 border-t border-[#d5dde2] flex items-center justify-end gap-2">
+            <div className="px-4 py-4 border-t border-border flex items-center justify-end gap-2">
               <button
                 onClick={() => setShowCreateLeagueModal(false)}
-                className="h-9 px-4 bg-[#eceff2] text-sm font-medium text-[#22292f] rounded-lg hover:bg-[#dfe3e8] transition-colors"
+                className="h-9 px-4 bg-muted text-sm font-medium text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 {t("Dismiss", "إغلاق", "Fermer")}
               </button>
               <button
                 onClick={handleCreateLeague}
                 disabled={!newLeagueName.trim()}
-                className="h-9 px-4 bg-[#3f52ff] text-sm font-medium text-white rounded-lg hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-sm font-medium text-white rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("Create League", "إنشاء دوري", "Créer une ligue")}
               </button>

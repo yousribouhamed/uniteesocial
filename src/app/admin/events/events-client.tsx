@@ -370,26 +370,26 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const { day: displayDay, month: displayMonth } = getDayAndMonth(startDate);
 
   return (
-    <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-3 pb-4 flex flex-col gap-4">
+    <div className="bg-muted border border-border rounded-lg p-3 pb-4 flex flex-col gap-4">
       {/* Header: Title + Badges + Check-In Guests */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold text-[#22292f] leading-[18px]">
+          <h2 className="text-lg font-semibold text-foreground leading-[18px]">
             {eventTitle}
           </h2>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
+            <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-[10px] font-medium rounded-[4px] leading-none">
               <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
               </svg>
               {chapter}
             </span>
-            <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
+            <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
               {type}
             </span>
           </div>
         </div>
-        <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
+        <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
           Check-In Guests
         </button>
       </div>
@@ -397,20 +397,20 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {/* Tabs Row */}
       <div className="flex items-center justify-between">
         {/* Tabs */}
-        <div className="inline-flex items-center gap-1 bg-[#eceff2] p-1 rounded-lg w-fit self-start">
+        <div className="inline-flex items-center gap-1 bg-muted p-1 rounded-lg w-fit self-start">
           {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setDetailTab(tab)}
               className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${detailTab === tab
-                ? "text-[#3f52ff]"
-                : "text-[#516778] hover:text-[#22292f]"
+                ? "text-[#3f52ff] dark:text-white"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
             >
               {detailTab === tab && (
                 <motion.div
                   layoutId="eventDetailTabIndicator"
-                  className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                  className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
                   initial={false}
                   transition={{
                     type: "spring",
@@ -426,28 +426,28 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
 
         {/* Top Right Action Button */}
         <Menu>
-          <MenuButton className="w-8 h-8 bg-[#22292f] rounded-lg flex items-center justify-center hover:bg-[#3a4249] transition-colors focus:outline-none data-[open]:bg-[#3a4249]">
+          <MenuButton className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center hover:bg-foreground/90 transition-colors focus:outline-none data-[open]:bg-foreground/90">
             <MoreHorizontal className="w-5 h-5 text-white" />
           </MenuButton>
           <Portal>
             <MenuItems
               anchor="bottom end"
               transition
-              className="z-[100] mt-1.5 w-[180px] bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg focus:outline-none transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+              className="z-[100] mt-1.5 w-[180px] bg-card border border-border rounded-xl p-1 shadow-lg focus:outline-none transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
             >
               <MenuItem>
                 <button
                   onClick={() => setShowCloneModal(true)}
-                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-[#22292f] hover:bg-[#f0f2f5] transition-colors group focus:outline-none"
+                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/70 transition-colors group focus:outline-none"
                 >
-                  <Copy className="w-4 h-4 text-[#516778]" />
+                  <Copy className="w-4 h-4 text-muted-foreground" />
                   Clone Event
                 </button>
               </MenuItem>
               <MenuItem>
                 <button
                   onClick={() => setShowSlidoModal(true)}
-                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-[#d8e6ff] hover:bg-[#d8e6ff] transition-colors text-[#22292f] focus:outline-none"
+                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-blue-100 dark:bg-blue-950/40 hover:bg-blue-100 dark:bg-blue-950/40 transition-colors text-foreground focus:outline-none"
                 >
                   <Code className="w-4 h-4" />
                   Add Slido Embed
@@ -456,9 +456,9 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               <MenuItem>
                 <button
                   onClick={() => setShowCancelModal(true)}
-                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-[#e53935] hover:bg-[#fff0f0] transition-colors group focus:outline-none"
+                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors group focus:outline-none"
                 >
-                  <XCircle className="w-4 h-4 text-[#e53935]" />
+                  <XCircle className="w-4 h-4 text-destructive" />
                   Cancel Event
                 </button>
               </MenuItem>
@@ -471,9 +471,9 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {detailTab === "overview" && (
         <div className="flex lg:flex-row flex-col gap-4 items-start">
           {/* Left: Event Preview Card */}
-          <div className="w-full lg:w-[493px] shrink-0 bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-4 h-fit">
+          <div className="w-full lg:w-[493px] shrink-0 bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
             {/* Cover Image */}
-            <div className="relative w-full h-[264px] rounded-lg overflow-hidden bg-[#d5dde2]">
+            <div className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted">
               {coverImage ? (
                 coverImage.startsWith("data:") ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -492,10 +492,10 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   />
                 )
               ) : (
-                <div className="w-full h-full bg-[#d5dde2]" />
+                <div className="w-full h-full bg-muted" />
               )}
               {/* Centered User Icon */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full border-[2.889px] border-border flex items-center justify-center">
                 <svg width="23" height="23" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="14" cy="5" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
                   <path d="M9 20V18C9 15.7909 10.7909 14 13 14H15C17.2091 14 19 15.7909 19 18V20" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
@@ -509,17 +509,17 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             <div className="flex flex-col gap-4">
               {/* Title + Badges */}
               <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
+                <h3 className="text-lg font-semibold text-foreground leading-[18px]">
                   {eventTitle || "Event name"}
                 </h3>
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] text-white text-xs font-medium rounded">
+                  <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
                     <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
                     </svg>
                     {chapter}
                   </span>
-                  <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] text-white text-xs font-medium rounded">
+                  <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
                     {type}
                   </span>
                 </div>
@@ -530,17 +530,17 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 {/* Date Section */}
                 <div className="flex items-center gap-2">
                   {/* Date Box */}
-                  <div className="w-10 h-11 border border-[#859bab] rounded-lg overflow-hidden flex flex-col">
-                    <div className="bg-[#859bab] px-0.5 py-1 flex items-center justify-center">
+                  <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
+                    <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
                       <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">{displayMonth}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center">
-                      <span className="text-base font-medium text-[#859bab] leading-none">{displayDay}</span>
+                      <span className="text-base font-medium text-muted-foreground leading-none">{displayDay}</span>
                     </div>
                   </div>
                   {/* Date Text */}
                   <div className="flex flex-col gap-px">
-                    <span className="text-base font-medium text-[#22292f] leading-[24px]">
+                    <span className="text-base font-medium text-foreground leading-[24px]">
                       {startDate ? (() => {
                         const weekdays = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
                         const d = new Date(startDate.year, startDate.month - 1, startDate.day);
@@ -548,7 +548,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                         return `${weekdays[d.getDay()]} ${startDate.day} ${monthsFull[startDate.month - 1]}`;
                       })() : "samedi 25 octobre"}
                     </span>
-                    <span className="text-sm font-normal text-[#859bab] leading-[21px]">
+                    <span className="text-sm font-normal text-muted-foreground leading-[21px]">
                       {startTime} - {endTime} UTC+4
                     </span>
                   </div>
@@ -557,18 +557,18 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 {/* Venue Section */}
                 <div className="flex items-center gap-2">
                   {/* Location Icon Box */}
-                  <div className="w-10 h-10 border border-[#859bab] rounded-lg flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-[#859bab]" />
+                  <div className="w-10 h-10 border border-border rounded-lg flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-muted-foreground" />
                   </div>
                   {/* Venue Text */}
                   <div className="flex flex-col gap-px">
                     <div className="flex items-center gap-1">
-                      <span className="text-base font-medium text-[#22292f] leading-[24px]">
+                      <span className="text-base font-medium text-foreground leading-[24px]">
                         {locationInput ? locationInput.split(",")[0] : "Lieu"}
                       </span>
-                      <ArrowUpRight className="w-4 h-4 text-[#22292f] opacity-50" />
+                      <ArrowUpRight className="w-4 h-4 text-foreground opacity-50" />
                     </div>
-                    <span className="text-sm font-normal text-[#859bab] leading-[21px]">
+                    <span className="text-sm font-normal text-muted-foreground leading-[21px]">
                       {locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || "Dubai, Dubai" : "Dubai, Dubai"}
                     </span>
                   </div>
@@ -578,14 +578,14 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               {/* Address + Capacity */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
-                  <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                  <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm font-normal text-foreground leading-[18px]">
                     {locationInput || "Dubai World Trade Center, DWC"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
-                  <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+                  <ClipboardPenLine className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm font-normal text-foreground leading-[18px]">
                     {event?.signups || 0}/{event?.maxSignups || 300}
                   </span>
                 </div>
@@ -609,25 +609,25 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               type="text"
               value={eventTitle}
               onChange={(e) => setEventTitle(e.target.value)}
-              className="text-[40px] font-bold text-[#3f52ff] leading-[46px] bg-transparent outline-none w-full"
+              className="text-[40px] font-bold text-[#3f52ff] dark:text-white leading-[46px] bg-transparent outline-none w-full"
               placeholder="Event Title"
             />
 
             {/* Start / End Date-Time Input */}
             <div className="flex sm:flex-row flex-col gap-2 items-start">
-              <div className="flex-1 bg-white rounded-lg p-2.5 flex flex-col gap-4 w-full">
+              <div className="flex-1 bg-card rounded-lg p-2.5 flex flex-col gap-4 w-full">
                 {/* Start Row */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0">
-                      <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
+                    <div className="w-[40px] h-[42px] border border-border rounded-[8px] flex flex-col items-center overflow-hidden bg-card shrink-0">
+                      <div className="bg-muted-foreground/40 w-full h-[14px] flex items-center justify-center">
                         <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
                       </div>
                       <div className="flex-1 flex items-center justify-center w-full">
-                        <span className="text-[16px] font-medium text-[#859bab] leading-none">{displayDay}</span>
+                        <span className="text-[16px] font-medium text-muted-foreground leading-none">{displayDay}</span>
                       </div>
                     </div>
-                    <span className="text-sm font-semibold text-[#22292f]">Start</span>
+                    <span className="text-sm font-semibold text-foreground">Start</span>
                   </div>
                   <div className="flex gap-1 items-center">
                     <div className="w-[136px]">
@@ -637,30 +637,30 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                       type="text"
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
-                      className="bg-[#d8e6ff] rounded-lg px-2 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
+                      className="bg-blue-100 dark:bg-blue-950/40 rounded-lg px-2 py-2 text-base font-normal text-foreground w-[60px] text-center outline-none"
                     />
                   </div>
                 </div>
 
                 {/* Divider / Line between */}
-                <div className="ml-5 h-px bg-[#f0f2f4] -my-2" />
+                <div className="ml-5 h-px bg-border -my-2" />
 
                 {/* End Row */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-[40px] h-[42px] border border-[#859bab] rounded-[8px] flex flex-col items-center overflow-hidden bg-white shrink-0 opacity-60">
-                      <div className="bg-[#859bab] w-full h-[14px] flex items-center justify-center">
+                    <div className="w-[40px] h-[42px] border border-border rounded-[8px] flex flex-col items-center overflow-hidden bg-card shrink-0 opacity-60">
+                      <div className="bg-muted-foreground/40 w-full h-[14px] flex items-center justify-center">
                         <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">
                           {getDayAndMonth(endDate).month}
                         </span>
                       </div>
                       <div className="flex-1 flex items-center justify-center w-full">
-                        <span className="text-[16px] font-medium text-[#859bab] leading-none">
+                        <span className="text-[16px] font-medium text-muted-foreground leading-none">
                           {getDayAndMonth(endDate).day}
                         </span>
                       </div>
                     </div>
-                    <span className="text-sm font-semibold text-[#22292f]">End</span>
+                    <span className="text-sm font-semibold text-foreground">End</span>
                   </div>
                   <div className="flex gap-1 items-center">
                     <div className="w-[136px]">
@@ -670,25 +670,25 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                       type="text"
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
-                      className="bg-[#d8e6ff] rounded-lg px-2 py-2 text-base font-normal text-[#22292f] w-[60px] text-center outline-none"
+                      className="bg-blue-100 dark:bg-blue-950/40 rounded-lg px-2 py-2 text-base font-normal text-foreground w-[60px] text-center outline-none"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
-                <Globe className="w-4 h-4 text-[#22292f]" />
-                <span className="text-sm font-medium text-[#22292f]">GMT+01:00</span>
-                <span className="text-xs font-normal text-[#668091]">Algiers</span>
+              <div className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                <Globe className="w-4 h-4 text-foreground" />
+                <span className="text-sm font-medium text-foreground">GMT+01:00</span>
+                <span className="text-xs font-normal text-muted-foreground">Algiers</span>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg px-3 py-2 flex items-center justify-between">
+            <div className="bg-card rounded-lg px-3 py-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#22292f]" />
-                <span className="text-base font-medium text-[#22292f]">Duration</span>
+                <Clock className="w-4 h-4 text-foreground" />
+                <span className="text-base font-medium text-foreground">Duration</span>
               </div>
-              <span className="text-base font-medium text-[#668091]">3 hours</span>
+              <span className="text-base font-medium text-muted-foreground">3 hours</span>
             </div>
 
             {/* Chapter / Type Selection */}
@@ -719,14 +719,14 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
 
             {/* Event Location Section */}
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-[#3f52ff]">Event Location</span>
-              <div className="bg-white rounded-lg p-3 flex flex-col gap-4">
+              <span className="text-sm font-medium text-[#3f52ff] dark:text-white">Event Location</span>
+              <div className="bg-card rounded-lg p-3 flex flex-col gap-4">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-[#22292f] mt-0.5" />
-                  <span className="text-base font-medium text-[#22292f]">Add event location</span>
+                  <MapPin className="w-4 h-4 text-foreground mt-0.5" />
+                  <span className="text-base font-medium text-foreground">Add event location</span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-[#22292f]">Location Name</label>
+                  <label className="text-sm font-semibold text-foreground">Location Name</label>
                   <div className="relative" ref={placesBoxRef}>
                     <input
                       type="text"
@@ -739,16 +739,16 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                         setIsPlacesOpen(true);
                       }}
                       onFocus={() => setIsPlacesOpen(true)}
-                      className="h-9 px-3 border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] w-full"
+                      className="h-9 px-3 border border-border rounded-lg text-sm text-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] w-full"
                     />
                     {isPlacesOpen && placePredictions.length > 0 && (
-                      <div className="absolute z-50 mt-1 w-full bg-white border border-[#d5dde2] rounded-lg shadow-lg overflow-hidden">
+                      <div className="absolute z-50 mt-1 w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden">
                         {placePredictions.slice(0, 6).map((p) => (
                           <button
                             key={p.place_id}
                             type="button"
                             onClick={() => selectPlace(p.place_id, p.description)}
-                            className="w-full text-left px-3 py-2 text-sm text-[#22292f] hover:bg-[#f5f7fa] transition-colors"
+                            className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted/70 transition-colors"
                           >
                             {p.description}
                           </button>
@@ -757,12 +757,12 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                     )}
                   </div>
                 </div>
-                <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-[#eee]">
+                <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-muted">
                   <Image src="/img/map-placeholder.jpg" alt="Map" fill className="object-cover" />
                 </div>
 
                 {/* Geo-Fence Radius */}
-                <div className="flex flex-col gap-2 pt-2 border-t border-[#f0f2f4]">
+                <div className="flex flex-col gap-2 pt-2 border-t border-border">
                   <AriaSlider
                     label="Geo-Fence Radius"
                     unit="meters"
@@ -774,32 +774,32 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 </div>
 
                 {/* Location Masking */}
-                <div className="flex items-center justify-between pt-2 border-t border-[#f0f2f4]">
+                <div className="flex items-center justify-between pt-2 border-t border-border">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-[#22292f]">Location Masking</span>
-                    <span className="text-xs text-[#859bab]">Hide real location and show custom name</span>
+                    <span className="text-sm font-semibold text-foreground">Location Masking</span>
+                    <span className="text-xs text-muted-foreground">Hide real location and show custom name</span>
                   </div>
                   <button
                     onClick={() => setLocationMasking(!locationMasking)}
-                    className={`w-10 h-5 rounded-full relative transition-colors ${locationMasking ? "bg-[#3f52ff]" : "bg-[#d5dde2]"}`}
+                    className={`w-10 h-5 rounded-full relative transition-colors ${locationMasking ? "bg-[#3f52ff] dark:bg-[#3f52ff]" : "bg-muted"}`}
                   >
-                    <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${locationMasking ? "translate-x-5" : "translate-x-0"}`} />
+                    <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-card transition-transform ${locationMasking ? "translate-x-5" : "translate-x-0"}`} />
                   </button>
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-[#3f52ff]">Description</span>
-              <div className="border border-[#b0bfc9] rounded-lg p-3 flex flex-col gap-2 h-[149px] bg-white">
+              <span className="text-sm font-medium text-[#3f52ff] dark:text-white">Description</span>
+              <div className="border border-border rounded-lg p-3 flex flex-col gap-2 h-[149px] bg-card">
                 <textarea
                   value={eventDescription}
                   onChange={(e) => setEventDescription(e.target.value)}
                   maxLength={280}
-                  className="flex-1 text-sm font-normal text-[#22292f] resize-none outline-none"
+                  className="flex-1 text-sm font-normal text-foreground resize-none outline-none"
                 />
                 <div className="flex justify-end">
-                  <span className="text-[#859bab] text-[10px] font-semibold">
+                  <span className="text-muted-foreground text-[10px] font-semibold">
                     {eventDescription.length}/280
                   </span>
                 </div>
@@ -828,7 +828,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 };
                 onSave(savedEvent);
               }}
-              className="w-full min-h-[40px] bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full min-h-[40px] bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSaving ? (
                 <>
@@ -847,72 +847,72 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {detailTab === "guests" && (
         <div className="flex flex-col gap-4">
           {/* Stats Row - unified border container */}
-          <div className="flex items-stretch border border-[#d5dde2] rounded-xl bg-white">
+          <div className="flex items-stretch border border-border rounded-xl bg-card">
             {/* Registered Guests */}
-            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
               <div className="flex items-center gap-2">
-                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                  <Users className="w-4 h-4 text-[#516778]" />
+                <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <Users className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Registered Guests</span>
-                  <span className="text-xs font-normal text-[#516778] leading-[18px]">Capacity limit</span>
+                  <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Registered Guests</span>
+                  <span className="text-xs font-normal text-muted-foreground leading-[18px]">Capacity limit</span>
                 </div>
               </div>
-              <span className="text-base font-semibold text-[#22292f] leading-[18px]">42 / 50</span>
+              <span className="text-base font-semibold text-foreground leading-[18px]">42 / 50</span>
             </div>
 
             {/* Checked In */}
-            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
               <div className="flex items-center gap-2">
-                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                  <LogIn className="w-4 h-4 text-[#516778]" />
+                <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <LogIn className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In</span>
-                  <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of registered</span>
+                  <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Checked In</span>
+                  <span className="text-xs font-normal text-muted-foreground leading-[18px]">0% of registered</span>
                 </div>
               </div>
-              <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
+              <span className="text-xl font-semibold text-foreground leading-[18px]">0</span>
             </div>
 
             {/* Checked Out */}
-            <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
               <div className="flex items-center gap-2">
-                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                  <LogOut className="w-4 h-4 text-[#516778]" />
+                <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <LogOut className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out</span>
-                  <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of checked in</span>
+                  <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Checked Out</span>
+                  <span className="text-xs font-normal text-muted-foreground leading-[18px]">0% of checked in</span>
                 </div>
               </div>
-              <span className="text-xl font-semibold text-[#22292f] leading-[18px]">0</span>
+              <span className="text-xl font-semibold text-foreground leading-[18px]">0</span>
             </div>
 
             {/* Booked */}
             <div className="flex-1 flex items-center justify-between p-4">
               <div className="flex items-center gap-2">
-                <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4 text-[#516778]" />
+                <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Booked</span>
-                  <span className="text-xs font-normal text-[#516778] leading-[18px]">Checked-in</span>
+                  <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Booked</span>
+                  <span className="text-xs font-normal text-muted-foreground leading-[18px]">Checked-in</span>
                 </div>
               </div>
-              <span className="text-xl font-semibold text-[#22292f] leading-[18px]">2</span>
+              <span className="text-xl font-semibold text-foreground leading-[18px]">2</span>
             </div>
           </div>
 
 
           {/* Guest List Container */}
-          <div className="bg-white border border-[#d5dde2] rounded-xl p-4 flex flex-col gap-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+          <div className="bg-card border border-border rounded-xl p-4 flex flex-col gap-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
             {/* Guest List Header */}
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-1">
-                <h3 className="text-lg font-semibold text-[#22292f]">Guest List</h3>
-                <span className="text-sm text-[#859bab]">All registered guests for this event</span>
+                <h3 className="text-lg font-semibold text-foreground">Guest List</h3>
+                <span className="text-sm text-muted-foreground">All registered guests for this event</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -942,8 +942,8 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   }}
                   disabled={selectedGuests.size === 0}
                   className={`flex items-center gap-2 h-8 px-3 text-xs font-medium rounded-lg transition-colors ${selectedGuests.size > 0
-                    ? "bg-[#22292f] text-white hover:bg-[#3a4249]"
-                    : "bg-[#eceff2] text-[#859bab] cursor-not-allowed"
+                    ? "bg-foreground text-background hover:bg-foreground/90"
+                    : "bg-muted text-muted-foreground cursor-not-allowed"
                     }`}
                 >
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -953,12 +953,12 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   </svg>
                   Export CSV
                   {selectedGuests.size > 0 && (
-                    <span className="bg-white text-[#22292f] text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                    <span className="bg-card text-foreground text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
                       {selectedGuests.size}
                     </span>
                   )}
                 </button>
-                <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
+                <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
                   Add User
                 </button>
               </div>
@@ -967,22 +967,22 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
           {/* Search + Filter Row */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 h-9 px-3 py-1 bg-white border border-[#d5dde2] rounded-lg w-[373px]">
-                <Search className="w-4 h-4 text-[#668091]" />
+              <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-[373px]">
+                <Search className="w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search Name, Email"
                   value={guestSearchQuery}
                   onChange={(e) => setGuestSearchQuery(e.target.value)}
-                  className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] bg-transparent outline-none border-none p-0 focus:ring-0"
+                  className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none border-none p-0 focus:ring-0"
                 />
-                <span className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
+                <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
               </div>
               <Menu>
-                <MenuButton className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] transition-colors">
+                <MenuButton className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
                   <Filter className="w-4 h-4" />
                   {guestStatusFilter !== "all" && (
-                    <span className="bg-white text-[#3f52ff] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    <span className="bg-card text-[#3f52ff] dark:text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                       1
                     </span>
                   )}
@@ -991,12 +991,12 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   <MenuItems
                     anchor="bottom end"
                     transition
-                    className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                    className="z-[100] mt-1 bg-card border border-border rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                   >
                     <MenuItem>
                       <button
                         onClick={() => setGuestStatusFilter("all")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
                       >
                         All Guests
                       </button>
@@ -1004,7 +1004,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                     <MenuItem>
                       <button
                         onClick={() => setGuestStatusFilter("checked-in")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
                       >
                         Checked In
                       </button>
@@ -1012,7 +1012,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                     <MenuItem>
                       <button
                         onClick={() => setGuestStatusFilter("not-checked-in")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
                       >
                         Not Checked In
                       </button>
@@ -1020,7 +1020,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                     <MenuItem>
                       <button
                         onClick={() => setGuestStatusFilter("booked")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
                       >
                         Booked
                       </button>
@@ -1028,7 +1028,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                     <MenuItem>
                       <button
                         onClick={() => setGuestStatusFilter("cancelled")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
                       >
                         Cancelled
                       </button>
@@ -1052,7 +1052,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   <col className="w-[14%]" />
                 </colgroup>
                 <thead>
-                  <tr className="[&>th]:bg-[#eceff2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
+                  <tr className="[&>th]:bg-muted [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
                     <th className="h-9 px-3 py-2 text-left">
                       <AriaCheckbox
                         isSelected={selectedGuests.size === filteredGuests.length && filteredGuests.length > 0}
@@ -1066,37 +1066,37 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                         }}
                       />
                     </th>
-                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]">
+                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-foreground">
                       <div className="flex items-center gap-1">
                         Name
-                        <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
+                        <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                       </div>
                     </th>
-                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]">
+                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-foreground">
                       <div className="flex items-center gap-1">
                         Email
-                        <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
+                        <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                       </div>
                     </th>
-                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]">
+                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-foreground">
                       <div className="flex items-center gap-1">
                         Registration Time
-                        <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
+                        <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                       </div>
                     </th>
-                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]">
+                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-foreground">
                       <div className="flex items-center gap-1">
                         Ticket ID
-                        <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
+                        <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                       </div>
                     </th>
-                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]">
+                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-foreground">
                       <div className="flex items-center gap-1">
                         Ticket QR
-                        <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
+                        <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                       </div>
                     </th>
-                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]">
+                    <th className="h-9 px-3 py-2 text-left text-sm font-medium text-foreground">
                       <div className="flex items-center gap-1">
                         Status
                       </div>
@@ -1109,7 +1109,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                     return (
                       <tr
                         key={guest.id}
-                        className={`border-b border-[#eceff2] last:border-b-0 transition-colors ${isSelected ? "bg-[#d8e6ff]" : "hover:bg-[#f9fafb]"}`}
+                        className={`border-b border-border last:border-b-0 transition-colors ${isSelected ? "bg-blue-100 dark:bg-blue-950/40" : "hover:bg-background"}`}
                       >
                         <td className="px-3 py-3">
                           <AriaCheckbox
@@ -1126,67 +1126,67 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                           />
                         </td>
                         <td className="px-3 py-3">
-                          <span className="text-sm font-medium text-[#22292f]">
+                          <span className="text-sm font-medium text-foreground">
                             {guest.name}
                           </span>
                         </td>
                         <td className="px-3 py-3">
-                          <span className="text-sm text-[#516778]">
+                          <span className="text-sm text-muted-foreground">
                             {guest.email}
                           </span>
                         </td>
                         <td className="px-3 py-3">
-                          <span className="text-sm text-[#516778]">
+                          <span className="text-sm text-muted-foreground">
                             {guest.registrationTime}
                           </span>
                         </td>
                         <td className="px-3 py-3">
-                          <span className="text-sm font-medium text-[#22292f]">
+                          <span className="text-sm font-medium text-foreground">
                             {guest.ticketId}
                           </span>
                         </td>
                         <td className="px-3 py-3">
-                          <button className="inline-flex items-center gap-1.5 h-7 px-2.5 bg-white border border-[#d5dde2] rounded-md text-xs font-medium text-[#516778] hover:bg-[#f9fafb] transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                              <rect x="1" y="1" width="12" height="12" rx="1.5" stroke="#516778" strokeWidth="1" />
-                              <rect x="3.5" y="3.5" width="2.5" height="2.5" fill="#516778" />
-                              <rect x="8" y="3.5" width="2.5" height="2.5" fill="#516778" />
-                              <rect x="3.5" y="8" width="2.5" height="2.5" fill="#516778" />
-                              <rect x="8" y="8" width="2.5" height="2.5" fill="#516778" />
+                          <button className="inline-flex items-center gap-1.5 h-7 px-2.5 bg-card border border-border rounded-md text-xs font-medium text-muted-foreground hover:bg-background transition-colors">
+                            <svg className="text-muted-foreground" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                              <rect x="1" y="1" width="12" height="12" rx="1.5" stroke="currentColor" strokeWidth="1" />
+                              <rect x="3.5" y="3.5" width="2.5" height="2.5" fill="currentColor" />
+                              <rect x="8" y="3.5" width="2.5" height="2.5" fill="currentColor" />
+                              <rect x="3.5" y="8" width="2.5" height="2.5" fill="currentColor" />
+                              <rect x="8" y="8" width="2.5" height="2.5" fill="currentColor" />
                             </svg>
                             View QR
                           </button>
                         </td>
                         <td className="px-3 py-3">
                           {guest.status === "checked-in" && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-[#22892e] bg-[#e8f5e9] px-2 py-0.5 rounded-full">
-                              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                                <circle cx="7" cy="7" r="6" fill="#22892e" />
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
+                              <svg className="text-emerald-600 dark:text-emerald-300" width="12" height="12" viewBox="0 0 14 14" fill="none">
+                                <circle cx="7" cy="7" r="6" fill="currentColor" />
                                 <path d="M4.5 7L6.25 8.75L9.5 5.25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                               Checked-In
                             </span>
                           )}
                           {guest.status === "not-checked-in" && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-[#d97706] bg-[#fef3c7] px-2 py-0.5 rounded-full">
-                              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                                <path d="M7 1.5L12.5 11.5H1.5L7 1.5Z" fill="#d97706" />
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
+                              <svg className="text-amber-600 dark:text-amber-300" width="12" height="12" viewBox="0 0 14 14" fill="none">
+                                <path d="M7 1.5L12.5 11.5H1.5L7 1.5Z" fill="currentColor" />
                                 <path d="M7 5.5V7.5M7 9.25V9.26" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
                               </svg>
                               Not Checked-In
                             </span>
                           )}
                           {guest.status === "booked" && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-[#22892e] bg-[#e8f5e9] px-2 py-0.5 rounded-full">
-                              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                                <circle cx="7" cy="7" r="6" fill="#22892e" />
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
+                              <svg className="text-emerald-600 dark:text-emerald-300" width="12" height="12" viewBox="0 0 14 14" fill="none">
+                                <circle cx="7" cy="7" r="6" fill="currentColor" />
                                 <path d="M4.5 7L6.25 8.75L9.5 5.25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                               Booked
                             </span>
                           )}
                           {guest.status === "cancelled" && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-[#dc2626] bg-[#fee2e2] px-2 py-0.5 rounded-full">
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-300 bg-destructive/10 px-2 py-0.5 rounded-full">
                               <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
                                 <circle cx="7" cy="7" r="6" fill="#dc2626" />
                                 <path d="M5 5L9 9M9 5L5 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -1207,17 +1207,17 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               <button
                 onClick={() => setGuestPage(p => Math.max(1, p - 1))}
                 disabled={guestPage === 1}
-                className="w-8 h-8 flex items-center justify-center border border-[#d5dde2] rounded-lg bg-white text-[#516778] hover:bg-[#f9fafb] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-8 h-8 flex items-center justify-center border border-border rounded-lg bg-card text-muted-foreground hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
-              <span className="text-sm text-[#516778]">
-                Page <span className="font-semibold text-[#22292f]">{guestPage}</span> of <span className="text-[#3f52ff]">{totalGuestPages}</span>
+              <span className="text-sm text-muted-foreground">
+                Page <span className="font-semibold text-foreground">{guestPage}</span> of <span className="text-[#3f52ff] dark:text-white">{totalGuestPages}</span>
               </span>
               <button
                 onClick={() => setGuestPage(p => Math.min(totalGuestPages, p + 1))}
                 disabled={guestPage >= totalGuestPages}
-                className="w-8 h-8 flex items-center justify-center border border-[#d5dde2] rounded-lg bg-white text-[#516778] hover:bg-[#f9fafb] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-8 h-8 flex items-center justify-center border border-border rounded-lg bg-card text-muted-foreground hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
@@ -1290,24 +1290,24 @@ function SlidoEmbedModal({ onClose }: { onClose: () => void }) {
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="relative bg-white border border-[#d5dde2] rounded-xl w-full max-w-[560px] flex flex-col shadow-xl overflow-hidden"
+        className="relative bg-card border border-border rounded-xl w-full max-w-[560px] flex flex-col shadow-xl overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-[#d5dde2]">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-lg p-3 flex items-center justify-center">
-              <Code className="w-4 h-4 text-[#3f52ff]" />
+            <div className="bg-blue-100 dark:bg-blue-950/40 border border-[#8faeff] rounded-lg p-3 flex items-center justify-center">
+              <Code className="w-4 h-4 text-[#3f52ff] dark:text-white" />
             </div>
             <div className="flex flex-col">
-              <h2 className="text-base font-semibold text-[#22292f]">Slido Embed</h2>
-              <p className="text-xs text-[#859bab]">Add interactive polls and Q&A to your event with Slido</p>
+              <h2 className="text-base font-semibold text-foreground">Slido Embed</h2>
+              <p className="text-xs text-muted-foreground">Add interactive polls and Q&A to your event with Slido</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+            className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted transition-colors"
           >
-            <X className="w-4 h-4 text-[#516778]" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
 
@@ -1318,28 +1318,28 @@ function SlidoEmbedModal({ onClose }: { onClose: () => void }) {
               value={embedCode}
               onChange={(e) => setEmbedCode(e.target.value)}
               placeholder='<iframe src="...."></iframe>'
-              className="w-full min-h-[180px] p-4 bg-white border border-[#d5dde2] rounded-xl text-sm text-[#22292f] focus:border-[#3f52ff] outline-none transition-colors resize-none placeholder:text-[#859bab] font-mono"
+              className="w-full min-h-[180px] p-4 bg-card border border-border rounded-xl text-sm text-foreground focus:border-[#3f52ff] dark:focus:border-[#8faeff] outline-none transition-colors resize-none placeholder:text-muted-foreground font-mono"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <Info className="w-4 h-4 text-[#859bab]" />
-            <span className="text-sm text-[#859bab]">Copy the embed code from Slido and paste it here</span>
+            <Info className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Copy the embed code from Slido and paste it here</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t border-[#d5dde2]">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-border">
           <button
             onClick={onClose}
-            className="h-10 px-6 text-sm font-semibold text-[#3f52ff] bg-[#d8e6ff]/50 rounded-lg hover:bg-[#d8e6ff] transition-colors"
+            className="h-10 px-6 text-sm font-semibold text-[#3f52ff] dark:text-white bg-blue-100 dark:bg-blue-950/40/50 rounded-lg hover:bg-blue-100 dark:bg-blue-950/40 transition-colors"
           >
             Dismiss
           </button>
           <button
             onClick={handleSave}
             disabled={loading || !embedCode.trim()}
-            className="h-10 px-6 text-sm font-semibold text-white bg-[#3f52ff] rounded-lg hover:bg-[#3545e0] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-10 px-6 text-sm font-semibold text-white bg-[#3f52ff] dark:bg-[#3f52ff] rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             Save Embed Code
@@ -1389,27 +1389,27 @@ function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps)
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="relative bg-white border border-[#d5dde2] rounded-xl w-full max-w-[480px] flex flex-col shadow-xl overflow-hidden"
+        className="relative bg-card border border-border rounded-xl w-full max-w-[480px] flex flex-col shadow-xl overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-[#d5dde2]">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="bg-[#ffe1e1] rounded-lg p-2 flex items-center justify-center">
-              <AlertCircle className="w-4 h-4 text-[#e53935]" />
+            <div className="bg-destructive/10 rounded-lg p-2 flex items-center justify-center">
+              <AlertCircle className="w-4 h-4 text-destructive" />
             </div>
-            <h2 className="text-base font-semibold text-[#22292f]">Cancel Event</h2>
+            <h2 className="text-base font-semibold text-foreground">Cancel Event</h2>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+            className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted transition-colors"
           >
-            <X className="w-4 h-4 text-[#516778]" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
 
         {/* Body */}
         <div className="p-4 flex flex-col gap-6 max-h-[70vh] overflow-y-auto">
-          <p className="text-sm font-medium text-[#859bab] leading-relaxed">
+          <p className="text-sm font-medium text-muted-foreground leading-relaxed">
             If you aren&apos;t able to host your event, you can cancel and we&apos;ll notify your guests. This event will be permanently deleted.
           </p>
 
@@ -1420,20 +1420,20 @@ function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps)
             className="flex-row-reverse justify-between w-full"
           >
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-semibold text-[#22292f]">Customise Notification</span>
-              <span className="text-xs text-[#859bab]">Send a custom message to guests</span>
+              <span className="text-sm font-semibold text-foreground">Customise Notification</span>
+              <span className="text-xs text-muted-foreground">Send a custom message to guests</span>
             </div>
           </AriaSwitch>
 
           {customiseNotification && (
             <div className="flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-[#22292f]">Notification Subject</label>
+                <label className="text-sm font-semibold text-foreground">Notification Subject</label>
                 <input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="h-10 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] focus:border-[#3f52ff] outline-none transition-colors"
+                  className="h-10 px-3 bg-card border border-border rounded-lg text-sm text-foreground focus:border-[#3f52ff] dark:focus:border-[#8faeff] outline-none transition-colors"
                 />
               </div>
 
@@ -1443,13 +1443,13 @@ function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps)
                     value={message}
                     onChange={(e) => setMessage(e.target.value.slice(0, 280))}
                     placeholder="Custom Message"
-                    className="w-full min-h-[120px] p-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] focus:border-[#3f52ff] outline-none transition-colors resize-none placeholder:text-[#859bab]"
+                    className="w-full min-h-[120px] p-3 bg-card border border-border rounded-lg text-sm text-foreground focus:border-[#3f52ff] dark:focus:border-[#8faeff] outline-none transition-colors resize-none placeholder:text-muted-foreground"
                   />
-                  <div className="absolute bottom-3 left-3 px-2 py-1 bg-[#eceff2] rounded text-[10px] font-medium text-[#859bab]">
+                  <div className="absolute bottom-3 left-3 px-2 py-1 bg-muted rounded text-[10px] font-medium text-muted-foreground">
                     {message.length}/280 characters
                   </div>
-                  <div className="absolute bottom-3 right-3 w-7 h-7 bg-[#eceff2] rounded flex items-center justify-center">
-                    <ArrowUp className="w-3.5 h-3.5 text-[#859bab]" />
+                  <div className="absolute bottom-3 right-3 w-7 h-7 bg-muted rounded flex items-center justify-center">
+                    <ArrowUp className="w-3.5 h-3.5 text-muted-foreground" />
                   </div>
                 </div>
               </div>
@@ -1457,26 +1457,26 @@ function CancelEventModal({ onClose, eventTitle, guestCount }: CancelModalProps)
           )}
 
           {/* Warning Banner */}
-          <div className="bg-[#fff3dc] border border-[#ffedc2] rounded-lg p-3 flex gap-3">
-            <AlertCircle className="w-5 h-5 text-[#f59e0b] shrink-0 mt-0.5" />
-            <p className="text-sm text-[#22292f] leading-relaxed">
+          <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/60 rounded-lg p-3 flex gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-300 shrink-0 mt-0.5" />
+            <p className="text-sm text-foreground leading-relaxed">
               This action cannot be undone. <span className="font-bold">{guestCount} registered guests will be notified.</span>
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center gap-3 p-4 border-t border-[#d5dde2]">
+        <div className="flex items-center gap-3 p-4 border-t border-border">
           <button
             onClick={onClose}
-            className="flex-1 h-11 px-4 text-sm font-semibold text-[#22292f] bg-white border border-[#d5dde2] rounded-xl hover:bg-[#f5f5f5] transition-colors"
+            className="flex-1 h-11 px-4 text-sm font-semibold text-foreground bg-card border border-border rounded-xl hover:bg-muted/70 transition-colors"
           >
             Dismiss
           </button>
           <button
             onClick={handleCancelEvent}
             disabled={loading}
-            className="flex-1 h-11 px-4 text-sm font-semibold text-white bg-[#e53935] rounded-xl hover:bg-[#c62828] transition-colors flex items-center justify-center gap-2"
+            className="flex-1 h-11 px-4 text-sm font-semibold text-white bg-destructive rounded-xl hover:bg-destructive/90 transition-colors flex items-center justify-center gap-2"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -1560,71 +1560,71 @@ function AnalyticsView() {
   return (
     <div className="flex flex-col gap-4 animate-in fade-in duration-300">
       {/* Stats Row - matching Guests tab style with unified border container */}
-      <div className="flex items-stretch border border-[#d5dde2] rounded-lg bg-white">
+      <div className="flex items-stretch border border-border rounded-lg bg-card">
         {/* Total Registrations */}
-        <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+        <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
           <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-              <Users className="w-4 h-4 text-[#516778]" />
+            <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+              <Users className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Total Registrations</span>
-              <span className="text-xs font-normal text-[#516778] leading-[18px]">68% of capacity</span>
+              <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Total Registrations</span>
+              <span className="text-xs font-normal text-muted-foreground leading-[18px]">68% of capacity</span>
             </div>
           </div>
-          <span className="text-base font-semibold text-[#22292f] leading-[18px]">342</span>
+          <span className="text-base font-semibold text-foreground leading-[18px]">342</span>
         </div>
         {/* Checked In Users */}
-        <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+        <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
           <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-              <LogIn className="w-4 h-4 text-[#516778]" />
+            <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+              <LogIn className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked In Users</span>
-              <span className="text-xs font-normal text-[#516778] leading-[18px]">0% attendance rate</span>
+              <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Checked In Users</span>
+              <span className="text-xs font-normal text-muted-foreground leading-[18px]">0% attendance rate</span>
             </div>
           </div>
-          <span className="text-base font-semibold text-[#22292f] leading-[18px]">0</span>
+          <span className="text-base font-semibold text-foreground leading-[18px]">0</span>
         </div>
         {/* Checked Out Users */}
-        <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+        <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
           <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-              <LogOut className="w-4 h-4 text-[#516778]" />
+            <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+              <LogOut className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Checked Out Users</span>
-              <span className="text-xs font-normal text-[#516778] leading-[18px]">0% of checked in</span>
+              <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Checked Out Users</span>
+              <span className="text-xs font-normal text-muted-foreground leading-[18px]">0% of checked in</span>
             </div>
           </div>
-          <span className="text-base font-semibold text-[#22292f] leading-[18px]">0</span>
+          <span className="text-base font-semibold text-foreground leading-[18px]">0</span>
         </div>
         {/* Booked Users */}
         <div className="flex-1 flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
-            <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-[#516778]" />
+            <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Booked Users</span>
-              <span className="text-xs font-normal text-[#516778] leading-[18px]">Checked-in</span>
+              <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Booked Users</span>
+              <span className="text-xs font-normal text-muted-foreground leading-[18px]">Checked-in</span>
             </div>
           </div>
-          <span className="text-base font-semibold text-[#22292f] leading-[18px]">2</span>
+          <span className="text-base font-semibold text-foreground leading-[18px]">2</span>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-start justify-between w-full">
           <div className="flex flex-col">
-            <span className="text-base font-semibold text-[#22292f] leading-[18px]">Registrations Over Time</span>
-            <span className="text-xs font-normal text-[#859bab] leading-[18px]">Track how registrations grew over time</span>
+            <span className="text-base font-semibold text-foreground leading-[18px]">Registrations Over Time</span>
+            <span className="text-xs font-normal text-muted-foreground leading-[18px]">Track how registrations grew over time</span>
           </div>
           <Menu>
-            <MenuButton className="h-8 px-3 bg-[#eceff2] rounded-lg flex items-center gap-1 text-xs font-medium text-[#22292f] hover:bg-[#d5dde2] transition-colors">
+            <MenuButton className="h-8 px-3 bg-muted rounded-lg flex items-center gap-1 text-xs font-medium text-foreground hover:bg-muted transition-colors">
               {timeFilter}
               <ChevronDown className="w-4 h-4" />
             </MenuButton>
@@ -1632,13 +1632,13 @@ function AnalyticsView() {
               <MenuItems
                 anchor="bottom end"
                 transition
-                className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-xl p-1 shadow-lg w-[140px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                className="z-[100] mt-1 bg-card border border-border rounded-xl p-1 shadow-lg w-[140px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
               >
                 {["Last 24 Hours", "Last 7 days", "Last 30 days", "Last 60 days"].map((option) => (
                   <MenuItem key={option}>
                     <button
                       onClick={() => setTimeFilter(option)}
-                      className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-[#22292f] data-[focus]:bg-[#eceff2] hover:bg-[#eceff2] transition-colors focus:outline-none"
+                      className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
                     >
                       {option}
                     </button>
@@ -1654,7 +1654,7 @@ function AnalyticsView() {
           {/* Y-axis labels */}
           <div className="flex flex-col justify-between pr-3 shrink-0" style={{ height: chartHeight }}>
             {yAxisLabels.map(val => (
-              <span key={val} className="text-sm font-semibold text-[#859bab] leading-[18px]">{val}</span>
+              <span key={val} className="text-sm font-semibold text-muted-foreground leading-[18px]">{val}</span>
             ))}
           </div>
 
@@ -1665,7 +1665,7 @@ function AnalyticsView() {
               {/* Horizontal grid lines */}
               <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
                 {yAxisLabels.map((_, i) => (
-                  <div key={i} className="border-b border-[#eceff2]" />
+                  <div key={i} className="border-b border-border" />
                 ))}
               </div>
 
@@ -1679,12 +1679,12 @@ function AnalyticsView() {
                       className="flex-1 flex flex-col items-center justify-end group"
                     >
                       {/* Tooltip on hover */}
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-[#22292f] text-white text-xs px-2 py-1 rounded mb-1 whitespace-nowrap">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-xs px-2 py-1 rounded mb-1 whitespace-nowrap">
                         {item.value}
                       </div>
                       {/* Bar */}
                       <div
-                        className="w-full bg-[#3f52ff] rounded-t-sm transition-all duration-300 hover:bg-[#2a3bcc] min-w-[4px]"
+                        className="w-full bg-[#3f52ff] dark:bg-[#3f52ff] rounded-t-sm transition-all duration-300 hover:bg-[#2a3bcc] dark:hover:bg-[#2a3bcc] min-w-[4px]"
                         style={{ height: barHeight }}
                       />
                     </div>
@@ -1697,7 +1697,7 @@ function AnalyticsView() {
             <div className="flex gap-[2px] px-1 mt-2">
               {chartData.map((item, index) => (
                 <div key={index} className="flex-1 flex justify-center min-w-0">
-                  <span className="text-sm font-semibold text-[#859bab] leading-[18px] truncate">{item.label}</span>
+                  <span className="text-sm font-semibold text-muted-foreground leading-[18px] truncate">{item.label}</span>
                 </div>
               ))}
             </div>
@@ -1706,54 +1706,54 @@ function AnalyticsView() {
 
         {/* Footer text */}
         <div className="text-center">
-          <span className="text-sm font-normal text-[#859bab]">{getFooterText()}</span>
+          <span className="text-sm font-normal text-muted-foreground">{getFooterText()}</span>
         </div>
       </div>
 
       {/* Bottom Tables Row */}
       <div className="flex gap-4">
         {/* Check-In Summary */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
-          <span className="text-base font-semibold text-[#668091] leading-[18px]">Check-In Summary</span>
+        <div className="flex-1 bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
+          <span className="text-base font-semibold text-muted-foreground leading-[18px]">Check-In Summary</span>
           <div className="flex flex-col gap-2 text-sm leading-[18px]">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-[#22292f]">Total Registered</span>
-              <span className="font-semibold text-[#859bab]">342</span>
+              <span className="font-semibold text-foreground">Total Registered</span>
+              <span className="font-semibold text-muted-foreground">342</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-normal text-[#22292f]">Checked In</span>
-              <span className="font-semibold text-[#859bab]">0</span>
+              <span className="font-normal text-foreground">Checked In</span>
+              <span className="font-semibold text-muted-foreground">0</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-normal text-[#22292f]">Checked Out</span>
-              <span className="font-semibold text-[#859bab]">0</span>
+              <span className="font-normal text-foreground">Checked Out</span>
+              <span className="font-semibold text-muted-foreground">0</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-normal text-[#22292f]">Still Inside</span>
-              <span className="font-semibold text-[#859bab]">0</span>
+              <span className="font-normal text-foreground">Still Inside</span>
+              <span className="font-semibold text-muted-foreground">0</span>
             </div>
           </div>
         </div>
 
         {/* Event Information */}
-        <div className="flex-1 bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
-          <span className="text-base font-semibold text-[#668091] leading-[18px]">Event Information</span>
+        <div className="flex-1 bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
+          <span className="text-base font-semibold text-muted-foreground leading-[18px]">Event Information</span>
           <div className="flex flex-col gap-2 text-sm leading-[18px]">
             <div className="flex items-center justify-between">
-              <span className="font-normal text-[#22292f]">Event Type</span>
-              <span className="font-semibold text-[#859bab]">General Event</span>
+              <span className="font-normal text-foreground">Event Type</span>
+              <span className="font-semibold text-muted-foreground">General Event</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-normal text-[#22292f]">Mode</span>
-              <span className="font-semibold text-[#859bab]">On Site</span>
+              <span className="font-normal text-foreground">Mode</span>
+              <span className="font-semibold text-muted-foreground">On Site</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-normal text-[#22292f]">Language</span>
-              <span className="font-semibold text-[#859bab]">English</span>
+              <span className="font-normal text-foreground">Language</span>
+              <span className="font-semibold text-muted-foreground">English</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-normal text-[#22292f]">Capacity</span>
-              <span className="font-semibold text-[#859bab]">500</span>
+              <span className="font-normal text-foreground">Capacity</span>
+              <span className="font-semibold text-muted-foreground">500</span>
             </div>
           </div>
         </div>
@@ -1777,29 +1777,29 @@ function DeleteEventModal({
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white border border-[#d5dde2] rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
+      <div className="relative bg-card border border-border rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-[#d5dde2]">
+        <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-border">
           <div className="flex items-center gap-4">
-            <div className="bg-[#ffe0e1] rounded-md p-2">
-              <AlertCircle className="w-4 h-4 text-[#e53935]" />
+            <div className="bg-destructive/10 rounded-md p-2">
+              <AlertCircle className="w-4 h-4 text-destructive" />
             </div>
-            <span className="text-base font-semibold text-[#22292f]">
+            <span className="text-base font-semibold text-foreground">
               Delete Event
             </span>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+            className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted transition-colors"
           >
-            <X className="w-3.5 h-3.5 text-[#516778]" />
+            <X className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         </div>
         {/* Modal Body */}
         <div className="px-4">
-          <p className="text-sm font-semibold text-[#859bab] leading-[20px]">
+          <p className="text-sm font-semibold text-muted-foreground leading-[20px]">
             Are you sure you want to delete{" "}
-            <span className="font-bold text-[#22292f]">
+            <span className="font-bold text-foreground">
               &quot;{event.title}&quot;
             </span>
             ? This action cannot be undone and will permanently remove the event
@@ -1807,18 +1807,18 @@ function DeleteEventModal({
           </p>
         </div>
         {/* Modal Footer */}
-        <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-[#d5dde2]">
+        <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-border">
           <button
             onClick={onClose}
             disabled={isDeleting}
-            className="flex-1 h-10 px-4 text-sm font-medium text-[#22292f] bg-white border border-[#d5dde2] rounded-lg hover:bg-[#f5f5f5] transition-colors disabled:opacity-50"
+            className="flex-1 h-10 px-4 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted/70 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={isDeleting}
-            className="flex-1 h-10 px-4 text-sm font-medium text-white bg-[#e53935] rounded-lg hover:bg-[#c62828] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 h-10 px-4 text-sm font-medium text-white bg-destructive rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isDeleting ? (
               <>
@@ -1855,11 +1855,11 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-[#b0bfc9] rounded-lg p-3 flex flex-col flex-1 min-w-0 cursor-pointer hover:border-[#3f52ff] transition-all group"
+      className="bg-card border border-border rounded-lg p-3 flex flex-col flex-1 min-w-0 cursor-pointer hover:border-[#3f52ff] transition-all group"
     >
       <div className="flex flex-col gap-4">
         {/* Cover Image */}
-        <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-[#d9d9d9]">
+        <div className="relative w-full h-[150px] rounded-lg overflow-hidden bg-muted">
           {event.coverImage?.startsWith("data:") || event.coverImage?.startsWith("http") ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -1890,23 +1890,23 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
                 e.stopPropagation();
                 setMenuOpen(!menuOpen);
               }}
-              className="h-6 px-3 bg-[#d8e6ff] rounded-full flex items-center justify-center gap-[3px] hover:bg-[#c5d8f7] transition-colors"
+              className="h-6 px-3 bg-blue-100 dark:bg-blue-950/40 rounded-full flex items-center justify-center gap-[3px] hover:bg-blue-100 dark:bg-blue-950/40 transition-colors"
             >
-              <div className="w-[5px] h-[5px] bg-[#516778] rounded-full" />
-              <div className="w-[5px] h-[5px] bg-[#516778] rounded-full" />
-              <div className="w-[5px] h-[5px] bg-[#516778] rounded-full" />
+              <div className="w-[5px] h-[5px] bg-muted-foreground rounded-full" />
+              <div className="w-[5px] h-[5px] bg-muted-foreground rounded-full" />
+              <div className="w-[5px] h-[5px] bg-muted-foreground rounded-full" />
             </button>
             {menuOpen && (
-              <div className="absolute top-8 right-0 bg-[#f9fafb] border border-[#d5dde2] rounded-xl p-1 shadow-lg z-50">
+              <div className="absolute top-8 right-0 bg-background border border-border rounded-xl p-1 shadow-lg z-50">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setMenuOpen(false);
                     onClick();
                   }}
-                  className="flex items-center gap-2 w-full h-8 px-2 rounded text-sm font-medium text-[#22292f] hover:bg-[#eceff2] transition-colors"
+                  className="flex items-center gap-2 w-full h-8 px-2 rounded text-sm font-medium text-foreground hover:bg-muted transition-colors"
                 >
-                  <Eye className="w-4 h-4 text-[#516778]" />
+                  <Eye className="w-4 h-4 text-muted-foreground" />
                   View
                 </button>
                 <button
@@ -1915,9 +1915,9 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
                     setMenuOpen(false);
                     onDelete();
                   }}
-                  className="flex items-center gap-2 w-full h-8 px-2 rounded text-sm font-medium text-[#e22023] hover:bg-[#eceff2] transition-colors"
+                  className="flex items-center gap-2 w-full h-8 px-2 rounded text-sm font-medium text-destructive hover:bg-muted transition-colors"
                 >
-                  <Trash2 className="w-4 h-4 text-[#e22023]" />
+                  <Trash2 className="w-4 h-4 text-destructive" />
                   Delete
                 </button>
               </div>
@@ -1929,21 +1929,21 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
         <div className="flex flex-col gap-4">
           {/* Title + Badges */}
           <div className="flex flex-col gap-2">
-            <h3 className="text-lg font-semibold text-[#22292f] leading-[18px]">
+            <h3 className="text-lg font-semibold text-foreground leading-[18px]">
               {event.title}
             </h3>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] text-white text-[10px] font-medium rounded-[4px] leading-none">
+              <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-[10px] font-medium rounded-[4px] leading-none">
                 <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
                 </svg>
                 {event.chapter}
               </span>
-              <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
+              <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
                 {event.type}
               </span>
               {event.date && (
-                <span className="text-sm font-normal text-[#516778] leading-[18px]">
+                <span className="text-sm font-normal text-muted-foreground leading-[18px]">
                   {event.date}
                 </span>
               )}
@@ -1953,14 +1953,14 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
           {/* Location + Signups */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#516778] shrink-0" />
-              <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+              <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+              <span className="text-sm font-normal text-foreground leading-[18px]">
                 {event.location}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <ClipboardPenLine className="w-4 h-4 text-[#516778] shrink-0" />
-              <span className="text-sm font-normal text-[#22292f] leading-[18px]">
+              <ClipboardPenLine className="w-4 h-4 text-muted-foreground shrink-0" />
+              <span className="text-sm font-normal text-foreground leading-[18px]">
                 {event.signups}/{event.maxSignups}
               </span>
             </div>
@@ -2355,20 +2355,20 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
 
   return (
-    <div className="flex min-h-screen bg-[#f9fafb] font-[family-name:'Instrument_Sans',sans-serif]">
+    <div className="flex min-h-screen bg-background font-[family-name:'Instrument_Sans',sans-serif]">
       <AdminSidebar currentUser={currentUser} />
 
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <header className="flex items-center justify-between px-8 py-3 bg-white border-b border-[#eceff2]">
+        <header className="flex items-center justify-between px-8 py-3 bg-card border-b border-border">
           <nav className="flex items-center gap-0.5 text-sm">
-            <span className="text-[#859bab] font-medium px-1 py-0.5">
+            <span className="text-muted-foreground font-medium px-1 py-0.5">
               <Calendar className="w-4 h-4 inline mr-1" />
             </span>
-            <span className="text-[#859bab] font-medium px-1 py-0.5">Event</span>
+            <span className="text-muted-foreground font-medium px-1 py-0.5">Event</span>
           </nav>
-          <div className="bg-[#d5dde2] rounded-full p-[7px]">
-            <Bell className="w-[17px] h-[17px] text-[#22292f]" />
+          <div className="bg-muted rounded-full p-[7px]">
+            <Bell className="w-[17px] h-[17px] text-foreground" />
           </div>
         </header>
 
@@ -2390,65 +2390,65 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
               isSaving={isSaving}
             />
           ) : (
-            <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg p-2 pb-2 flex flex-col gap-4">
+            <div className="bg-muted border border-border rounded-lg p-2 pb-2 flex flex-col gap-4">
               {/* Page Header */}
               <div className="flex flex-col gap-2 pl-4 pt-2">
-                <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
+                <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
                   Events Management
                 </h1>
-                <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+                <p className="text-base font-semibold text-muted-foreground leading-[18px]">
                   This section enables you to manage your app members and Teams
                 </p>
               </div>
 
               {/* Stats Cards Row */}
-              <div className="flex items-stretch border border-[#d5dde2] rounded-xl bg-white">
+              <div className="flex items-stretch border border-border rounded-xl bg-card">
                 {/* Total Events */}
-                <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+                <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
                   <div className="flex items-center gap-2">
-                    <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                    <div className="bg-background border-[0.6px] border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                      <svg className="text-muted-foreground" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
+                      <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
                         Total Events
                       </span>
-                      <span className="text-xs font-normal text-[#516778] leading-[18px]">
+                      <span className="text-xs font-normal text-muted-foreground leading-[18px]">
                         All Events
                       </span>
                     </div>
                   </div>
-                  <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+                  <span className="text-base font-semibold text-foreground leading-[18px]">
                     {totalEvents}
                   </span>
                 </div>
 
                 {/* Match */}
-                <div className="flex-1 flex items-center justify-between p-4 border-r border-[#d5dde2]">
+                <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
                   <div className="flex items-center gap-2">
-                    <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.6667 14V12.6667C10.6667 11.9594 10.3857 11.2811 9.88562 10.781C9.38552 10.281 8.70724 10 8 10H4C3.29276 10 2.61448 10.281 2.11438 10.781C1.61429 11.2811 1.33333 11.9594 1.33333 12.6667V14" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12.6667 5.33333L11.3333 6.66667L10.6667 6" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M14.6667 6.66667C14.6667 8.87581 12.876 10.6667 10.6667 10.6667" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                    <div className="bg-background border-[0.6px] border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                      <svg className="text-muted-foreground" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.6667 14V12.6667C10.6667 11.9594 10.3857 11.2811 9.88562 10.781C9.38552 10.281 8.70724 10 8 10H4C3.29276 10 2.61448 10.281 2.11438 10.781C1.61429 11.2811 1.33333 11.9594 1.33333 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M12.6667 5.33333L11.3333 6.66667L10.6667 6" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M14.6667 6.66667C14.6667 8.87581 12.876 10.6667 10.6667 10.6667" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
+                      <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
                         Match
                       </span>
-                      <span className="text-xs font-normal text-[#516778] leading-[18px]">
+                      <span className="text-xs font-normal text-muted-foreground leading-[18px]">
                         {matchPercent}% of total
                       </span>
                     </div>
                   </div>
-                  <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+                  <span className="text-xl font-semibold text-foreground leading-[18px]">
                     {matchCount}
                   </span>
                 </div>
@@ -2456,24 +2456,24 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 {/* General Event */}
                 <div className="flex-1 flex items-center justify-between p-4">
                   <div className="flex items-center gap-2">
-                    <div className="bg-[#f9fafb] border-[0.6px] border-[#d5dde2] rounded-[5.4px] p-[7.2px] flex items-center justify-center">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="#516778" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                    <div className="bg-background border-[0.6px] border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
+                      <svg className="text-muted-foreground" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-base font-semibold text-[#3f52ff] leading-[18px]">
+                      <span className="text-base font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
                         General Event
                       </span>
-                      <span className="text-xs font-normal text-[#516778] leading-[18px]">
+                      <span className="text-xs font-normal text-muted-foreground leading-[18px]">
                         {generalPercent}% of total
                       </span>
                     </div>
                   </div>
-                  <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+                  <span className="text-xl font-semibold text-foreground leading-[18px]">
                     {generalCount}
                   </span>
                 </div>
@@ -2482,20 +2482,20 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
               {/* Tabs + Filters Bar */}
               <div className="flex items-center justify-between">
                 {/* Left: Event tabs */}
-                <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative self-start w-fit">
+                <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">
                   {(["all", "current", "past"] as const).map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
-                        ? "text-[#3f52ff]"
-                        : "text-[#516778] hover:text-[#22292f]"
+                        ? "text-[#3f52ff] dark:text-white"
+                        : "text-muted-foreground hover:text-foreground"
                         }`}
                     >
                       {activeTab === tab && (
                         <motion.div
                           layoutId="eventsTabIndicator"
-                          className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                          className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
                           initial={false}
                           transition={{
                             type: "spring",
@@ -2564,7 +2564,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                     {/* + Create Event */}
                     <button
                       onClick={handleCreateEvent}
-                      className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-xs font-normal rounded-lg hover:bg-[#3545e0] transition-colors"
+                      className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-normal rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors"
                     >
                       + Create Event
                     </button>
@@ -2574,9 +2574,9 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
               {/* Events Content: Loading, Empty State or Events List */}
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center gap-4 py-16 bg-white border border-[#d5dde2] rounded-xl">
-                  <Loader2 className="w-8 h-8 text-[#3f52ff] animate-spin" />
-                  <p className="text-sm text-[#859bab]">Loading events...</p>
+                <div className="flex flex-col items-center justify-center gap-4 py-16 bg-card border border-border rounded-xl">
+                  <Loader2 className="w-8 h-8 text-[#3f52ff] dark:text-white animate-spin" />
+                  <p className="text-sm text-muted-foreground">Loading events...</p>
                 </div>
               ) : hasEvents ? (
                 hasFilteredEvents ? (
@@ -2585,10 +2585,10 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                       <div key={dateGroup} className="flex flex-col gap-4">
                         {/* Date Group Header */}
                         <div className="flex items-center gap-4">
-                          <span className="text-sm font-semibold text-[#516778] leading-[18px] whitespace-nowrap">
+                          <span className="text-sm font-semibold text-muted-foreground leading-[18px] whitespace-nowrap">
                             {dateGroup}
                           </span>
-                          <div className="flex-1 h-px bg-[#d5dde2]" />
+                          <div className="flex-1 h-px bg-muted" />
                         </div>
 
                         {/* Events Grid - 3 columns */}
@@ -2607,7 +2607,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                   </div>
                 ) : (
                   /* No Results State (Filter Active) */
-                  <div className="flex flex-col items-center justify-center gap-4 py-16 bg-white border border-[#d5dde2] rounded-xl">
+                  <div className="flex flex-col items-center justify-center gap-4 py-16 bg-card border border-border rounded-xl">
                     <Image
                       src="/img/events-empty.svg"
                       alt="No events found"
@@ -2616,8 +2616,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                       className="object-contain"
                     />
                     <div className="flex flex-col items-center gap-1">
-                      <h3 className="text-lg font-semibold text-[#22292f]">No events found</h3>
-                      <p className="text-sm text-[#859bab] text-center max-w-xs">
+                      <h3 className="text-lg font-semibold text-foreground">No events found</h3>
+                      <p className="text-sm text-muted-foreground text-center max-w-xs">
                         No events scheduled for the selected filters. <br /> Try adjusting your dates or categories.
                       </p>
                     </div>
@@ -2628,7 +2628,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                         setFilterChapter("all");
                         setFilterType("all");
                       }}
-                      className="text-sm font-medium text-[#3f52ff] hover:underline"
+                      className="text-sm font-medium text-[#3f52ff] dark:text-white hover:underline"
                     >
                       Clear Filters
                     </button>
@@ -2636,7 +2636,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 )
               ) : (
                 /* Empty State - No Events Created Yet */
-                <div className="flex flex-col items-center justify-center gap-4 py-16 bg-white border border-[#d5dde2] rounded-xl">
+                <div className="flex flex-col items-center justify-center gap-4 py-16 bg-card border border-border rounded-xl">
                   <Image
                     src="/img/events-empty.svg"
                     alt="No events"
@@ -2645,14 +2645,14 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                     className="object-contain"
                   />
                   <div className="flex flex-col items-center gap-1">
-                    <h3 className="text-lg font-semibold text-[#22292f]">No events yet</h3>
-                    <p className="text-sm text-[#859bab] text-center max-w-xs">
+                    <h3 className="text-lg font-semibold text-foreground">No events yet</h3>
+                    <p className="text-sm text-muted-foreground text-center max-w-xs">
                       You haven&apos;t created any events yet. <br /> Click the button below to create your first event.
                     </p>
                   </div>
                   <button
                     onClick={handleCreateEvent}
-                    className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+                    className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Create Event
