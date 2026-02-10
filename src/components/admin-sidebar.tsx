@@ -260,7 +260,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
       <button
         type="button"
         aria-label="Open sidebar"
-        className="lg:hidden fixed top-4 left-4 z-50 h-10 w-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center text-foreground"
+        className={`lg:hidden fixed top-4 left-4 z-50 h-10 w-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center text-foreground ${mobileOpen ? "opacity-0 pointer-events-none" : "opacity-100"}`}
         onClick={() => setMobileOpen(true)}
       >
         <div className="flex flex-col gap-1.5">
