@@ -402,7 +402,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             <button
               key={tab}
               onClick={() => setDetailTab(tab)}
-              className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${detailTab === tab
+              className={`relative h-9 px-4 py-2 rounded-lg text-sm md:text-base font-medium whitespace-nowrap transition-colors z-10 ${detailTab === tab
                 ? "text-[#3f52ff] dark:text-white"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -2487,7 +2487,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
+                      className={`relative h-9 px-4 py-2 rounded-lg text-sm md:text-base font-medium whitespace-nowrap transition-colors z-10 ${activeTab === tab
                         ? "text-[#3f52ff] dark:text-white"
                         : "text-muted-foreground hover:text-foreground"
                         }`}
