@@ -28,9 +28,9 @@ export function AriaDatePicker<T extends DateValue>({
 }: AriaDatePickerProps<T>) {
     return (
         <DatePicker {...props} className="group flex flex-col gap-1 w-full">
-            {label && <Label className="text-sm font-semibold text-[#22292f]">{label}</Label>}
-            <Group className="flex items-center w-full bg-white border border-[#d5dde2] rounded-lg transition-colors focus-within:border-[#3f52ff] h-9 px-3">
-                <DateInput className="flex-1 flex bg-transparent outline-none text-sm text-[#22292f] p-0">
+            {label && <Label className="text-sm font-semibold text-muted-foreground">{label}</Label>}
+            <Group className="flex items-center w-full bg-card border border-border rounded-lg transition-colors focus-within:border-[#3f52ff] dark:focus-within:border-[#8faeff] h-9 px-3">
+                <DateInput className="flex-1 flex bg-transparent outline-none text-sm text-foreground p-0">
                     {(segment) => (
                         <DateSegment
                             segment={segment}
@@ -38,21 +38,21 @@ export function AriaDatePicker<T extends DateValue>({
                         />
                     )}
                 </DateInput>
-                <Button className="outline-none text-[#859bab] group-focus-within:text-[#3f52ff]">
+                <Button className="outline-none text-muted-foreground group-focus-within:text-[#3f52ff] dark:group-focus-within:text-white">
                     <CalendarIcon className="w-4 h-4 cursor-pointer" />
                 </Button>
             </Group>
 
-            <Popover className="bg-white rounded-lg shadow-lg border border-[#e5e7eb] p-3 overflow-auto max-w-xs">
+            <Popover className="bg-popover text-popover-foreground rounded-lg shadow-lg border border-border p-3 overflow-auto max-w-xs">
                 <Dialog className="outline-none">
                     <Calendar className="w-full">
                         <header className="flex items-center justify-between pb-4">
-                            <Button slot="previous" className="p-1 rounded-md hover:bg-gray-100 outline-none">
-                                <ChevronLeft className="w-4 h-4 text-[#516778]" />
+                            <Button slot="previous" className="p-1 rounded-md hover:bg-muted/70 outline-none">
+                                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
                             </Button>
-                            <Heading className="text-sm font-semibold text-[#22292f]" />
-                            <Button slot="next" className="p-1 rounded-md hover:bg-gray-100 outline-none">
-                                <ChevronRight className="w-4 h-4 text-[#516778]" />
+                            <Heading className="text-sm font-semibold text-foreground" />
+                            <Button slot="next" className="p-1 rounded-md hover:bg-muted/70 outline-none">
+                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
                             </Button>
                         </header>
                         <CalendarGrid className="border-spacing-1 border-separate">
@@ -61,8 +61,8 @@ export function AriaDatePicker<T extends DateValue>({
                                     date={date}
                                     className={({ isSelected, isHovered, isOutsideVisibleRange }) => `
                     w-8 h-8 flex items-center justify-center rounded-md text-sm cursor-pointer outline-none
-                    ${isOutsideVisibleRange ? "text-gray-300 pointer-events-none" : "text-[#22292f]"}
-                    ${isSelected ? "bg-[#3f52ff] text-white font-medium" : isHovered ? "bg-gray-100" : ""}
+                    ${isOutsideVisibleRange ? "text-muted-foreground/50 pointer-events-none" : "text-foreground"}
+                    ${isSelected ? "bg-[#3f52ff] text-white font-medium" : isHovered ? "bg-muted/70" : ""}
                   `}
                                 />
                             )}

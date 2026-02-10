@@ -35,13 +35,13 @@ export function AriaSelect<T extends object>({
 }: AriaSelectProps<T>) {
     return (
         <Select {...props} className={`flex flex-col gap-1 w-full ${className}`}>
-            {label && <Label className="text-sm font-semibold text-[#859bab]">{label}</Label>}
-            <Button className="flex items-center justify-between w-full h-9 px-3 bg-white border border-[#d5dde2] rounded-lg text-sm text-[#22292f] outline-none focus:border-[#3f52ff] transition-colors data-[pressed]:bg-gray-50 cursor-pointer">
-                <SelectValue className="flex-1 text-left truncate placeholder-shown:text-[#859bab]" />
-                <ChevronDown className="w-4 h-4 text-[#516778] shrink-0 ml-2" />
+            {label && <Label className="text-sm font-semibold text-muted-foreground">{label}</Label>}
+            <Button className="flex items-center justify-between w-full h-9 px-3 bg-card border border-border rounded-lg text-sm text-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] transition-colors data-[pressed]:bg-muted/70 cursor-pointer">
+                <SelectValue className="flex-1 text-left truncate placeholder-shown:text-muted-foreground" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 ml-2" />
             </Button>
-            {description && <span className="text-xs text-gray-500">{description}</span>}
-            <Popover className="w-[--trigger-width] bg-white border border-[#d5dde2] rounded-lg shadow-lg overflow-auto p-1 max-h-60 z-50 transform origin-top transition duration-200 ease-out data-[entering]:scale-95 data-[entering]:opacity-0 data-[exiting]:scale-95 data-[exiting]:opacity-0">
+            {description && <span className="text-xs text-muted-foreground">{description}</span>}
+            <Popover className="w-[--trigger-width] bg-popover text-popover-foreground border border-border rounded-lg shadow-lg overflow-auto p-1 max-h-60 z-50 transform origin-top transition duration-200 ease-out data-[entering]:scale-95 data-[entering]:opacity-0 data-[exiting]:scale-95 data-[exiting]:opacity-0">
                 <ListBox items={items} className="outline-none flex flex-col gap-0.5 w-full">
                     {children}
                 </ListBox>
@@ -54,7 +54,7 @@ export function AriaSelectItem(props: ListBoxItemProps) {
     return (
         <ListBoxItem
             {...props}
-            className={`group flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-[#22292f] outline-none cursor-pointer data-[focused]:bg-[#edf8ff] data-[focused]:text-[#3f52ff] data-[selected]:font-semibold data-[selected]:bg-[#3f52ff] data-[selected]:text-white`}
+            className={`group flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-foreground outline-none cursor-pointer data-[focused]:bg-muted/70 data-[focused]:text-foreground data-[selected]:font-semibold data-[selected]:bg-[#3f52ff] data-[selected]:text-white`}
         >
             {({ isSelected }) => (
                 <>
