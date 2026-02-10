@@ -87,22 +87,22 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
   }, [refreshProfile]);
 
   return (
-    <div className="flex min-h-screen bg-[#f9fafb] font-[family-name:'Instrument_Sans',sans-serif]">
+    <div className="flex min-h-screen bg-background font-[family-name:'Instrument_Sans',sans-serif] text-foreground">
       <AdminSidebar currentUser={currentUser} />
 
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <header className="flex items-center justify-between px-8 py-3 bg-white border-b border-[#eceff2]">
+        <header className="flex items-center justify-between px-8 py-3 bg-card border-b border-border">
           <nav className="flex items-center gap-0.5 text-sm">
-            <span className="text-[#859bab] font-medium px-1 py-0.5">
+            <span className="text-muted-foreground font-medium px-1 py-0.5">
               <Building2 className="w-4 h-4 inline mr-1" />
             </span>
-            <span className="text-[#859bab] font-medium px-1 py-0.5">Business Profile</span>
-            <ChevronRight className="w-4 h-4 text-[#859bab]" />
-            <span className="text-[#859bab] font-medium px-1 py-0.5">General Settings</span>
+            <span className="text-muted-foreground font-medium px-1 py-0.5">Business Profile</span>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            <span className="text-muted-foreground font-medium px-1 py-0.5">General Settings</span>
           </nav>
-          <div className="bg-[#d5dde2] rounded-full p-[7px]">
-            <Bell className="w-[17px] h-[17px] text-[#22292f]" />
+          <div className="bg-muted rounded-full p-[7px]">
+            <Bell className="w-[17px] h-[17px] text-foreground" />
           </div>
         </header>
 
@@ -110,20 +110,20 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
         <main className="flex-1 px-8 py-6">
           <div className="flex flex-col gap-2">
             {/* Top Tabs - Tenant Setup, Social Links, Legal and T&C, Chapters */}
-            <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative self-start w-fit">
+            <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">
               {topTabs.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTopTab(tab)}
                   className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTopTab === tab
                     ? "text-[#3f52ff]"
-                    : "text-[#516778] hover:text-[#22292f]"
+                    : "text-muted-foreground hover:text-foreground"
                     }`}
                 >
                   {activeTopTab === tab && (
                     <motion.div
                       layoutId="topTabIndicator"
-                      className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                      className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
                       initial={false}
                       transition={{
                         type: "spring",
@@ -139,33 +139,33 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
             {/* Tab Content */}
             {activeTopTab === "Tenant Setup" && (
-              <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+              <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
                 {/* Section Header */}
                 <div className="flex flex-col gap-2 px-2">
                   <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
                     About Business
                   </h1>
-                  <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+                  <p className="text-base font-semibold text-muted-foreground leading-[18px]">
                     Configure your business information and settings
                   </p>
                 </div>
 
                 {/* Inner Tabs - General Setting, Branding, Modules */}
                 <div className="flex flex-col gap-2">
-                  <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative self-start w-max">
+                  <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-max">
                     {innerTabs.map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setActiveInnerTab(tab)}
                         className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeInnerTab === tab
                           ? "text-[#3f52ff]"
-                          : "text-[#516778] hover:text-[#22292f]"
+                          : "text-muted-foreground hover:text-foreground"
                           }`}
                       >
                         {activeInnerTab === tab && (
                           <motion.div
                             layoutId="innerTabIndicator"
-                            className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                            className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
                             initial={false}
                             transition={{
                               type: "spring",
@@ -410,7 +410,7 @@ function ColorPicker({
   return (
     <div
       ref={pickerRef}
-      className="absolute top-full left-0 mt-2 z-50 bg-white border border-[#e4e4e4] rounded-lg shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] p-4 flex flex-col gap-3.5 w-[340px]"
+      className="absolute top-full left-0 mt-2 z-50 bg-card border border-border rounded-lg shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] p-4 flex flex-col gap-3.5 w-[340px]"
     >
       {/* Saturation/Brightness Area */}
       <div
@@ -430,8 +430,8 @@ function ColorPicker({
 
       {/* Eyedropper + Sliders */}
       <div className="flex items-center gap-3.5">
-        <button className="w-8 h-8 rounded-lg border border-[#e4e4e4] bg-white shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] flex items-center justify-center shrink-0 hover:bg-[#f5f5f5] transition-colors">
-          <Pipette className="w-3.5 h-3.5 text-[#22292f]" />
+        <button className="w-8 h-8 rounded-lg border border-border bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] flex items-center justify-center shrink-0 hover:bg-muted/70 transition-colors">
+          <Pipette className="w-3.5 h-3.5 text-foreground" />
         </button>
         <div className="flex-1 flex flex-col gap-1">
           {/* Hue Slider */}
@@ -445,7 +445,7 @@ function ColorPicker({
               style={{ background: "linear-gradient(to right, #ff0000, #ffff00 16.67%, #00ff00 33.33%, #00ffff 50%, #0000ff 66.67%, #ff00ff 83.33%, #ff0000)" }}
             />
             <div
-              className="absolute top-0 w-3.5 h-3.5 rounded-full bg-white border border-[rgba(24,24,29,0.5)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] -translate-x-1/2 pointer-events-none"
+              className="absolute top-0 w-3.5 h-3.5 rounded-full bg-card border border-[rgba(24,24,29,0.5)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] -translate-x-1/2 pointer-events-none"
               style={{ left: `${(hsv[0] / 360) * 100}%` }}
             />
           </div>
@@ -463,7 +463,7 @@ function ColorPicker({
               }}
             />
             <div
-              className="absolute top-0 w-3.5 h-3.5 rounded-full bg-white border border-[rgba(24,24,29,0.5)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] -translate-x-1/2 pointer-events-none"
+              className="absolute top-0 w-3.5 h-3.5 rounded-full bg-card border border-[rgba(24,24,29,0.5)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] -translate-x-1/2 pointer-events-none"
               style={{ left: `${opacity}%` }}
             />
           </div>
@@ -473,20 +473,20 @@ function ColorPicker({
       {/* HEX/RGB Input Row */}
       <div className="flex items-center gap-2">
         <Menu as="div" className="relative">
-          <MenuButton className="flex items-center justify-between px-3 py-1.5 h-8 w-[72px] rounded-lg border border-[#e4e4e4] bg-white shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] shrink-0 hover:bg-[#f5f5f5] transition-colors focus:outline-none">
+          <MenuButton className="flex items-center justify-between px-3 py-1.5 h-8 w-[72px] rounded-lg border border-border bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] shrink-0 hover:bg-muted/70 transition-colors focus:outline-none">
             <span className="text-xs text-[rgba(9,9,9,0.9)]">{mode}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-[#70707d] opacity-50" />
+            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
           </MenuButton>
           <Portal>
             <MenuItems
               anchor="bottom start"
-              className="z-[100] mt-1 w-[120px] bg-white border border-[#e4e4e4] rounded-lg p-1 shadow-lg focus:outline-none"
+              className="z-[100] mt-1 w-[120px] bg-card border border-border rounded-lg p-1 shadow-lg focus:outline-none"
             >
               <MenuItem>
                 {({ active }) => (
                   <button
                     onClick={() => setMode("HEX")}
-                    className={`flex items-center w-full px-2 py-1.5 rounded-md text-sm transition-colors ${active ? "bg-[#f5f5f5] text-[#22292f]" : "text-[#516778]"}`}
+                    className={`flex items-center w-full px-2 py-1.5 rounded-md text-sm transition-colors ${active ? "bg-muted/70 text-foreground" : "text-muted-foreground"}`}
                   >
                     HEX
                   </button>
@@ -496,7 +496,7 @@ function ColorPicker({
                 {({ active }) => (
                   <button
                     onClick={() => setMode("RGB")}
-                    className={`flex items-center w-full px-2 py-1.5 rounded-md text-sm transition-colors ${active ? "bg-[#f5f5f5] text-[#22292f]" : "text-[#516778]"}`}
+                    className={`flex items-center w-full px-2 py-1.5 rounded-md text-sm transition-colors ${active ? "bg-muted/70 text-foreground" : "text-muted-foreground"}`}
                   >
                     RGB
                   </button>
@@ -512,48 +512,48 @@ function ColorPicker({
               type="text"
               value={hexInput}
               onChange={(e) => handleHexChange(e.target.value)}
-              className="flex-1 h-7 px-2 py-1 bg-[#f5f5f5] border border-[#e4e4e4] rounded-l-lg text-sm text-[rgba(9,9,9,0.9)] outline-none"
+              className="flex-1 h-7 px-2 py-1 bg-muted/70 border border-border rounded-l-lg text-sm text-[rgba(9,9,9,0.9)] outline-none"
             />
           ) : (
-            <div className="flex flex-1 gap-px bg-[#e4e4e4] border border-[#e4e4e4] rounded-l-lg overflow-hidden">
-              <div className="flex flex-col items-center bg-[#f5f5f5] w-1/3">
+            <div className="flex flex-1 gap-px bg-muted/70 border border-border rounded-l-lg overflow-hidden">
+              <div className="flex flex-col items-center bg-muted/70 w-1/3">
                 <input
                   type="text"
                   inputMode="numeric"
                   value={rgbInput[0]}
                   onChange={(e) => handleRgbChange(0, e.target.value)}
-                  className="w-full h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+                  className="w-full h-7 px-1 py-1 bg-muted/70 text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
                   maxLength={3}
                 />
-                <span className="text-[10px] text-[#71717b] -mt-1 pb-0.5">R</span>
+                <span className="text-[10px] text-muted-foreground -mt-1 pb-0.5">R</span>
               </div>
-              <div className="flex flex-col items-center bg-[#f5f5f5] w-1/3">
+              <div className="flex flex-col items-center bg-muted/70 w-1/3">
                 <input
                   type="text"
                   inputMode="numeric"
                   value={rgbInput[1]}
                   onChange={(e) => handleRgbChange(1, e.target.value)}
-                  className="w-full h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+                  className="w-full h-7 px-1 py-1 bg-muted/70 text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
                   maxLength={3}
                 />
-                <span className="text-[10px] text-[#71717b] -mt-1 pb-0.5">G</span>
+                <span className="text-[10px] text-muted-foreground -mt-1 pb-0.5">G</span>
               </div>
-              <div className="flex flex-col items-center bg-[#f5f5f5] w-1/3">
+              <div className="flex flex-col items-center bg-muted/70 w-1/3">
                 <input
                   type="text"
                   inputMode="numeric"
                   value={rgbInput[2]}
                   onChange={(e) => handleRgbChange(2, e.target.value)}
-                  className="w-full h-7 px-1 py-1 bg-[#f5f5f5] text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
+                  className="w-full h-7 px-1 py-1 bg-muted/70 text-center text-sm text-[rgba(9,9,9,0.9)] outline-none"
                   maxLength={3}
                 />
-                <span className="text-[10px] text-[#71717b] -mt-1 pb-0.5">B</span>
+                <span className="text-[10px] text-muted-foreground -mt-1 pb-0.5">B</span>
               </div>
             </div>
           )}
-          <div className="relative h-7 w-[52px] bg-[#f5f5f5] border border-l-0 border-[#e4e4e4] rounded-r-lg flex items-center px-2">
+          <div className="relative h-7 w-[52px] bg-muted/70 border border-l-0 border-border rounded-r-lg flex items-center px-2">
             <span className="text-sm text-[rgba(9,9,9,0.9)]">{opacity}</span>
-            <span className="absolute right-1.5 text-xs text-[#70707d]">%</span>
+            <span className="absolute right-1.5 text-xs text-muted-foreground">%</span>
           </div>
         </div>
       </div>
@@ -577,18 +577,18 @@ function ColorInput({
 
   return (
     <div className="flex flex-col gap-2 flex-1 relative">
-      <span className="text-sm font-semibold text-[#22292f]">{label}</span>
+      <span className="text-sm font-semibold text-foreground">{label}</span>
       <div
-        className="flex items-center gap-2 h-9 px-3 py-1 bg-white border border-[#d5dde2] rounded-lg cursor-pointer hover:border-[#859bab] transition-colors"
+        className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg cursor-pointer hover:border-muted-foreground/60 transition-colors"
         onClick={() => setShowPicker(!showPicker)}
       >
         <div
           className="w-5 h-5 rounded shrink-0"
           style={{ backgroundColor: colorSwatch }}
         />
-        <span className="flex-1 text-sm text-[#22292f]">{value}</span>
+        <span className="flex-1 text-sm text-foreground">{value}</span>
         <Copy
-          className="w-4 h-4 text-[#859bab] shrink-0 cursor-pointer hover:text-[#516778] transition-colors"
+          className="w-4 h-4 text-muted-foreground shrink-0 cursor-pointer hover:text-muted-foreground transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             navigator.clipboard.writeText(value);
@@ -663,17 +663,17 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
     setIsEditing(false);
   };
 
-  const inputBaseClass = "h-9 px-3 text-sm text-[#22292f] border rounded-lg outline-none transition-colors";
-  const inputEditClass = `${inputBaseClass} border-[#b0bfc9] bg-white focus:border-[#3f52ff]`;
-  const inputReadOnlyClass = `${inputBaseClass} border-[#d5dde2] bg-[#f9fafb]`;
+  const inputBaseClass = "h-9 px-3 text-sm text-foreground border rounded-lg outline-none transition-colors";
+  const inputEditClass = `${inputBaseClass} border-border bg-card focus:border-[#3f52ff]`;
+  const inputReadOnlyClass = `${inputBaseClass} border-border bg-muted`;
 
   return (
-    <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+    <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
       {/* Header with Edit Button */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">General Settings</span>
-          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Manage your business profile information
           </span>
         </div>
@@ -690,7 +690,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
       {/* Business Info Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-[#859bab]">Business Name</label>
+          <label className="text-sm font-semibold text-muted-foreground">Business Name</label>
           {isEditing ? (
             <input
               type="text"
@@ -701,12 +701,12 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
             />
           ) : (
             <div className={inputReadOnlyClass + " flex items-center"}>
-              {formData.business_name || <span className="text-[#668091]">Not set</span>}
+              {formData.business_name || <span className="text-muted-foreground">Not set</span>}
             </div>
           )}
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-[#859bab]">POC Email</label>
+          <label className="text-sm font-semibold text-muted-foreground">POC Email</label>
           {isEditing ? (
             <input
               type="email"
@@ -717,12 +717,12 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
             />
           ) : (
             <div className={inputReadOnlyClass + " flex items-center"}>
-              {formData.poc_email || <span className="text-[#668091]">Not set</span>}
+              {formData.poc_email || <span className="text-muted-foreground">Not set</span>}
             </div>
           )}
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-[#859bab]">POC Name</label>
+          <label className="text-sm font-semibold text-muted-foreground">POC Name</label>
           {isEditing ? (
             <input
               type="text"
@@ -733,12 +733,12 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
             />
           ) : (
             <div className={inputReadOnlyClass + " flex items-center"}>
-              {formData.poc_name || <span className="text-[#668091]">Not set</span>}
+              {formData.poc_name || <span className="text-muted-foreground">Not set</span>}
             </div>
           )}
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-[#859bab]">Time Zone</label>
+          <label className="text-sm font-semibold text-muted-foreground">Time Zone</label>
           {isEditing ? (
             <AriaSelect
               aria-label="Select Time Zone"
@@ -754,26 +754,26 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
             </AriaSelect>
           ) : (
             <div className={inputReadOnlyClass + " flex items-center"}>
-              {formData.timezone || <span className="text-[#668091]">Not set</span>}
+              {formData.timezone || <span className="text-muted-foreground">Not set</span>}
             </div>
           )}
         </div>
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-[#d5dde2] w-full" />
+      <div className="h-px bg-muted w-full" />
 
       {/* Domains Section */}
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Domains</span>
-          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Add and verify custom domains for your platform
           </span>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-[#859bab]">Domain</label>
+          <label className="text-sm font-semibold text-muted-foreground">Domain</label>
           {isEditing ? (
             <input
               type="text"
@@ -784,7 +784,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
             />
           ) : (
             <div className={inputReadOnlyClass + " flex items-center w-full max-w-md"}>
-              {formData.domain || <span className="text-[#668091]">Not set</span>}
+              {formData.domain || <span className="text-muted-foreground">Not set</span>}
             </div>
           )}
         </div>
@@ -795,7 +795,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
         <div className="flex justify-end gap-2">
           <button
             onClick={handleCancel}
-            className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+            className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors"
           >
             Cancel
           </button>
@@ -920,17 +920,17 @@ function ImageUploadArea({
 
   return (
     <div className="flex flex-col gap-2 flex-1">
-      <span className="text-sm font-semibold text-[#22292f]">{label}</span>
+      <span className="text-sm font-semibold text-foreground">{label}</span>
       <div
         onDragOver={disabled ? undefined : handleDragOver}
         onDragLeave={disabled ? undefined : handleDragLeave}
         onDrop={disabled ? undefined : handleDrop}
         onClick={disabled ? undefined : handleClick}
         aria-disabled={disabled}
-        className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-[#f9fafb] border-[#d5dde2] cursor-not-allowed pointer-events-none" :
+        className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-muted border-border cursor-not-allowed pointer-events-none" :
           isDragging
-            ? "bg-[#eff6ff] border-[#3f52ff] cursor-copy"
-            : "bg-white border-[#d4d4d8] cursor-pointer hover:border-[#859bab]"
+            ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff] cursor-copy"
+            : "bg-card border-border cursor-pointer hover:border-muted-foreground/60"
           }`}
       >
         <input
@@ -946,7 +946,7 @@ function ImageUploadArea({
           <div className="flex flex-col items-center gap-3">
             {/* Simple spinner */}
             <div className="w-8 h-8 border-4 border-[#3f52ff]/30 border-t-[#3f52ff] rounded-full animate-spin" />
-            <span className="text-sm font-medium text-[#09090b]">Uploading...</span>
+            <span className="text-sm font-medium text-foreground">Uploading...</span>
           </div>
         ) : value ? (
           <div className="relative w-full h-full min-h-[120px] flex items-center justify-center group">
@@ -966,13 +966,13 @@ function ImageUploadArea({
           </div>
         ) : (
           <>
-            <div className={`w-11 h-11 rounded-full border border-[#e4e4e7] flex items-center justify-center mb-2 ${isDragging ? "bg-white" : ""}`}>
-              <Upload className={`w-4 h-4 ${isDragging ? "text-[#3f52ff]" : "text-[#71717b] opacity-60"}`} />
+            <div className={`w-11 h-11 rounded-full border border-border flex items-center justify-center mb-2 ${isDragging ? "bg-card" : ""}`}>
+              <Upload className={`w-4 h-4 ${isDragging ? "text-[#3f52ff] dark:text-[#8faeff]" : "text-muted-foreground opacity-60"}`} />
             </div>
-            <span className={`text-sm font-medium ${isDragging ? "text-[#3f52ff]" : "text-[#09090b]"}`}>
+            <span className={`text-sm font-medium ${isDragging ? "text-[#3f52ff] dark:text-[#8faeff]" : "text-foreground"}`}>
               {isDragging ? "Drop to upload" : "Upload image"}
             </span>
-            <span className="text-xs text-[#71717b]/70 mt-1">All files · Up to 10MB</span>
+            <span className="text-xs text-muted-foreground/70 mt-1">All files · Up to 10MB</span>
           </>
         )}
       </div>
@@ -1087,12 +1087,12 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
   };
 
   return (
-    <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+    <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
       {/* Header with Edit Button */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Branding</span>
-          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Customize your app&apos;s visual appearance
           </span>
         </div>
@@ -1109,21 +1109,21 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       {/* Logo Uploads - Kept static for now as requested only for the two specific bottom images */}
       <div className="flex gap-8">
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold text-[#22292f]">Splash Screen Logo</span>
+          <span className="text-sm font-semibold text-foreground">Splash Screen Logo</span>
           <div
             aria-disabled={!isEditing}
-            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb] pointer-events-none cursor-not-allowed"}`}
+            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-border cursor-pointer hover:border-muted-foreground/60" : "border-border bg-muted pointer-events-none cursor-not-allowed"}`}
           >
-            <User className="w-4 h-4 text-[#71717b] opacity-60" />
+            <User className="w-4 h-4 text-muted-foreground opacity-60" />
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold text-[#22292f]">Home Screen logo</span>
+          <span className="text-sm font-semibold text-foreground">Home Screen logo</span>
           <div
             aria-disabled={!isEditing}
-            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-[#d4d4d8] cursor-pointer hover:border-[#859bab]" : "border-[#d5dde2] bg-[#f9fafb] pointer-events-none cursor-not-allowed"}`}
+            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-border cursor-pointer hover:border-muted-foreground/60" : "border-border bg-muted pointer-events-none cursor-not-allowed"}`}
           >
-            <User className="w-4 h-4 text-[#71717b] opacity-60" />
+            <User className="w-4 h-4 text-muted-foreground opacity-60" />
           </div>
         </div>
       </div>
@@ -1135,8 +1135,8 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       </div>
 
       {/* Navigation/Icons hint */}
-      <div className="flex items-center gap-1.5 text-sm text-[#859bab]">
-        <div className="w-4 h-4 rounded-full border border-[#d5dde2] flex items-center justify-center">
+      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <div className="w-4 h-4 rounded-full border border-border flex items-center justify-center">
           <span className="text-[10px]">i</span>
         </div>
         Navigations/Icons
@@ -1173,14 +1173,14 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-[#d5dde2] w-full" />
+      <div className="h-px bg-muted w-full" />
 
       {/* Save/Cancel Buttons - only shown when editing */}
       {isEditing && (
         <div className="flex justify-end gap-2">
           <button
             onClick={handleCancel}
-            className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+            className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors"
           >
             Cancel
           </button>
@@ -1213,13 +1213,13 @@ function RadioOption({
     >
       <div
         className={`w-4 h-4 rounded-full border flex items-center justify-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] ${selected
-          ? "bg-[#173254] border-[#173254]"
-          : "bg-white border-[#d5dde2]"
+          ? "bg-[#173254] border-[#173254] dark:bg-[#8faeff] dark:border-[#8faeff]"
+          : "bg-card border-border"
           }`}
       >
-        {selected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+        {selected && <div className="w-1.5 h-1.5 rounded-full bg-card" />}
       </div>
-      <span className="text-sm font-medium text-[#09090b]">{label}</span>
+      <span className="text-sm font-medium text-foreground">{label}</span>
     </button>
   );
 }
@@ -1239,12 +1239,12 @@ function ModuleItem({
   return (
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-3"> {/* Added flex container for icon and text */}
-        <div className="w-8 h-8 rounded-lg bg-[#f9fafb] border border-[#d5dde2] flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0">
           {icon}
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-semibold text-[#22292f]">{label}</span>
-          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+          <span className="text-sm font-semibold text-foreground">{label}</span>
+          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             {description}
           </span>
         </div>
@@ -1286,15 +1286,15 @@ function SocialLinkInput({
 }) {
   return (
     <div className="flex flex-col gap-2 flex-1">
-      <label className="text-sm font-semibold text-[#22292f]">{label}</label>
+      <label className="text-sm font-semibold text-foreground">{label}</label>
       <div className={`flex items-center gap-2 h-9 px-3 border rounded-lg transition-colors ${readOnly
-        ? "bg-[#f9fafb] border-[#d5dde2]"
-        : "bg-white border-[#b0bfc9] focus-within:border-[#3f52ff]"
+        ? "bg-muted border-border"
+        : "bg-card border-border focus-within:border-[#3f52ff]"
         }`}>
-        <span className="shrink-0 text-[#859bab]">{icon}</span>
+        <span className="shrink-0 text-muted-foreground">{icon}</span>
         {readOnly ? (
-          <span className="flex-1 text-sm text-[#22292f] truncate">
-            {value || <span className="text-[#668091]">Not set</span>}
+          <span className="flex-1 text-sm text-foreground truncate">
+            {value || <span className="text-muted-foreground">Not set</span>}
           </span>
         ) : (
           <input
@@ -1302,7 +1302,7 @@ function SocialLinkInput({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Paste URL"
-            className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] outline-none bg-transparent"
+            className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
           />
         )}
       </div>
@@ -1360,14 +1360,14 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
   };
 
   return (
-    <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+    <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
       <div className="flex items-center justify-between px-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
             Social Links
           </h1>
-          <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+          <p className="text-base font-semibold text-muted-foreground leading-[18px]">
             Manage your social media links and online presence
           </p>
         </div>
@@ -1382,7 +1382,7 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
       </div>
 
       {/* White Card */}
-      <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
         {/* Row 1: LinkedIn + X / Twitter */}
         <div className="flex gap-4">
           <SocialLinkInput
@@ -1424,7 +1424,7 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
           <div className="flex justify-end gap-2">
             <button
               onClick={handleCancel}
-              className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+              className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors"
             >
               Cancel
             </button>
@@ -1492,18 +1492,18 @@ function LegalAndTCContent({ initialData, refreshProfile }: { initialData?: any;
   };
 
   const inputBaseClass = "flex items-center gap-2 h-10 px-3 border rounded-lg transition-colors";
-  const inputEditClass = `${inputBaseClass} bg-white border-[#b0bfc9] focus-within:border-[#3f52ff]`;
-  const inputReadOnlyClass = `${inputBaseClass} bg-[#f9fafb] border-[#d5dde2]`;
+  const inputEditClass = `${inputBaseClass} bg-card border-border focus-within:border-[#3f52ff]`;
+  const inputReadOnlyClass = `${inputBaseClass} bg-muted border-border`;
 
   return (
-    <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+    <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
       <div className="flex items-center justify-between px-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
             Legal &amp; T&amp;C
           </h1>
-          <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+          <p className="text-base font-semibold text-muted-foreground leading-[18px]">
             Manage your Legal &amp; T&amp;C documents and compliance settings
           </p>
         </div>
@@ -1518,25 +1518,25 @@ function LegalAndTCContent({ initialData, refreshProfile }: { initialData?: any;
       </div>
 
       {/* White Card */}
-      <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
         {/* Terms & Conditions URL */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-[#22292f]">
+          <label className="text-sm font-semibold text-foreground">
             Terms &amp; Conditions URL
           </label>
           <div className={isEditing ? inputEditClass : inputReadOnlyClass}>
-            <Link2 className="w-4 h-4 text-[#859bab] shrink-0" />
+            <Link2 className="w-4 h-4 text-muted-foreground shrink-0" />
             {isEditing ? (
               <input
                 type="url"
                 value={termsUrl}
                 onChange={(e) => setTermsUrl(e.target.value)}
                 placeholder="Paste URL"
-                className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+                className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
               />
             ) : (
-              <span className="flex-1 text-sm text-[#22292f] truncate">
-                {termsUrl || <span className="text-[#668091]">Not set</span>}
+              <span className="flex-1 text-sm text-foreground truncate">
+                {termsUrl || <span className="text-muted-foreground">Not set</span>}
               </span>
             )}
           </div>
@@ -1544,22 +1544,22 @@ function LegalAndTCContent({ initialData, refreshProfile }: { initialData?: any;
 
         {/* Privacy Policy URL */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-[#22292f]">
+          <label className="text-sm font-semibold text-foreground">
             Privacy Policy URL
           </label>
           <div className={isEditing ? inputEditClass : inputReadOnlyClass}>
-            <Link2 className="w-4 h-4 text-[#859bab] shrink-0" />
+            <Link2 className="w-4 h-4 text-muted-foreground shrink-0" />
             {isEditing ? (
               <input
                 type="url"
                 value={privacyUrl}
                 onChange={(e) => setPrivacyUrl(e.target.value)}
                 placeholder="Paste URL"
-                className="flex-1 text-sm text-[#22292f] placeholder:text-[#859bab] outline-none bg-transparent"
+                className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
               />
             ) : (
-              <span className="flex-1 text-sm text-[#22292f] truncate">
-                {privacyUrl || <span className="text-[#668091]">Not set</span>}
+              <span className="flex-1 text-sm text-foreground truncate">
+                {privacyUrl || <span className="text-muted-foreground">Not set</span>}
               </span>
             )}
           </div>
@@ -1570,7 +1570,7 @@ function LegalAndTCContent({ initialData, refreshProfile }: { initialData?: any;
           <div className="flex justify-end gap-2">
             <button
               onClick={handleCancel}
-              className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+              className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors"
             >
               Cancel
             </button>
@@ -1641,12 +1641,12 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
   };
 
   return (
-    <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+    <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
       {/* Header with Edit Button */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">Modules</span>
-          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Enable or disable features for your platform
           </span>
         </div>
@@ -1662,31 +1662,31 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
 
       <div className="flex flex-col gap-4">
         <ModuleItem
-          icon={<Calendar className="w-4 h-4 text-[#71717b]" />}
+          icon={<Calendar className="w-4 h-4 text-muted-foreground" />}
           label="Events"
           description="Create and manage events"
           action={<AriaSwitch isSelected={modules.events} onChange={isEditing ? updateModule("events") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
-          icon={<Ticket className="w-4 h-4 text-[#71717b]" />}
+          icon={<Ticket className="w-4 h-4 text-muted-foreground" />}
           label="Tickets"
           description="Sell tickets for events"
           action={<AriaSwitch isSelected={modules.tickets} onChange={isEditing ? updateModule("tickets") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
-          icon={<CalendarDays className="w-4 h-4 text-[#71717b]" />}
+          icon={<CalendarDays className="w-4 h-4 text-muted-foreground" />}
           label="Calendar View"
           description="Display events in a calendar view"
           action={<AriaSwitch isSelected={modules.calendarView} onChange={isEditing ? updateModule("calendarView") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
-          icon={<MessageSquare className="w-4 h-4 text-[#71717b]" />}
+          icon={<MessageSquare className="w-4 h-4 text-muted-foreground" />}
           label="Chat"
           description="Enable chat for events"
           action={<AriaSwitch isSelected={modules.chat} onChange={isEditing ? updateModule("chat") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
-          icon={<Users className="w-4 h-4 text-[#71717b]" />}
+          icon={<Users className="w-4 h-4 text-muted-foreground" />}
           label="Explore Members"
           description="Allow members to explore other members"
           action={
@@ -1701,13 +1701,13 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
                 onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "city" }))}
                 label="City Only"
               />
-              <div className="h-6 w-px bg-[#d5dde2] mx-2" />
+              <div className="h-6 w-px bg-muted mx-2" />
               <AriaSwitch isSelected={modules.exploreMembers} onChange={isEditing ? updateModule("exploreMembers") : undefined} isDisabled={!isEditing} />
             </div>
           }
         />
         <ModuleItem
-          icon={<Building2 className="w-4 h-4 text-[#71717b]" />}
+          icon={<Building2 className="w-4 h-4 text-muted-foreground" />}
           label="Explore Company"
           description="Allow members to explore companies"
           action={
@@ -1722,7 +1722,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
                 onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "city" }))}
                 label="City Only"
               />
-              <div className="h-6 w-px bg-[#d5dde2] mx-2" />
+              <div className="h-6 w-px bg-muted mx-2" />
               <AriaSwitch isSelected={modules.exploreCompany} onChange={isEditing ? updateModule("exploreCompany") : undefined} isDisabled={!isEditing} />
             </div>
           }
@@ -1730,14 +1730,14 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-[#d5dde2] w-full mt-2" />
+      <div className="h-px bg-muted w-full mt-2" />
 
       {/* Save/Cancel Buttons - only shown when editing */}
       {isEditing && (
         <div className="flex justify-end gap-2">
           <button
             onClick={handleCancel}
-            className="h-8 px-4 bg-white border border-[#d5dde2] text-[#22292f] text-sm font-medium rounded-lg hover:bg-[#f9fafb] transition-colors"
+            className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors"
           >
             Cancel
           </button>
@@ -1771,23 +1771,23 @@ function StatCard({
 }) {
   return (
     <div
-      className={`flex-1 bg-white border border-[#d5dde2] p-4 flex items-center justify-between -mr-px ${isFirst ? "rounded-l-lg" : ""
+      className={`flex-1 bg-card border border-border p-4 flex items-center justify-between -mr-px ${isFirst ? "rounded-l-lg" : ""
         } ${isLast ? "rounded-r-lg" : ""}`}
     >
       <div className="flex items-center gap-2">
-        <div className="bg-[#f9fafb] border border-[#d5dde2] rounded-[5.4px] p-[7px] flex items-center justify-center">
+        <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
           {icon}
         </div>
         <div className="flex flex-col">
           <span className="text-sm font-semibold text-[#3f52ff] leading-[18px]">
             {title}
           </span>
-          <span className="text-xs text-[#516778] leading-[18px]">
+          <span className="text-xs text-muted-foreground leading-[18px]">
             {subtitle}
           </span>
         </div>
       </div>
-      <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+      <span className="text-base font-semibold text-foreground leading-[18px]">
         {value}
       </span>
     </div>
@@ -1866,10 +1866,10 @@ function TeamTabContent() {
     <div className="flex flex-col gap-4">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+        <span className="text-base font-semibold text-foreground leading-[18px]">
           Chapter Team Members
         </span>
-        <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+        <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
           Add team members who will manage this chapter and receive admin
           notifications
         </span>
@@ -1877,18 +1877,18 @@ function TeamTabContent() {
 
       {/* Team Member Headshot */}
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-semibold text-[#22292f]">
+        <span className="text-sm font-semibold text-foreground">
           Team Member Headshot
         </span>
-        <div className="w-16 h-16 rounded-full border border-dashed border-[#d4d4d8] flex items-center justify-center cursor-pointer hover:border-[#859bab] transition-colors">
-          <User className="w-4 h-4 text-[#71717b] opacity-60" />
+        <div className="w-16 h-16 rounded-full border border-dashed border-border flex items-center justify-center cursor-pointer hover:border-muted-foreground/60 transition-colors">
+          <User className="w-4 h-4 text-muted-foreground opacity-60" />
         </div>
       </div>
 
       {/* Add Member Row */}
       <div className="flex items-end gap-4">
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-[#22292f]">
+          <label className="text-sm font-semibold text-foreground">
             Full Name
           </label>
           <input
@@ -1896,12 +1896,12 @@ function TeamTabContent() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Enter full name"
-            className="h-9 w-[180px] px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+            className="h-9 w-[180px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
           />
         </div>
         <div className="flex items-end gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-[#22292f]">
+            <label className="text-sm font-semibold text-foreground">
               Email Address
             </label>
             <input
@@ -1909,19 +1909,19 @@ function TeamTabContent() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email address"
-              className="h-9 w-[200px] px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+              className="h-9 w-[200px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
             />
           </div>
           <div className="relative">
             <button
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-              className="h-9 px-3 flex items-center gap-2 text-sm text-[#22292f] border border-[#d5dde2] rounded-lg hover:border-[#859bab] transition-colors bg-white"
+              className="h-9 px-3 flex items-center gap-2 text-sm text-foreground border border-border rounded-lg hover:border-muted-foreground/60 transition-colors bg-card"
             >
               {selectedRole}
-              <ChevronDown className="w-3.5 h-3.5 text-[#859bab]" />
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
             {showRoleDropdown && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-[#d5dde2] rounded-lg shadow-lg z-50 min-w-[140px]">
+              <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 min-w-[140px]">
                 {(["Chapter Lead", "Co-Lead", "Member"] as TeamRole[]).map(
                   (role) => (
                     <button
@@ -1930,9 +1930,9 @@ function TeamTabContent() {
                         setSelectedRole(role);
                         setShowRoleDropdown(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-[#f5f5f5] transition-colors first:rounded-t-lg last:rounded-b-lg ${selectedRole === role
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted/70 transition-colors first:rounded-t-lg last:rounded-b-lg ${selectedRole === role
                         ? "text-[#3f52ff] font-medium"
-                        : "text-[#22292f]"
+                        : "text-foreground"
                         }`}
                     >
                       {role}
@@ -1945,14 +1945,14 @@ function TeamTabContent() {
         </div>
         <button
           onClick={addMember}
-          className="h-9 px-4 bg-[#22292f] text-white text-sm font-medium rounded-lg hover:bg-[#3a4550] transition-colors whitespace-nowrap"
+          className="h-9 px-4 bg-foreground text-background text-sm font-medium rounded-lg hover:bg-foreground/90 transition-colors whitespace-nowrap"
         >
           + Add team member
         </button>
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-[#d5dde2] w-full" />
+      <div className="h-px bg-muted w-full" />
 
       {/* Team Members List */}
       <div className="flex flex-col gap-2">
@@ -1985,14 +1985,14 @@ function TeamMemberCard({
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
-    <div className="bg-white border border-[#d5dde2] rounded-xl p-2 flex items-center justify-between max-w-[564px]">
+    <div className="bg-card border border-border rounded-xl p-2 flex items-center justify-between max-w-[564px]">
       <div className="flex items-center gap-2">
-        <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-[9px] p-3 flex items-center justify-center">
-          <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
+        <div className="bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 flex items-center justify-center">
+          <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-[#8faeff]" />
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1">
-            <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+            <span className="text-base font-semibold text-foreground leading-[18px]">
               {member.name}
             </span>
             <span
@@ -2001,7 +2001,7 @@ function TeamMemberCard({
               {member.role}
             </span>
           </div>
-          <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             {member.email}
           </span>
         </div>
@@ -2010,13 +2010,13 @@ function TeamMemberCard({
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="h-8 px-3 flex items-center gap-1.5 text-sm text-[#22292f] bg-[#f5f5f5] border border-[#d5dde2] rounded-lg hover:bg-[#eceff2] transition-colors"
+            className="h-8 px-3 flex items-center gap-1.5 text-sm text-foreground bg-muted/70 border border-border rounded-lg hover:bg-muted transition-colors"
           >
             {member.role}
-            <ChevronDown className="w-3.5 h-3.5 text-[#859bab]" />
+            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
           {showDropdown && (
-            <div className="absolute top-full right-0 mt-1 bg-white border border-[#d5dde2] rounded-lg shadow-lg z-50 min-w-[140px]">
+            <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 min-w-[140px]">
               {(["Chapter Lead", "Co-Lead", "Member"] as TeamRole[]).map(
                 (role) => (
                   <button
@@ -2025,9 +2025,9 @@ function TeamMemberCard({
                       onRoleChange(role);
                       setShowDropdown(false);
                     }}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-[#f5f5f5] transition-colors first:rounded-t-lg last:rounded-b-lg ${member.role === role
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-muted/70 transition-colors first:rounded-t-lg last:rounded-b-lg ${member.role === role
                       ? "text-[#3f52ff] font-medium"
-                      : "text-[#22292f]"
+                      : "text-foreground"
                       }`}
                   >
                     {role}
@@ -2039,9 +2039,9 @@ function TeamMemberCard({
         </div>
         <button
           onClick={onRemove}
-          className="w-7 h-7 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+          className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted transition-colors"
         >
-          <X className="w-3.5 h-3.5 text-[#516778]" />
+          <X className="w-3.5 h-3.5 text-muted-foreground" />
         </button>
       </div>
     </div>
@@ -2063,33 +2063,33 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
   const [country, setCountry] = useState("");
 
   return (
-    <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+    <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
       <div className="flex flex-col gap-2 px-2">
         <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
           Create New Chapter
         </h1>
-        <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+        <p className="text-base font-semibold text-muted-foreground leading-[18px]">
           Fill in all required fields to create a new chapter. All fields marked
           with * are mandatory.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="inline-flex items-center bg-[#eceff2] rounded-lg p-1 relative">
+      <div className="inline-flex items-center bg-muted rounded-lg p-1 relative">
         {createChapterTabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`relative h-9 px-4 py-2 rounded-lg text-base font-medium transition-colors z-10 ${activeTab === tab
               ? "text-[#3f52ff]"
-              : "text-[#516778] hover:text-[#22292f]"
+              : "text-muted-foreground hover:text-foreground"
               }`}
           >
             {activeTab === tab && (
               <motion.div
                 layoutId="createChapterTabIndicator"
-                className="absolute inset-0 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
                 initial={false}
                 transition={{
                   type: "spring",
@@ -2104,13 +2104,13 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
       </div>
 
       {/* White Card */}
-      <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+      <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
         {/* Basic Info Tab */}
         {activeTab === "Basic Info" && (
           <div className="flex flex-col gap-4">
             <div className="flex gap-4">
               <div className="flex flex-col gap-2 flex-1">
-                <label className="text-sm font-semibold text-[#22292f]">
+                <label className="text-sm font-semibold text-foreground">
                   Chapter Name *
                 </label>
                 <input
@@ -2118,11 +2118,11 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                   value={chapterName}
                   onChange={(e) => setChapterName(e.target.value)}
                   placeholder="eg. Dubai Chapter"
-                  className="h-9 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                  className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                 />
               </div>
               <div className="flex flex-col gap-2 flex-1">
-                <label className="text-sm font-semibold text-[#22292f]">
+                <label className="text-sm font-semibold text-foreground">
                   Chapter Code *
                 </label>
                 <input
@@ -2130,13 +2130,13 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                   value={chapterCode}
                   onChange={(e) => setChapterCode(e.target.value)}
                   placeholder="eg. CH007"
-                  className="h-9 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                  className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                 />
               </div>
             </div>
             <div className="flex gap-4">
               <div className="flex flex-col gap-2 flex-1">
-                <label className="text-sm font-semibold text-[#22292f]">
+                <label className="text-sm font-semibold text-foreground">
                   City *
                 </label>
                 <input
@@ -2144,11 +2144,11 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="eg. Dubai"
-                  className="h-9 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                  className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                 />
               </div>
               <div className="flex flex-col gap-2 flex-1">
-                <label className="text-sm font-semibold text-[#22292f]">
+                <label className="text-sm font-semibold text-foreground">
                   Country *
                 </label>
                 <input
@@ -2156,7 +2156,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                   placeholder="eg. UAE"
-                  className="h-9 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                  className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                 />
               </div>
             </div>
@@ -2170,7 +2170,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
               {/* Left: Form Fields */}
               <div className="flex flex-col gap-4 w-[373px] shrink-0">
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-[#22292f]">
+                  <label className="text-sm font-semibold text-foreground">
                     Venue Name
                   </label>
                   <input
@@ -2178,11 +2178,11 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                     value={venueName}
                     onChange={(e) => setVenueName(e.target.value)}
                     placeholder="eg. Burj Al-Arab"
-                    className="h-9 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                    className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-[#22292f]">
+                  <label className="text-sm font-semibold text-foreground">
                     Full Address
                   </label>
                   <input
@@ -2190,11 +2190,11 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                     value={fullAddress}
                     onChange={(e) => setFullAddress(e.target.value)}
                     placeholder="Enter the vanue full address"
-                    className="h-9 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                    className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-[#22292f]">
+                  <label className="text-sm font-semibold text-foreground">
                     Search on map
                   </label>
                   <input
@@ -2211,14 +2211,14 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                       }
                     }}
                     placeholder="Search Places (eg. Central Park, NY)"
-                    className="h-9 px-3 text-sm text-[#22292f] placeholder:text-[#859bab] border border-[#d5dde2] rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                    className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                   />
                 </div>
               </div>
 
               {/* Right: Map Placeholder */}
-              <div className="flex-1 min-h-[215px] bg-[#e8ecf0] rounded-xl flex items-center justify-center">
-                <div className="flex flex-col items-center gap-2 text-[#859bab]">
+              <div className="flex-1 min-h-[215px] bg-muted rounded-xl flex items-center justify-center">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <MapPin className="w-8 h-8" />
                   <span className="text-sm">Map preview</span>
                 </div>
@@ -2226,9 +2226,9 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
             </div>
 
             {/* Info Toast */}
-            <div className="flex items-center gap-2 bg-[#eff6ff] border border-[#bfdbfe] rounded-lg px-3 py-2 max-w-fit">
-              <Info className="w-4 h-4 text-[#3b82f6] shrink-0" />
-              <span className="text-[13px] text-[#516778]">
+            <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 dark:bg-blue-950/40 dark:border-blue-800/60 rounded-lg px-3 py-2 max-w-fit">
+              <Info className="w-4 h-4 text-blue-600 dark:text-blue-300 shrink-0" />
+              <span className="text-[13px] text-muted-foreground">
                 Coordinates enable precise map location for events and mobile
                 app integration
               </span>
@@ -2243,7 +2243,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
 
         {/* Setting Tab */}
         {activeTab === "Setting" && (
-          <div className="flex flex-col gap-4 min-h-[200px] items-center justify-center text-[#859bab]">
+          <div className="flex flex-col gap-4 min-h-[200px] items-center justify-center text-muted-foreground">
             <span className="text-sm">Chapter settings will appear here</span>
           </div>
         )}
@@ -2252,7 +2252,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
         <div className="flex items-center justify-end gap-2">
           <button
             onClick={onDismiss}
-            className="px-4 py-2 bg-[#22292f] text-white text-sm font-medium rounded-lg hover:bg-[#3a4550] transition-colors"
+            className="px-4 py-2 bg-foreground text-background text-sm font-medium rounded-lg hover:bg-foreground/90 transition-colors"
           >
             Dismiss
           </button>
@@ -2311,21 +2311,21 @@ function ViewChapterPanel({
         className="absolute inset-0 bg-black/40"
         onClick={onClose}
       />
-      <div className="relative bg-white rounded-3xl w-[562px] max-h-[90vh] overflow-y-auto shadow-xl flex flex-col gap-6 py-4">
+      <div className="relative bg-card rounded-3xl w-[562px] max-h-[90vh] overflow-y-auto shadow-xl flex flex-col gap-6 py-4">
         {/* Top Navigation */}
         <div className="flex items-center justify-between px-4">
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+            className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted transition-colors"
           >
-            <ChevronLeft className="w-4 h-4 text-[#516778]" />
+            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           </button>
           <div className="flex items-center gap-1">
-            <button className="w-8 h-8 rounded-lg bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors">
-              <ChevronUp className="w-4 h-4 text-[#516778]" />
+            <button className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted transition-colors">
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
             </button>
-            <button className="w-8 h-8 rounded-lg bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors">
-              <ChevronDown className="w-4 h-4 text-[#516778]" />
+            <button className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted transition-colors">
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -2350,91 +2350,91 @@ function ViewChapterPanel({
 
         {/* Basic Information */}
         <div className="flex flex-col gap-6 px-4">
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+          <span className="text-xl font-semibold text-foreground leading-[18px]">
             Basic Information
           </span>
           <div className="flex gap-12">
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-[#668091] leading-[18px]">Chapter ID</span>
-              <span className="text-base text-[#22292f] leading-[18px]">{chapter.code}</span>
+              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Chapter ID</span>
+              <span className="text-base text-foreground leading-[18px]">{chapter.code}</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-[#668091] leading-[18px]">Sort Order</span>
-              <span className="text-base text-[#22292f] leading-[18px]">1</span>
+              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Sort Order</span>
+              <span className="text-base text-foreground leading-[18px]">1</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-[#668091] leading-[18px]">Created</span>
-              <span className="text-base text-[#22292f] leading-[18px]">11/28/2025</span>
+              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Created</span>
+              <span className="text-base text-foreground leading-[18px]">11/28/2025</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-[#668091] leading-[18px]">Last Updated</span>
-              <span className="text-base text-[#22292f] leading-[18px]">{chapter.lastUpdate}</span>
+              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Last Updated</span>
+              <span className="text-base text-foreground leading-[18px]">{chapter.lastUpdate}</span>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-[#d5dde2] mx-4" />
+        <div className="h-px bg-muted mx-4" />
 
         {/* Venue Information */}
         <div className="flex flex-col gap-6 px-4">
           <div className="flex items-center justify-between">
-            <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+            <span className="text-xl font-semibold text-foreground leading-[18px]">
               Venue Information
             </span>
-            <button className="flex items-center gap-1.5 px-3 py-1.5 bg-[#22292f] text-white text-xs font-medium rounded-lg hover:bg-[#3a4550] transition-colors">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 bg-foreground text-background text-xs font-medium rounded-lg hover:bg-foreground/90 transition-colors">
               View on maps
               <ExternalLink className="w-3 h-3" />
             </button>
           </div>
           <div className="flex gap-12">
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-[#668091] leading-[18px]">Venue Name</span>
-              <span className="text-base text-[#22292f] leading-[18px]">Manhattan Community Center</span>
+              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Venue Name</span>
+              <span className="text-base text-foreground leading-[18px]">Manhattan Community Center</span>
             </div>
             <div className="flex flex-col gap-1 flex-1">
-              <span className="text-sm font-semibold text-[#668091] leading-[18px]">Address</span>
-              <span className="text-base text-[#22292f] leading-[18px]">123 Madison Avenue, {chapter.city}, {chapter.country}</span>
+              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Address</span>
+              <span className="text-base text-foreground leading-[18px]">123 Madison Avenue, {chapter.city}, {chapter.country}</span>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-[#d5dde2] mx-4" />
+        <div className="h-px bg-muted mx-4" />
 
         {/* Chapter Story */}
         <div className="flex flex-col gap-6 px-4">
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+          <span className="text-xl font-semibold text-foreground leading-[18px]">
             Chapter Story
           </span>
-          <p className="text-sm font-semibold text-[#668091] leading-[18px]">
+          <p className="text-sm font-semibold text-muted-foreground leading-[18px]">
             The {chapter.name} Chapter brings together professionals and enthusiasts in the heart of {chapter.city}. Join us for networking events, workshops, and community building. Our vibrant community hosts monthly meetups, quarterly conferences, and annual galas that bring together industry leaders and innovators.
           </p>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-[#d5dde2] mx-4" />
+        <div className="h-px bg-muted mx-4" />
 
         {/* Team Members */}
         <div className="flex flex-col gap-6 px-4">
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+          <span className="text-xl font-semibold text-foreground leading-[18px]">
             Team Members
           </span>
           <div className="flex flex-col gap-2">
             {teamMembers.map((member) => (
               <div
                 key={member.email}
-                className="bg-white border border-[#d5dde2] rounded-xl p-2 flex items-center justify-between"
+                className="bg-card border border-border rounded-xl p-2 flex items-center justify-between"
               >
                 <div className="flex items-center gap-2">
-                  <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-[9px] p-3 flex items-center justify-center">
-                    <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
+                  <div className="bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 flex items-center justify-center">
+                    <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-[#8faeff]" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+                    <span className="text-base font-semibold text-foreground leading-[18px]">
                       {member.name}
                     </span>
-                    <span className="text-xs font-semibold text-[#859bab] leading-[18px]">
+                    <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
                       {member.email}
                     </span>
                   </div>
@@ -2448,37 +2448,37 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-[#d5dde2] mx-4" />
+        <div className="h-px bg-muted mx-4" />
 
         {/* Notifications Default */}
         <div className="flex flex-col gap-6 px-4">
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+          <span className="text-xl font-semibold text-foreground leading-[18px]">
             Notifications Default
           </span>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#22292f]">Enable Notifications</span>
+              <span className="text-sm text-foreground">Enable Notifications</span>
               <AriaSwitch
                 isSelected={notifications.enableNotifications}
                 onChange={() => toggleNotification("enableNotifications")}
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#22292f]">Auto-Notify New Events</span>
+              <span className="text-sm text-foreground">Auto-Notify New Events</span>
               <AriaSwitch
                 isSelected={notifications.autoNotifyNewEvents}
                 onChange={() => toggleNotification("autoNotifyNewEvents")}
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#22292f]">Auto-Notify New Updates</span>
+              <span className="text-sm text-foreground">Auto-Notify New Updates</span>
               <AriaSwitch
                 isSelected={notifications.autoNotifyNewUpdates}
                 onChange={() => toggleNotification("autoNotifyNewUpdates")}
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#22292f]">Auto-Notify Announcements</span>
+              <span className="text-sm text-foreground">Auto-Notify Announcements</span>
               <AriaSwitch
                 isSelected={notifications.autoNotifyAnnouncements}
                 onChange={() => toggleNotification("autoNotifyAnnouncements")}
@@ -2488,23 +2488,23 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-[#d5dde2] mx-4" />
+        <div className="h-px bg-muted mx-4" />
 
         {/* Linked Events */}
         <div className="flex flex-col gap-6 px-4 pb-2">
-          <span className="text-xl font-semibold text-[#22292f] leading-[18px]">
+          <span className="text-xl font-semibold text-foreground leading-[18px]">
             Linked Events
           </span>
           <div className="flex items-end justify-between">
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-[#22292f] leading-[18px]">
+              <span className="text-sm font-semibold text-foreground leading-[18px]">
                 {eventCount} Events linked to this chapter
               </span>
-              <span className="text-sm text-[#668091] leading-[18px]">
+              <span className="text-sm text-muted-foreground leading-[18px]">
                 Events use this chapter for filtering and mobile display
               </span>
             </div>
-            <button className="px-3 py-1.5 bg-[#22292f] text-white text-xs font-medium rounded-lg hover:bg-[#3a4550] transition-colors">
+            <button className="px-3 py-1.5 bg-foreground text-background text-xs font-medium rounded-lg hover:bg-foreground/90 transition-colors">
               View Events
             </button>
           </div>
@@ -2525,40 +2525,40 @@ function ChapterActionMenu({
 }) {
   return (
     <Menu>
-      <MenuButton className="p-1 hover:bg-[#f5f5f5] rounded transition-colors focus:outline-none">
-        <MoreVertical className="w-4 h-4 text-[#859bab]" />
+      <MenuButton className="p-1 hover:bg-muted/70 rounded transition-colors focus:outline-none">
+        <MoreVertical className="w-4 h-4 text-muted-foreground" />
       </MenuButton>
 
       <Portal>
         <MenuItems
           anchor="bottom end"
           transition
-          className="z-[100] mt-1 bg-white border border-[#d5dde2] rounded-lg shadow-lg min-w-[120px] py-1 transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+          className="z-[100] mt-1 bg-card border border-border rounded-lg shadow-lg min-w-[120px] py-1 transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
         >
           <MenuItem>
             <button
               onClick={onView}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] data-[focus]:bg-[#f5f5f5] hover:bg-[#f5f5f5] transition-colors focus:outline-none"
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground data-[focus]:bg-muted/70 hover:bg-muted/70 transition-colors focus:outline-none"
             >
-              <Eye className="w-4 h-4 text-[#859bab]" />
+              <Eye className="w-4 h-4 text-muted-foreground" />
               View
             </button>
           </MenuItem>
           <MenuItem>
             <button
               onClick={onEdit}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#22292f] data-[focus]:bg-[#f5f5f5] hover:bg-[#f5f5f5] transition-colors focus:outline-none"
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground data-[focus]:bg-muted/70 hover:bg-muted/70 transition-colors focus:outline-none"
             >
-              <Pencil className="w-4 h-4 text-[#859bab]" />
+              <Pencil className="w-4 h-4 text-muted-foreground" />
               Edit
             </button>
           </MenuItem>
           <MenuItem>
             <button
               onClick={onDelete}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#E22023] data-[focus]:bg-red-50 hover:bg-red-50 transition-colors focus:outline-none"
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-destructive data-[focus]:bg-destructive/10 hover:bg-destructive/10 transition-colors focus:outline-none"
             >
-              <Trash2 className="w-4 h-4 text-[#E22023]" />
+              <Trash2 className="w-4 h-4 text-destructive" />
               Delete
             </button>
           </MenuItem>
@@ -2620,13 +2620,13 @@ function ChaptersContent() {
 
   return (
     <>
-      <div className="bg-[#eceff2] border border-[#d5dde2] rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+      <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
         {/* Section Header */}
         <div className="flex flex-col gap-2 px-2">
           <h1 className="text-xl font-semibold text-[#3f52ff] leading-[18px]">
             Chapters Management
           </h1>
-          <p className="text-base font-semibold text-[#859bab] leading-[18px]">
+          <p className="text-base font-semibold text-muted-foreground leading-[18px]">
             Create and manage chapters for event segmentation and storytelling
           </p>
         </div>
@@ -2634,26 +2634,26 @@ function ChaptersContent() {
         {/* Stat Cards Row */}
         <div className="flex">
           <StatCard
-            icon={<Tags className="w-4 h-4 text-[#516778]" />}
+            icon={<Tags className="w-4 h-4 text-muted-foreground" />}
             title="Total Chapters"
             subtitle="All chapters in organization"
             value={3}
             isFirst
           />
           <StatCard
-            icon={<Tag className="w-4 h-4 text-[#516778]" />}
+            icon={<Tag className="w-4 h-4 text-muted-foreground" />}
             title="Active Chapters"
             subtitle="Currently operational"
             value={3}
           />
           <StatCard
-            icon={<Eye className="w-4 h-4 text-[#516778]" />}
+            icon={<Eye className="w-4 h-4 text-muted-foreground" />}
             title="Visible in App"
             subtitle="Shown to mobile users"
             value={2}
           />
           <StatCard
-            icon={<Link2 className="w-4 h-4 text-[#516778]" />}
+            icon={<Link2 className="w-4 h-4 text-muted-foreground" />}
             title="Linked Events"
             subtitle="Total events across chapters"
             value={20}
@@ -2662,10 +2662,10 @@ function ChaptersContent() {
         </div>
 
         {/* White Card - Table Section */}
-        <div className="bg-white border border-[#d5dde2] rounded-lg p-4 flex flex-col gap-4">
+        <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
           {/* Header Row */}
           <div className="flex items-center justify-between">
-            <span className="text-base font-semibold text-[#22292f] leading-[18px]">
+            <span className="text-base font-semibold text-foreground leading-[18px]">
               All Chapters
             </span>
             <button
@@ -2678,16 +2678,16 @@ function ChaptersContent() {
           </div>
 
           {/* Search Input */}
-          <div className="flex items-center gap-2 h-9 px-3 py-1 bg-white border border-[#d5dde2] rounded-lg w-[373px]">
-            <Search className="w-4 h-4 text-[#668091] shrink-0" />
+          <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-[373px]">
+            <Search className="w-4 h-4 text-muted-foreground shrink-0" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by chapter name, city or country"
-              className="flex-1 text-sm text-[#22292f] placeholder:text-[#668091] bg-transparent outline-none border-none p-0 focus:ring-0"
+              className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none border-none p-0 focus:ring-0"
             />
-            <kbd className="bg-[#eceff2] text-[#859bab] text-[10px] font-semibold px-1.5 py-0.5 rounded">
+            <kbd className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">
               ⌘K
             </kbd>
           </div>
@@ -2706,16 +2706,16 @@ function ChaptersContent() {
                 <col className="w-[8%]" />
               </colgroup>
               <thead>
-                <tr className="[&>th]:bg-[#eceff2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
+                <tr className="[&>th]:bg-muted [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
                   {tableHeaders.map((header) => (
                     <th
                       key={header}
-                      className="h-9 px-3 py-2 text-left text-sm font-medium text-[#22292f]"
+                      className="h-9 px-3 py-2 text-left text-sm font-medium text-foreground"
                     >
                       <div className="flex items-center gap-1">
                         {header}
                         {header !== "Action" && (
-                          <ChevronsUpDown className="w-3.5 h-3.5 text-[#859bab]" />
+                          <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                         )}
                       </div>
                     </th>
@@ -2736,15 +2736,15 @@ function ChaptersContent() {
                   .map((chapter) => (
                     <tr
                       key={chapter.code}
-                      className="border-b border-[#eceff2] last:border-b-0"
+                      className="border-b border-border last:border-b-0"
                     >
                       {/* Chapter */}
                       <td className="px-3 py-3">
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium text-[#22292f]">
+                          <span className="text-sm font-medium text-foreground">
                             {chapter.name}
                           </span>
-                          <span className="text-xs text-[#859bab]">
+                          <span className="text-xs text-muted-foreground">
                             {chapter.code}
                           </span>
                         </div>
@@ -2752,20 +2752,20 @@ function ChaptersContent() {
                       {/* Location */}
                       <td className="px-3 py-3">
                         <div className="flex flex-col">
-                          <span className="text-sm text-[#22292f]">
+                          <span className="text-sm text-foreground">
                             {chapter.city}
                           </span>
-                          <span className="text-xs text-[#859bab]">
+                          <span className="text-xs text-muted-foreground">
                             {chapter.country}
                           </span>
                         </div>
                       </td>
                       {/* Team */}
-                      <td className="px-3 py-3 text-sm text-[#22292f]">
+                      <td className="px-3 py-3 text-sm text-foreground">
                         {chapter.team}
                       </td>
                       {/* Events */}
-                      <td className="px-3 py-3 text-sm text-[#22292f]">
+                      <td className="px-3 py-3 text-sm text-foreground">
                         {chapter.events}
                       </td>
                       {/* Visible Toggle */}
@@ -2777,7 +2777,7 @@ function ChaptersContent() {
                       </td>
                       {/* Status */}
                       <td className="px-3 py-3">
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-[#22892e] bg-[#e8f5e9] px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
                           <CheckCircle2 className="w-3 h-3" />
                           {chapter.status}
                         </span>
@@ -2785,11 +2785,11 @@ function ChaptersContent() {
                       {/* Last Update */}
                       <td className="px-3 py-3">
                         <div className="flex flex-col">
-                          <span className="text-sm text-[#22292f]">
+                          <span className="text-sm text-foreground">
                             {chapter.lastUpdate}
                           </span>
                           {chapter.updatedBy && (
-                            <span className="text-xs text-[#859bab]">
+                            <span className="text-xs text-muted-foreground">
                               {chapter.updatedBy}
                             </span>
                           )}
@@ -2844,29 +2844,29 @@ function ChaptersContent() {
             className="absolute inset-0 bg-black/40"
             onClick={() => setDeleteChapter(null)}
           />
-          <div className="relative bg-white border border-[#d5dde2] rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
+          <div className="relative bg-card border border-border rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-[#d5dde2]">
+            <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-border">
               <div className="flex items-center gap-4">
-                <div className="bg-[#ffe0e1] rounded-md p-2">
-                  <AlertCircle className="w-4 h-4 text-[#e53935]" />
+                <div className="bg-destructive/10 rounded-md p-2">
+                  <AlertCircle className="w-4 h-4 text-destructive" />
                 </div>
-                <span className="text-base font-semibold text-[#22292f]">
+                <span className="text-base font-semibold text-foreground">
                   Delete Chapter
                 </span>
               </div>
               <button
                 onClick={() => setDeleteChapter(null)}
-                className="w-7 h-7 rounded-full bg-[#eceff2] flex items-center justify-center hover:bg-[#d5dde2] transition-colors"
+                className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted transition-colors"
               >
-                <X className="w-3.5 h-3.5 text-[#516778]" />
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
               </button>
             </div>
 
             {/* Modal Body */}
             <div className="px-4">
-              <p className="text-sm font-semibold text-[#859bab] leading-[20px]">
-                <span className="font-bold text-[#22292f]">
+              <p className="text-sm font-semibold text-muted-foreground leading-[20px]">
+                <span className="font-bold text-foreground">
                   &quot;{deleteChapter.name} Chapter&quot;
                 </span>{" "}
                 has {getEventCount(deleteChapter.events)} linked events. Deleting
@@ -2876,16 +2876,16 @@ function ChaptersContent() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-[#d5dde2]">
+            <div className="flex items-center gap-3 px-4 pb-4 pt-2 border-t border-border">
               <button
                 onClick={() => setDeleteChapter(null)}
-                className="flex-1 h-10 px-4 text-sm font-medium text-[#22292f] bg-white border border-[#d5dde2] rounded-lg hover:bg-[#f5f5f5] transition-colors"
+                className="flex-1 h-10 px-4 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted/70 transition-colors"
               >
                 Dismiss
               </button>
               <button
                 onClick={() => setDeleteChapter(null)}
-                className="flex-1 h-10 px-4 text-sm font-medium text-white bg-[#e53935] rounded-lg hover:bg-[#c62828] transition-colors"
+                className="flex-1 h-10 px-4 text-sm font-medium text-white bg-destructive rounded-lg hover:bg-destructive/90 transition-colors"
               >
                 Delete Chapter
               </button>
