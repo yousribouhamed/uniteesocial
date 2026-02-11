@@ -1692,7 +1692,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
           label="Explore Members"
           description="Allow members to explore other members"
           action={
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-2 lg:gap-4">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
                 <RadioOption
                   selected={modules.exploreMembersScope === "all"}
@@ -1715,7 +1715,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
           label="Explore Company"
           description="Allow members to explore companies"
           action={
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-2 lg:gap-4">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
                 <RadioOption
                   selected={modules.exploreCompanyScope === "all"}
