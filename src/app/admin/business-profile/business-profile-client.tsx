@@ -1219,7 +1219,9 @@ function RadioOption({
       >
         {selected && <div className="w-1.5 h-1.5 rounded-full bg-card" />}
       </div>
-      <span className="text-sm font-medium text-foreground">{label}</span>
+      <span className="text-sm font-medium text-foreground whitespace-nowrap">
+        {label}
+      </span>
     </button>
   );
 }
@@ -1691,7 +1693,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
           description="Allow members to explore other members"
           action={
             <div className="flex items-start gap-4">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
                 <RadioOption
                   selected={modules.exploreMembersScope === "all"}
                   onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "all" }))}
@@ -1714,7 +1716,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
           description="Allow members to explore companies"
           action={
             <div className="flex items-start gap-4">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
                 <RadioOption
                   selected={modules.exploreCompanyScope === "all"}
                   onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "all" }))}
