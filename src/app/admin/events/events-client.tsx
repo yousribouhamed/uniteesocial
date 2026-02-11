@@ -2355,10 +2355,10 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
 
   return (
-    <div className="flex min-h-screen bg-background font-[family-name:'Instrument_Sans',sans-serif]">
+    <div className="flex min-h-screen w-full max-w-full bg-background font-[family-name:'Instrument_Sans',sans-serif]">
       <AdminSidebar currentUser={currentUser} />
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Navbar */}
           <header className="flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
           <nav className="flex items-center gap-0.5 text-sm">
@@ -2373,7 +2373,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto px-8 py-8">
+        <main className="flex-1 overflow-y-auto px-4 md:px-8 py-8 min-w-0">
           {showCreateEvent ? (
             /* New Create Event Screen from Figma design */
             <CreateEventScreen

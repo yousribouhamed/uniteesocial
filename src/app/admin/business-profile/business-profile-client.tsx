@@ -87,10 +87,10 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
   }, [refreshProfile]);
 
   return (
-    <div className="flex min-h-screen bg-background font-[family-name:'Instrument_Sans',sans-serif] text-foreground">
+    <div className="flex min-h-screen w-full max-w-full bg-background font-[family-name:'Instrument_Sans',sans-serif] text-foreground">
       <AdminSidebar currentUser={currentUser} />
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Navbar */}
         <header className="flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
           <nav className="flex items-center gap-0.5 text-sm">
@@ -107,7 +107,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
         </header>
 
         {/* Content */}
-        <main className="flex-1 px-4 md:px-8 py-6">
+        <main className="flex-1 px-4 md:px-8 py-6 min-w-0">
           <div className="flex flex-col gap-2">
             {/* Top Tabs - Tenant Setup, Social Links, Legal and T&C, Chapters */}
             <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">

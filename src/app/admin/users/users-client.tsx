@@ -1759,10 +1759,10 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
 
   return (
     <>
-      <div className="flex min-h-screen bg-background font-[family-name:'Instrument_Sans',sans-serif]">
+      <div className="flex min-h-screen w-full max-w-full bg-background font-[family-name:'Instrument_Sans',sans-serif]">
         <AdminSidebar currentUser={currentUser} />
 
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           {/* Navbar */}
           <header className="flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
             <nav className="flex items-center gap-0.5 text-sm">
@@ -1797,7 +1797,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
           </header>
 
           {/* Content */}
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto min-w-0">
             {editUser ? (
               <EditUserView
                 user={editUser}
