@@ -245,7 +245,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
     <div className={`bg-muted border border-border rounded-lg p-4 pb-2 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}>
       <div className="flex lg:flex-row flex-col gap-4 items-start">
         {/* Left: Event Preview Card */}
-        <div className="w-full lg:w-[493px] shrink-0 bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
+        <div className="hidden lg:flex w-full lg:w-[493px] shrink-0 bg-card border border-border rounded-lg p-3 flex-col gap-4 h-fit">
           {/* Cover Image */}
           <div
             className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
@@ -1438,6 +1438,121 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   </MenuItems>
                 </Portal>
               </Menu>
+            </div>
+          </div>
+
+          {/* Mobile: Event Preview Card (above CTA) */}
+          <div className="lg:hidden w-full bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
+            {/* Cover Image */}
+            <div
+              className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {coverImage ? (
+                <img
+                  src={coverImage}
+                  alt="Event cover"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted" />
+              )}
+              {/* Centered Camera Icon */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
+                <Camera className="w-6 h-6 text-white" />
+              </div>
+              {/* Hover overlay for changing image */}
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Camera className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+
+            {/* Event Info */}
+            <div className="flex flex-col gap-4">
+              {/* Title + Badges */}
+              <div className="flex flex-col gap-2">
+                <h3 className="text-lg font-semibold text-foreground leading-[18px]">
+                  {eventCategory === "match"
+                    ? (homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : t("Team A Vs Team B", "الفريق أ ضد الفريق ب", "Équipe A vs Équipe B"))
+                    : (eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement"))}
+                </h3>
+                <div className="flex items-center gap-2">
+                  {eventCategory === "match" ? (
+                    <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
+                      {matchLocationType === "virtual"
+                        ? t("Virtual", "افتراضي", "Virtuel")
+                        : t("Onsite", "حضوري", "Sur site")}
+                    </span>
+                  ) : (
+                    <>
+                      <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
+                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                        </svg>
+                        {chapter}
+                      </span>
+                      <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
+                        {locationType === "virtual"
+                          ? t("Online", "عبر الإنترنت", "En ligne")
+                          : t("Onsite", "حضوري", "Sur site")}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Date & Venue Row */}
+              <div className="flex items-start gap-8 flex-wrap">
+                {/* Date Section */}
+                <div className="flex items-center gap-2">
+                  {/* Date Box */}
+                  <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
+                    <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
+                      <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
+                        {startDate ? (() => {
+                          const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
+                          return months[startDate.month - 1];
+                        })() : "OCT."}
+                      </span>
+                    </div>
+                    <div className="flex-1 flex items-center justify-center">
+                      <span className="text-base font-medium text-muted-foreground leading-none">{startDate?.day || "25"}</span>
+                    </div>
+                  </div>
+                  {/* Date Text */}
+                  <div className="flex flex-col gap-px">
+                    <span className="text-base font-medium text-foreground leading-[24px]">
+                      {formatDateForDisplay(startDate)}
+                    </span>
+                    <span className="text-sm font-normal text-muted-foreground leading-[21px]">
+                      {startTime} - {endTime} UTC+4
+                    </span>
+                  </div>
+                </div>
+
+                {/* Venue Section */}
+                <div className="flex items-center gap-2">
+                  {/* Location Icon Box */}
+                  <div className="w-10 h-10 border border-border rounded-lg flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-base font-medium text-foreground leading-[24px]">
+                      {locationInput ? locationInput.split(",")[0] : t("Venue", "الموقع", "Lieu")}
+                    </span>
+                    <span className="text-sm font-normal text-muted-foreground leading-[21px]">
+                      {locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || t("Dubai, Dubai", "دبي، دبي", "Dubai, Dubai") : t("Dubai, Dubai", "دبي، دبي", "Dubai, Dubai")}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
