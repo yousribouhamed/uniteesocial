@@ -2693,8 +2693,8 @@ function ChaptersContent() {
           </div>
 
           {/* Table */}
-          <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0">
-            <table className="w-full table-fixed">
+          <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 hide-scrollbar">
+            <table className="w-full min-w-[720px] table-auto">
               <colgroup>
                 <col className="w-[14%]" />
                 <col className="w-[14%]" />
