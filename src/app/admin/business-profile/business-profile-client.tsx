@@ -1690,17 +1690,19 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
           label="Explore Members"
           description="Allow members to explore other members"
           action={
-            <div className="flex items-center gap-4">
-              <RadioOption
-                selected={modules.exploreMembersScope === "all"}
-                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "all" }))}
-                label="All"
-              />
-              <RadioOption
-                selected={modules.exploreMembersScope === "city"}
-                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "city" }))}
-                label="City Only"
-              />
+            <div className="flex items-start gap-4">
+              <div className="flex flex-col gap-2">
+                <RadioOption
+                  selected={modules.exploreMembersScope === "all"}
+                  onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "all" }))}
+                  label="All"
+                />
+                <RadioOption
+                  selected={modules.exploreMembersScope === "city"}
+                  onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreMembersScope: "city" }))}
+                  label="City Only"
+                />
+              </div>
               <div className="h-6 w-px bg-muted mx-2" />
               <AriaSwitch isSelected={modules.exploreMembers} onChange={isEditing ? updateModule("exploreMembers") : undefined} isDisabled={!isEditing} />
             </div>
@@ -1711,17 +1713,19 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
           label="Explore Company"
           description="Allow members to explore companies"
           action={
-            <div className="flex items-center gap-4">
-              <RadioOption
-                selected={modules.exploreCompanyScope === "all"}
-                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "all" }))}
-                label="All"
-              />
-              <RadioOption
-                selected={modules.exploreCompanyScope === "city"}
-                onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "city" }))}
-                label="City Only"
-              />
+            <div className="flex items-start gap-4">
+              <div className="flex flex-col gap-2">
+                <RadioOption
+                  selected={modules.exploreCompanyScope === "all"}
+                  onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "all" }))}
+                  label="All"
+                />
+                <RadioOption
+                  selected={modules.exploreCompanyScope === "city"}
+                  onClick={() => isEditing && setModules((prev) => ({ ...prev, exploreCompanyScope: "city" }))}
+                  label="City Only"
+                />
+              </div>
               <div className="h-6 w-px bg-muted mx-2" />
               <AriaSwitch isSelected={modules.exploreCompany} onChange={isEditing ? updateModule("exploreCompany") : undefined} isDisabled={!isEditing} />
             </div>
