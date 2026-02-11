@@ -1775,7 +1775,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`flex-1 bg-card border border-border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 -mr-px ${mobileTopValue ? "relative" : ""} ${isFirst ? "rounded-l-lg sm:rounded-l-lg" : ""
+      className={`flex-1 bg-card border border-border p-4 -mr-px ${mobileTopValue ? "relative" : ""} ${isFirst ? "rounded-l-lg sm:rounded-l-lg" : ""
         } ${isLast ? "rounded-r-lg sm:rounded-r-lg" : ""}`}
     >
       {mobileTopValue && (
@@ -1783,37 +1783,49 @@ function StatCard({
           {value}
         </span>
       )}
-      <div className="flex items-center gap-2">
-        <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
-          {icon}
-        </div>
-        {mobileTitle ? (
-          <>
-            <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px] sm:hidden">
+      <div className="flex flex-col gap-2 sm:hidden">
+        <div className="flex items-center gap-2">
+          <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
+            {icon}
+          </div>
+          {mobileTitle ? (
+            <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
               {mobileTitle}
             </span>
-            <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px] hidden sm:inline">
+          ) : (
+            <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
               {title}
             </span>
-          </>
-        ) : (
+          )}
+        </div>
+        <span className="text-xs text-muted-foreground leading-[18px]">
+          {subtitle}
+        </span>
+        <div className="flex items-center justify-between">
+          <span
+            className={`text-base font-semibold text-foreground leading-[18px] ${mobileTopValue ? "hidden" : ""}`}
+          >
+            {value}
+          </span>
+        </div>
+      </div>
+      <div className="hidden sm:flex sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
+          <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
+            {icon}
+          </div>
           <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             {title}
           </span>
-        )}
-      </div>
-      <span className="text-xs text-muted-foreground leading-[18px] sm:hidden">
-        {subtitle}
-      </span>
-      <div className="flex items-center justify-between">
-        <span
-          className={`text-base font-semibold text-foreground leading-[18px] ${mobileTopValue ? "hidden sm:inline" : ""}`}
-        >
-          {value}
-        </span>
-        <span className="text-xs text-muted-foreground leading-[18px] hidden sm:inline">
-          {subtitle}
-        </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-base font-semibold text-foreground leading-[18px]">
+            {value}
+          </span>
+          <span className="text-xs text-muted-foreground leading-[18px]">
+            {subtitle}
+          </span>
+        </div>
       </div>
     </div>
   );
