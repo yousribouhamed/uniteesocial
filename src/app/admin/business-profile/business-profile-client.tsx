@@ -1771,8 +1771,8 @@ function StatCard({
 }) {
   return (
     <div
-      className={`flex-1 bg-card border border-border p-4 flex items-center justify-between -mr-px ${isFirst ? "rounded-l-lg" : ""
-        } ${isLast ? "rounded-r-lg" : ""}`}
+      className={`flex-1 bg-card border border-border p-4 flex items-center justify-between -mr-px ${isFirst ? "rounded-l-lg sm:rounded-l-lg" : ""
+        } ${isLast ? "rounded-r-lg sm:rounded-r-lg" : ""}`}
     >
       <div className="flex items-center gap-2">
         <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
@@ -2632,7 +2632,7 @@ function ChaptersContent() {
         </div>
 
         {/* Stat Cards Row */}
-        <div className="flex">
+        <div className="grid grid-cols-2 sm:grid-cols-4">
           <StatCard
             icon={<Tags className="w-4 h-4 text-muted-foreground" />}
             title="Total Chapters"
@@ -2678,7 +2678,7 @@ function ChaptersContent() {
           </div>
 
           {/* Search Input */}
-          <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-[373px]">
+          <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-full sm:w-[373px]">
             <Search className="w-4 h-4 text-muted-foreground shrink-0" />
             <input
               type="text"
