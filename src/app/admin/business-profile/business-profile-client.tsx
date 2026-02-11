@@ -1759,14 +1759,16 @@ function StatCard({
   title,
   subtitle,
   value,
+  mobileTitle,
   mobileTopValue,
   isFirst,
   isLast,
 }: {
   icon: React.ReactNode;
-  title: React.ReactNode;
+  title: string;
   subtitle: string;
   value: string | number;
+  mobileTitle?: React.ReactNode;
   mobileTopValue?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
@@ -1785,9 +1787,20 @@ function StatCard({
         <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
           {icon}
         </div>
-        <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
-          {title}
-        </span>
+        {mobileTitle ? (
+          <>
+            <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px] sm:hidden">
+              {mobileTitle}
+            </span>
+            <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px] hidden sm:inline">
+              {title}
+            </span>
+          </>
+        ) : (
+          <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
+            {title}
+          </span>
+        )}
       </div>
       <span className="text-xs text-muted-foreground leading-[18px] sm:hidden">
         {subtitle}
@@ -2647,10 +2660,12 @@ function ChaptersContent() {
         <div className="grid grid-cols-2 sm:grid-cols-4">
           <StatCard
             icon={<Tags className="w-4 h-4 text-muted-foreground" />}
-            title={
+            title="Total Chapters"
+            mobileTitle={
               <>
                 Total
-                <span className="block sm:inline sm:ml-1">Chapters</span>
+                <br />
+                Chapters
               </>
             }
             subtitle="All chapters in organization"
@@ -2661,20 +2676,44 @@ function ChaptersContent() {
           <StatCard
             icon={<Tag className="w-4 h-4 text-muted-foreground" />}
             title="Active Chapters"
+            mobileTitle={
+              <>
+                Active
+                <br />
+                Chapters
+              </>
+            }
             subtitle="Currently operational"
             value={3}
+            mobileTopValue
           />
           <StatCard
             icon={<Eye className="w-4 h-4 text-muted-foreground" />}
             title="Visible in App"
+            mobileTitle={
+              <>
+                Visible
+                <br />
+                in App
+              </>
+            }
             subtitle="Shown to mobile users"
             value={2}
+            mobileTopValue
           />
           <StatCard
             icon={<Link2 className="w-4 h-4 text-muted-foreground" />}
             title="Linked Events"
+            mobileTitle={
+              <>
+                Linked
+                <br />
+                Events
+              </>
+            }
             subtitle="Total events across chapters"
             value={20}
+            mobileTopValue
             isLast
           />
         </div>
