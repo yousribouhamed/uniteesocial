@@ -17,20 +17,62 @@ import {
     DateValue
 } from "react-aria-components";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface AriaDatePickerProps<T extends DateValue> extends DatePickerProps<T> {
     label?: string;
+    className?: string;
+    groupClassName?: string;
+    inputClassName?: string;
+    buttonClassName?: string;
+    showButton?: boolean;
+    openOnFieldClick?: boolean;
 }
 
 export function AriaDatePicker<T extends DateValue>({
     label,
+    className,
+    groupClassName,
+    inputClassName,
+    buttonClassName,
+    showButton = true,
+    openOnFieldClick = true,
+    isOpen,
+    onOpenChange,
     ...props
 }: AriaDatePickerProps<T>) {
+    const [internalOpen, setInternalOpen] = useState(false);
+    const controlledOpen = isOpen !== undefined;
+    const resolvedOpen = controlledOpen ? isOpen : internalOpen;
+
+    const handleOpenChange = (open: boolean) => {
+        if (!controlledOpen) {
+            setInternalOpen(open);
+        }
+        onOpenChange?.(open);
+    };
+
     return (
-        <DatePicker {...props} className="group flex flex-col gap-1 w-full">
+        <DatePicker
+            {...props}
+            isOpen={resolvedOpen}
+            onOpenChange={handleOpenChange}
+            className={cn("group flex flex-col gap-1 w-full", className)}
+        >
             {label && <Label className="text-sm font-semibold text-muted-foreground">{label}</Label>}
-            <Group className="flex items-center w-full bg-card border border-border rounded-lg transition-colors focus-within:border-[#3f52ff] dark:focus-within:border-[#8faeff] h-9 px-3">
-                <DateInput className="flex-1 flex bg-transparent outline-none text-sm text-foreground p-0">
+            <Group
+                onClick={() => {
+                    if (openOnFieldClick) {
+                        handleOpenChange(true);
+                    }
+                }}
+                className={cn(
+                    "flex items-center w-full bg-card border border-border rounded-lg transition-colors focus-within:border-[#3f52ff] dark:focus-within:border-[#8faeff] h-9 px-3",
+                    groupClassName
+                )}
+            >
+                <DateInput className={cn("flex-1 flex bg-transparent outline-none text-sm text-foreground p-0", inputClassName)}>
                     {(segment) => (
                         <DateSegment
                             segment={segment}
@@ -38,7 +80,13 @@ export function AriaDatePicker<T extends DateValue>({
                         />
                     )}
                 </DateInput>
-                <Button className="outline-none text-muted-foreground group-focus-within:text-[#3f52ff] dark:text-white dark:group-focus-within:text-white">
+                <Button
+                    className={cn(
+                        "outline-none text-muted-foreground group-focus-within:text-[#3f52ff] dark:text-white dark:group-focus-within:text-white",
+                        !showButton && "hidden",
+                        buttonClassName
+                    )}
+                >
                     <CalendarIcon className="w-4 h-4 cursor-pointer" />
                 </Button>
             </Group>

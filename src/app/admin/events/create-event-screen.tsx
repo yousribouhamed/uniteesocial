@@ -614,8 +614,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       </span>
                     </div>
                     <div className="flex gap-[2px] items-center">
-                      <div className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg flex items-center justify-center">
-                        <span className="text-base font-normal text-foreground">{formatDateForDisplay(startDate)}</span>
+                      <div className="w-[136px]">
+                        <AriaDatePicker
+                          value={startDate}
+                          onChange={setStartDate}
+                          groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
+                          inputClassName="text-base font-normal text-foreground justify-center"
+                          showButton={false}
+                        />
                       </div>
                       <input
                         type="text"
@@ -640,8 +646,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       </span>
                     </div>
                     <div className="flex gap-[2px] items-center">
-                      <div className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg flex items-center justify-center">
-                        <span className="text-base font-normal text-foreground">{formatDateForDisplay(endDate)}</span>
+                      <div className="w-[136px]">
+                        <AriaDatePicker
+                          value={endDate}
+                          onChange={setEndDate}
+                          groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
+                          inputClassName="text-base font-normal text-foreground justify-center"
+                          showButton={false}
+                        />
                       </div>
                       <input
                         type="text"
@@ -1032,7 +1044,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 type="text"
                 value={eventTitle}
                 onChange={(e) => setEventTitle(e.target.value)}
-                className={`text-[40px] font-bold text-[#8faeff] leading-[46px] bg-transparent outline-none w-full placeholder:text-[#8faeff] ${isArabic ? "text-right" : ""}`}
+                className={`text-[40px] font-bold text-[#3f52ff] dark:text-white leading-[46px] bg-transparent outline-none w-full placeholder:text-[#3f52ff] dark:placeholder:text-white/70 ${isArabic ? "text-right" : ""}`}
                 placeholder={t("Event name", "اسم الحدث", "Nom de l'événement")}
               />
 
@@ -1052,8 +1064,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     </span>
                   </div>
                   <div className="flex gap-[2px] items-center">
-                    <div className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg flex items-center justify-center">
-                      <span className="text-base font-normal text-foreground">{formatDateForDisplay(startDate)}</span>
+                    <div className="w-[136px]">
+                      <AriaDatePicker
+                        value={startDate}
+                        onChange={setStartDate}
+                        groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
+                        inputClassName="text-base font-normal text-foreground justify-center"
+                        showButton={false}
+                      />
                     </div>
                     <input
                       type="text"
@@ -1078,8 +1096,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     </span>
                   </div>
                   <div className="flex gap-[2px] items-center">
-                    <div className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg flex items-center justify-center">
-                      <span className="text-base font-normal text-foreground">{formatDateForDisplay(endDate)}</span>
+                    <div className="w-[136px]">
+                      <AriaDatePicker
+                        value={endDate}
+                        onChange={setEndDate}
+                        groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
+                        inputClassName="text-base font-normal text-foreground justify-center"
+                        showButton={false}
+                      />
                     </div>
                     <input
                       type="text"
