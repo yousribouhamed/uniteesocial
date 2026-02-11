@@ -2481,8 +2481,31 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
               {/* Tabs + Filters Bar */}
               <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                {/* Left: Event tabs */}
-                <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">
+                {/* Mobile: tabs dropdown + CTA */}
+                <div className="md:hidden flex items-center justify-between gap-2 w-full">
+                  <div className="flex-1 min-w-0">
+                    <AriaSelect
+                      aria-label="Select Events Tab"
+                      selectedKey={activeTab}
+                      onSelectionChange={(k) => setActiveTab(k as any)}
+                    >
+                      <AriaSelectItem id="all" textValue="All events">All events</AriaSelectItem>
+                      <AriaSelectItem id="current" textValue="Current Event">Current Event</AriaSelectItem>
+                      <AriaSelectItem id="past" textValue="Past Events">Past Events</AriaSelectItem>
+                    </AriaSelect>
+                  </div>
+                  {hasEvents && (
+                    <button
+                      onClick={handleCreateEvent}
+                      className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-normal rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors shrink-0"
+                    >
+                      + Create Event
+                    </button>
+                  )}
+                </div>
+
+                {/* Desktop: Event tabs */}
+                <div className="hidden md:inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">
                   {(["all", "current", "past"] as const).map((tab) => (
                     <button
                       key={tab}
@@ -2564,7 +2587,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                     {/* + Create Event */}
                     <button
                       onClick={handleCreateEvent}
-                      className="flex items-center gap-1 h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-normal rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors"
+                      className="hidden md:flex items-center gap-1 h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-normal rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors"
                     >
                       + Create Event
                     </button>
