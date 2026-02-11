@@ -1771,25 +1771,28 @@ function StatCard({
 }) {
   return (
     <div
-      className={`flex-1 bg-card border border-border p-4 flex items-center justify-between -mr-px ${isFirst ? "rounded-l-lg sm:rounded-l-lg" : ""
+      className={`flex-1 bg-card border border-border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 -mr-px ${isFirst ? "rounded-l-lg sm:rounded-l-lg" : ""
         } ${isLast ? "rounded-r-lg sm:rounded-r-lg" : ""}`}
     >
       <div className="flex items-center gap-2">
         <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
           {icon}
         </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
-            {title}
-          </span>
-          <span className="text-xs text-muted-foreground leading-[18px]">
-            {subtitle}
-          </span>
-        </div>
+        <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
+          {title}
+        </span>
       </div>
-      <span className="text-base font-semibold text-foreground leading-[18px]">
-        {value}
+      <span className="text-xs text-muted-foreground leading-[18px] sm:hidden">
+        {subtitle}
       </span>
+      <div className="flex items-center justify-between">
+        <span className="text-base font-semibold text-foreground leading-[18px]">
+          {value}
+        </span>
+        <span className="text-xs text-muted-foreground leading-[18px] hidden sm:inline">
+          {subtitle}
+        </span>
+      </div>
     </div>
   );
 }
