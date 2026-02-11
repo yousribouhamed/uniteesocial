@@ -1089,7 +1089,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
   return (
     <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
       {/* Header with Edit Button */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Branding</span>
           <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
@@ -1099,7 +1099,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         {!isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors w-full sm:w-auto"
           >
             Edit
           </button>
@@ -1107,7 +1107,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       </div>
 
       {/* Logo Uploads - Kept static for now as requested only for the two specific bottom images */}
-      <div className="flex gap-8">
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-foreground">Splash Screen Logo</span>
           <div
@@ -1129,7 +1129,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       </div>
 
       {/* Color Row 1: Primary Color + Invert Colors */}
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ColorInput label="Primary Color" value={colors.primary} colorSwatch={colors.primary} onColorChange={isEditing ? updateColor("primary") : undefined} />
         <ColorInput label="Invert Colors" value={colors.invert} colorSwatch={colors.invert} onColorChange={isEditing ? updateColor("invert") : undefined} />
       </div>
@@ -1143,13 +1143,13 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       </div>
 
       {/* Color Row 2: Secondary Color + Text Color */}
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ColorInput label="Secondary Color" value={colors.secondary} colorSwatch={colors.secondary} onColorChange={isEditing ? updateColor("secondary") : undefined} />
         <ColorInput label="Text Color" value={colors.text} colorSwatch={colors.text} onColorChange={isEditing ? updateColor("text") : undefined} />
       </div>
 
       {/* Color Row 3: Header BG + Chat BG + Header Icon + Chat Send Button */}
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <ColorInput label="Header Background Colors" value={colors.headerBg} colorSwatch={colors.headerBg} onColorChange={isEditing ? updateColor("headerBg") : undefined} />
         <ColorInput label="Chat Background Screen Color" value={colors.chatBg} colorSwatch={colors.chatBg} onColorChange={isEditing ? updateColor("chatBg") : undefined} />
         <ColorInput label="Header Icon Color" value={colors.headerIcon} colorSwatch={colors.headerIcon} onColorChange={isEditing ? updateColor("headerIcon") : undefined} />
@@ -1157,7 +1157,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       </div>
 
       {/* Image Uploads - Replaced with ImageUploadArea */}
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ImageUploadArea
           label="Web Login Image"
           value={images.web_login_image}
@@ -1177,16 +1177,16 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
 
       {/* Save/Cancel Buttons - only shown when editing */}
       {isEditing && (
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
           <button
             onClick={handleCancel}
-            className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors"
+            className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors w-full sm:w-auto"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+            className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors w-full sm:w-auto"
           >
             Save changes
           </button>
