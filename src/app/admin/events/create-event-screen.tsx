@@ -1480,32 +1480,20 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               {/* Title + Badges */}
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-semibold text-foreground leading-[18px]">
-                {isMatchEvent
-                  ? (homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : t("Team A Vs Team B", "الفريق أ ضد الفريق ب", "Équipe A vs Équipe B"))
-                  : (eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement"))}
-              </h3>
-              <div className="flex items-center gap-2">
-                {isMatchEvent ? (
+                  {eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement")}
+                </h3>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
+                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                    </svg>
+                    {chapter}
+                  </span>
                   <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
-                    {matchLocationType === "virtual"
-                      ? t("Virtual", "افتراضي", "Virtuel")
+                    {locationType === "virtual"
+                      ? t("Online", "عبر الإنترنت", "En ligne")
                       : t("Onsite", "حضوري", "Sur site")}
-                    </span>
-                  ) : (
-                    <>
-                      <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
-                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
-                        </svg>
-                        {chapter}
-                      </span>
-                      <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
-                        {locationType === "virtual"
-                          ? t("Online", "عبر الإنترنت", "En ligne")
-                          : t("Onsite", "حضوري", "Sur site")}
-                      </span>
-                    </>
-                  )}
+                  </span>
                 </div>
               </div>
 
