@@ -110,7 +110,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
         <main className="flex-1 px-4 md:px-8 py-6 min-w-0">
           <div className="flex flex-col gap-2">
             {/* Top Tabs - Tenant Setup, Social Links, Legal and T&C, Chapters */}
-            <div className="flex items-center bg-muted rounded-lg p-1 relative self-start w-full overflow-x-auto whitespace-nowrap">
+            <div className="flex items-center bg-muted rounded-lg p-1 relative self-start w-full overflow-x-auto whitespace-nowrap hide-scrollbar">
               {topTabs.map((tab) => (
                 <button
                   key={tab}
