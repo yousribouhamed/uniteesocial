@@ -2425,7 +2425,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Navbar */}
-          <header className="flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
+          <header className="sticky top-0 z-30 flex items-center justify-between pl-16 pr-4 md:px-8 py-3 bg-card border-b border-border">
           <nav className="flex items-center gap-0.5 text-sm">
             <span className="text-muted-foreground font-medium px-1 py-0.5">
               <Calendar className="w-4 h-4 inline mr-1" />
