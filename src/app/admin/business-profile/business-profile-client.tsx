@@ -1246,7 +1246,7 @@ function ModuleItem({
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-foreground">{label}</span>
-          <span className="text-xs font-medium sm:font-semibold text-muted-foreground leading-[18px]">
+          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             {description}
           </span>
         </div>
@@ -1648,7 +1648,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">Modules</span>
-          <span className="text-xs font-medium sm:font-semibold text-muted-foreground leading-[18px]">
+          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
             Enable or disable features for your
             <br />
             platform
