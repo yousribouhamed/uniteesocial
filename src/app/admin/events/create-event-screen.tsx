@@ -240,6 +240,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       type: locationType === "virtual" ? "Online" : "Onsite",
     });
   };
+  const isMatchEvent = eventCategory === "match";
 
   return (
     <div className={`bg-muted border border-border rounded-lg p-4 pb-2 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}>
@@ -282,12 +283,12 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             {/* Title + Badges */}
             <div className="flex flex-col gap-2">
               <h3 className="text-lg font-semibold text-foreground leading-[18px]">
-                {eventCategory === "match"
+                {isMatchEvent
                   ? (homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : t("Team A Vs Team B", "الفريق أ ضد الفريق ب", "Équipe A vs Équipe B"))
                   : (eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement"))}
               </h3>
               <div className="flex items-center gap-2">
-                {eventCategory === "match" ? (
+                {isMatchEvent ? (
                   <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
                     {matchLocationType === "virtual"
                       ? t("Virtual", "افتراضي", "Virtuel")
@@ -1479,16 +1480,16 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               {/* Title + Badges */}
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-semibold text-foreground leading-[18px]">
-                  {eventCategory === "match"
-                    ? (homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : t("Team A Vs Team B", "الفريق أ ضد الفريق ب", "Équipe A vs Équipe B"))
-                    : (eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement"))}
-                </h3>
-                <div className="flex items-center gap-2">
-                  {eventCategory === "match" ? (
-                    <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
-                      {matchLocationType === "virtual"
-                        ? t("Virtual", "افتراضي", "Virtuel")
-                        : t("Onsite", "حضوري", "Sur site")}
+                {isMatchEvent
+                  ? (homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : t("Team A Vs Team B", "الفريق أ ضد الفريق ب", "Équipe A vs Équipe B"))
+                  : (eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement"))}
+              </h3>
+              <div className="flex items-center gap-2">
+                {isMatchEvent ? (
+                  <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
+                    {matchLocationType === "virtual"
+                      ? t("Virtual", "افتراضي", "Virtuel")
+                      : t("Onsite", "حضوري", "Sur site")}
                     </span>
                   ) : (
                     <>
