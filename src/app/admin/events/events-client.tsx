@@ -2402,9 +2402,9 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
               </div>
 
               {/* Stats Cards Row */}
-              <div className="flex items-stretch border border-border rounded-xl bg-card">
+              <div className="grid grid-cols-2 md:flex md:items-stretch border border-border rounded-xl bg-card overflow-hidden">
                 {/* Total Events */}
-                <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
+                <div className="col-span-2 md:col-span-1 flex-1 flex items-center justify-between p-4 border-b border-border md:border-b-0 md:border-r">
                   <div className="flex items-center gap-2">
                     <div className="bg-background border-[0.6px] border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                       <svg className="text-muted-foreground" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2429,7 +2429,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 </div>
 
                 {/* Match */}
-                <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
+                <div className="flex-1 flex items-center justify-between p-4 border-r border-border md:border-r">
                   <div className="flex items-center gap-2">
                     <div className="bg-background border-[0.6px] border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                       <svg className="text-muted-foreground" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2480,7 +2480,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
               </div>
 
               {/* Tabs + Filters Bar */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                 {/* Left: Event tabs */}
                 <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">
                   {(["all", "current", "past"] as const).map((tab) => (
@@ -2513,7 +2513,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
                 {/* Right: Filter dropdowns + Create Event */}
                 {hasEvents && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                     {/* Select Date */}
                     <div className="w-[160px]">
                       <AriaDatePicker value={filterDate} onChange={setFilterDate} aria-label="Select Date" />
