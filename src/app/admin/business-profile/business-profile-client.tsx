@@ -1246,7 +1246,7 @@ function ModuleItem({
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-foreground">{label}</span>
-          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
+          <span className="text-xs font-medium sm:font-semibold text-muted-foreground leading-[18px]">
             {description}
           </span>
         </div>
