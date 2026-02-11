@@ -1759,21 +1759,28 @@ function StatCard({
   title,
   subtitle,
   value,
+  mobileTopValue,
   isFirst,
   isLast,
 }: {
   icon: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   subtitle: string;
   value: string | number;
+  mobileTopValue?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
 }) {
   return (
     <div
-      className={`flex-1 bg-card border border-border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 -mr-px ${isFirst ? "rounded-l-lg sm:rounded-l-lg" : ""
+      className={`flex-1 bg-card border border-border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 -mr-px ${mobileTopValue ? "relative" : ""} ${isFirst ? "rounded-l-lg sm:rounded-l-lg" : ""
         } ${isLast ? "rounded-r-lg sm:rounded-r-lg" : ""}`}
     >
+      {mobileTopValue && (
+        <span className="text-base font-semibold text-foreground leading-[18px] absolute top-3 right-3 sm:hidden">
+          {value}
+        </span>
+      )}
       <div className="flex items-center gap-2">
         <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
           {icon}
@@ -1786,7 +1793,9 @@ function StatCard({
         {subtitle}
       </span>
       <div className="flex items-center justify-between">
-        <span className="text-base font-semibold text-foreground leading-[18px]">
+        <span
+          className={`text-base font-semibold text-foreground leading-[18px] ${mobileTopValue ? "hidden sm:inline" : ""}`}
+        >
           {value}
         </span>
         <span className="text-xs text-muted-foreground leading-[18px] hidden sm:inline">
@@ -2638,9 +2647,15 @@ function ChaptersContent() {
         <div className="grid grid-cols-2 sm:grid-cols-4">
           <StatCard
             icon={<Tags className="w-4 h-4 text-muted-foreground" />}
-            title="Total Chapters"
+            title={
+              <>
+                Total
+                <span className="block sm:inline sm:ml-1">Chapters</span>
+              </>
+            }
             subtitle="All chapters in organization"
             value={3}
+            mobileTopValue
             isFirst
           />
           <StatCard
