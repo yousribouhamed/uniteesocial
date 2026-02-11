@@ -1818,18 +1818,18 @@ function StatCard({
           <div className="bg-muted border border-border rounded-[5.4px] p-[7px] flex items-center justify-center">
             {icon}
           </div>
-          <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
-            {title}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
+              {title}
+            </span>
+            <span className="text-xs text-muted-foreground leading-[18px]">
+              {subtitle}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-base font-semibold text-foreground leading-[18px]">
-            {value}
-          </span>
-          <span className="text-xs text-muted-foreground leading-[18px]">
-            {subtitle}
-          </span>
-        </div>
+        <span className="text-base font-semibold text-foreground leading-[18px]">
+          {value}
+        </span>
       </div>
     </div>
   );
