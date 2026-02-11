@@ -110,7 +110,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
         <main className="flex-1 px-4 md:px-8 py-6 min-w-0">
           <div className="flex flex-col gap-2">
             {/* Top Tabs - Tenant Setup, Social Links, Legal and T&C, Chapters */}
-            <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">
+            <div className="flex items-center bg-muted rounded-lg p-1 relative self-start w-full overflow-x-auto whitespace-nowrap">
               {topTabs.map((tab) => (
                 <button
                   key={tab}
@@ -152,7 +152,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
                 {/* Inner Tabs - General Setting, Branding, Modules */}
                 <div className="flex flex-col gap-2">
-                  <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-max">
+                  <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-max overflow-x-auto whitespace-nowrap">
                     {innerTabs.map((tab) => (
                       <button
                         key={tab}
@@ -1362,7 +1362,7 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
   return (
     <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
-      <div className="flex items-center justify-between px-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             Social Links
@@ -1382,9 +1382,9 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
       </div>
 
       {/* White Card */}
-      <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
-        {/* Row 1: LinkedIn + X / Twitter */}
-        <div className="flex gap-4">
+        <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
+          {/* Row 1: LinkedIn + X / Twitter */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <SocialLinkInput
             label="LinkedIn"
             icon={<Linkedin className="w-4 h-4" />}
@@ -1402,7 +1402,7 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
         </div>
 
         {/* Row 2: Instagram + TikTok */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <SocialLinkInput
             label="Instagram"
             icon={<Instagram className="w-4 h-4" />}
@@ -1421,16 +1421,16 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
 
         {/* Save/Cancel Buttons - only shown when editing */}
         {isEditing && (
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
             <button
               onClick={handleCancel}
-              className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors"
+              className="h-8 px-4 bg-card border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/70 transition-colors w-full sm:w-auto"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors"
+              className="h-8 px-4 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors w-full sm:w-auto"
             >
               Save changes
             </button>
@@ -2076,7 +2076,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
       </div>
 
       {/* Tabs */}
-      <div className="inline-flex items-center bg-muted rounded-lg p-1 relative">
+      <div className="inline-flex items-center bg-muted rounded-lg p-1 relative overflow-x-auto whitespace-nowrap">
         {createChapterTabs.map((tab) => (
           <button
             key={tab}
