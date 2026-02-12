@@ -68,6 +68,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
   const router = useRouter();
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const desktopMenuRef = useRef<HTMLDivElement>(null);
@@ -108,7 +109,13 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
         {/* Search */}
         <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg">
           <Search className="w-4 h-4 text-muted-foreground" />
-          <span className="flex-1 text-sm text-muted-foreground">Search ...</span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search ..."
+            className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none border-none p-0 focus:ring-0"
+          />
           <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
         </div>
 
