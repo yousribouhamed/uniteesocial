@@ -593,12 +593,12 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {/* Tabs Row */}
       <div className="flex items-center justify-between">
         {/* Tabs */}
-        <div className="inline-flex items-center gap-1 bg-muted p-1 rounded-lg w-fit self-start">
+        <div className="grid grid-cols-4 md:inline-flex items-center gap-1 bg-muted p-1 rounded-lg w-full md:w-fit self-start">
           {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setDetailTab(tab)}
-              className={`relative h-9 px-4 py-2 rounded-lg text-sm md:text-base font-medium whitespace-nowrap transition-colors z-10 ${detailTab === tab
+              className={`relative h-9 w-full px-2 md:px-4 py-2 rounded-lg text-xs sm:text-sm md:text-base font-medium whitespace-nowrap transition-colors z-10 ${detailTab === tab
                 ? "text-[#3f52ff] dark:text-white"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
