@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, type ChangeEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { motion } from "framer-motion";
@@ -1956,6 +1956,7 @@ interface TeamMember {
   name: string;
   email: string;
   role: TeamRole;
+  avatarUrl?: string;
 }
 
 function TeamTabContent() {
@@ -1963,6 +1964,8 @@ function TeamTabContent() {
   const [email, setEmail] = useState("");
   const [selectedRole, setSelectedRole] = useState<TeamRole>("Member");
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [memberAvatarUrl, setMemberAvatarUrl] = useState("");
+  const memberAvatarInputRef = useRef<HTMLInputElement>(null);
   const [members, setMembers] = useState<TeamMember[]>([
     {
       id: "1",
@@ -1993,11 +1996,13 @@ function TeamTabContent() {
         name: fullName.trim(),
         email: email.trim(),
         role: selectedRole,
+        avatarUrl: memberAvatarUrl || "",
       },
     ]);
     setFullName("");
     setEmail("");
     setSelectedRole("Member");
+    setMemberAvatarUrl("");
   };
 
   const removeMember = (id: string) => {
@@ -2014,6 +2019,21 @@ function TeamTabContent() {
     Member: "bg-[#3f52ff] text-white",
     "Co-Lead": "bg-[#3f52ff] text-white",
     "Chapter Lead": "bg-[#3f52ff] text-white",
+  };
+
+  const handleMemberAvatarUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toastQueue.add({
+        title: "Invalid File",
+        description: "Please upload an image file.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+    const previewUrl = URL.createObjectURL(file);
+    setMemberAvatarUrl(previewUrl);
   };
 
   return (
@@ -2034,9 +2054,27 @@ function TeamTabContent() {
         <span className="text-sm font-semibold text-foreground">
           Team Member Headshot
         </span>
-        <div className="w-16 h-16 rounded-full border border-dashed border-border flex items-center justify-center cursor-pointer hover:border-muted-foreground/60 transition-colors">
-          <User className="w-4 h-4 text-muted-foreground opacity-60" />
-        </div>
+        <button
+          type="button"
+          onClick={() => memberAvatarInputRef.current?.click()}
+          className="w-16 h-16 rounded-full border border-dashed border-border flex items-center justify-center cursor-pointer hover:border-muted-foreground/60 transition-colors overflow-hidden bg-card"
+        >
+          {memberAvatarUrl ? (
+            <img src={memberAvatarUrl} alt="Member avatar" className="w-full h-full object-cover" />
+          ) : (
+            <User className="w-4 h-4 text-muted-foreground opacity-60" />
+          )}
+        </button>
+        <input
+          ref={memberAvatarInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleMemberAvatarUpload}
+        />
+      </div>
+      <div className="hidden md:flex">
+        <span className="text-xs text-muted-foreground">Upload an avatar for the member you are adding</span>
       </div>
 
       {/* Add Member Row */}
@@ -2141,8 +2179,12 @@ function TeamMemberCard({
   return (
     <div className="bg-card border border-border rounded-xl p-2 flex items-center justify-between gap-2 max-w-[564px]">
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        <div className="hidden md:flex bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 items-center justify-center">
-          <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-white dark:text-[#8faeff]" />
+        <div className="hidden md:flex bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 items-center justify-center w-10 h-10 overflow-hidden shrink-0">
+          {member.avatarUrl ? (
+            <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
+          ) : (
+            <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-white dark:text-[#8faeff]" />
+          )}
         </div>
         <div className="flex flex-col gap-1 min-w-0">
           <div className="flex items-center gap-1">
