@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Search,
   Users,
@@ -196,8 +197,15 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
           <MoreVertical className="w-5 h-5 text-foreground" />
         </div>
 
+        <AnimatePresence>
         {showLogoutMenu && (
-          <div className="absolute bottom-full left-0 right-0 mb-2 bg-popover text-popover-foreground border border-border rounded-xl shadow-lg pt-2 pb-4 px-2 flex flex-col gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="absolute bottom-full left-0 right-0 mb-2 bg-popover text-popover-foreground border border-border rounded-xl shadow-lg pt-2 pb-4 px-2 flex flex-col gap-4"
+          >
             {/* Menu Options */}
             <div className="flex flex-col gap-3">
               {/* Dark Mode */}
@@ -265,8 +273,9 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
             <div className="px-2">
               <span className="text-sm font-medium text-muted-foreground">v1.0 - Terms & Conditions</span>
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -274,30 +283,42 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
   return (
     <>
       {/* Mobile drawer */}
-      <div className={`lg:hidden fixed inset-0 z-40 ${mobileOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
-        <div
-          className={`absolute inset-0 bg-black/40 transition-opacity ${mobileOpen ? "opacity-100" : "opacity-0"}`}
-          onClick={() => setMobileOpen(false)}
-        />
-        <div
-          className={`absolute inset-y-0 left-0 w-[85%] max-w-[320px] bg-sidebar border-r border-sidebar-border p-4 text-sidebar-foreground transform transition-transform flex flex-col ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-semibold text-muted-foreground">Menu</span>
-            <button
-              type="button"
-              aria-label="Close sidebar"
-              className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"
+      <AnimatePresence>
+        {mobileOpen && (
+          <div className="lg:hidden fixed inset-0 z-40 pointer-events-auto">
+            <motion.div
+              className="absolute inset-0 bg-black/40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
               onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              className="absolute inset-y-0 left-0 w-[85%] max-w-[320px] bg-sidebar border-r border-sidebar-border p-4 text-sidebar-foreground flex flex-col"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 320, damping: 30 }}
             >
-              <X className="w-4 h-4 text-muted-foreground" />
-            </button>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold text-muted-foreground">Menu</span>
+                <button
+                  type="button"
+                  aria-label="Close sidebar"
+                  className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+              <div className="flex-1 min-h-0">
+                {renderSidebarBody(mobileMenuRef)}
+              </div>
+            </motion.div>
           </div>
-          <div className="flex-1 min-h-0">
-            {renderSidebarBody(mobileMenuRef)}
-          </div>
-        </div>
-      </div>
+        )}
+      </AnimatePresence>
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col justify-between lg:w-[325px] min-h-screen bg-sidebar border-r border-sidebar-border rounded-tr-xl rounded-br-xl p-4 text-sidebar-foreground">

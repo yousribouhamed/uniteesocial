@@ -1932,8 +1932,19 @@ function DeleteEventModal({
 }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-card border border-border rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 12, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="relative bg-card border border-border rounded-xl w-[420px] flex flex-col gap-4 shadow-xl"
+      >
         {/* Modal Header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-border">
           <div className="flex items-center gap-4">
@@ -1986,7 +1997,7 @@ function DeleteEventModal({
             )}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

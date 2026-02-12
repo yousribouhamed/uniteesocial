@@ -1592,7 +1592,17 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       {/* Create League Modal */}
       {showCreateLeagueModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]">
-          <div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowCreateLeagueModal(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
             className={`bg-card border border-border rounded-xl w-[493px] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
             dir={isArabic ? "rtl" : "ltr"}
           >
@@ -1727,7 +1737,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 {t("Create League", "إنشاء دوري", "Créer une ligue")}
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
