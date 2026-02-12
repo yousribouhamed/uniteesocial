@@ -1951,7 +1951,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                   </div>
 
                   {/* Table - Design System */}
-                  <div className="w-full overflow-x-auto hide-scrollbar">
+                  <div className="w-full px-4 pb-4 md:px-0 md:pb-0 overflow-x-auto hide-scrollbar">
                     <table className="w-full min-w-[720px] table-auto">
                       <colgroup>
                         <col className="w-12" />
