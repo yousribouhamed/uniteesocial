@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { X, Globe, Info } from "lucide-react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
+import { motion } from "framer-motion";
 
 interface CloneEventModalProps {
     isOpen: boolean;
@@ -27,14 +28,20 @@ export function CloneEventModal({ isOpen, onClose, onClone, eventTitle }: CloneE
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Backdrop */}
-            <div
+            <motion.div
                 className="absolute inset-0 bg-black/30"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
                 onClick={onClose}
             />
 
             {/* Modal */}
-            <div
+            <motion.div
                 className="relative bg-white border border-[#d5dde2] rounded-xl w-full max-w-[580px] flex flex-col gap-4 shadow-xl"
+                initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
                 data-name="Modal"
                 data-node-id="1818:15305"
             >
@@ -145,7 +152,7 @@ export function CloneEventModal({ isOpen, onClose, onClone, eventTitle }: CloneE
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }

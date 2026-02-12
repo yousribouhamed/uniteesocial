@@ -2461,11 +2461,19 @@ function ViewChapterPanel({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
         className="absolute inset-0 bg-black/40"
         onClick={onClose}
       />
-      <div className="relative bg-card rounded-3xl w-[562px] max-h-[90vh] overflow-y-auto shadow-xl flex flex-col gap-6 py-4">
+      <motion.div
+        initial={{ opacity: 0, y: 12, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="relative bg-card rounded-3xl w-[562px] max-h-[90vh] overflow-y-auto shadow-xl flex flex-col gap-6 py-4"
+      >
         {/* Top Navigation */}
         <div className="flex items-center justify-between px-4">
           <button
@@ -2663,7 +2671,7 @@ function ViewChapterPanel({
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -3026,11 +3034,19 @@ function ChaptersContent() {
       {/* Delete Chapter Confirmation Modal */}
       {deleteChapter && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
-          <div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             className="absolute inset-0 bg-black/40"
             onClick={() => setDeleteChapter(null)}
           />
-          <div className="relative bg-card border border-border rounded-xl w-[420px] flex flex-col gap-4 shadow-xl">
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="relative bg-card border border-border rounded-xl w-[420px] flex flex-col gap-4 shadow-xl"
+          >
             {/* Modal Header */}
             <div className="flex items-center justify-between px-4 pt-4 pb-4 border-b border-border">
               <div className="flex items-center gap-4">
@@ -3076,7 +3092,7 @@ function ChaptersContent() {
                 Delete Chapter
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </>
