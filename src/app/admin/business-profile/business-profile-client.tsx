@@ -2030,7 +2030,7 @@ function TeamTabContent() {
       </div>
 
       {/* Team Member Headshot */}
-      <div className="flex flex-col gap-2">
+      <div className="hidden md:flex flex-col gap-2">
         <span className="text-sm font-semibold text-foreground">
           Team Member Headshot
         </span>
@@ -2040,7 +2040,7 @@ function TeamTabContent() {
       </div>
 
       {/* Add Member Row */}
-      <div className="flex items-end gap-4">
+      <div className="flex flex-col md:flex-row md:items-end gap-4">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-foreground">
             Full Name
@@ -2050,10 +2050,10 @@ function TeamTabContent() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Enter full name"
-            className="h-9 w-[180px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+            className="h-9 w-full md:w-[180px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
           />
         </div>
-        <div className="flex items-end gap-4">
+        <div className="flex flex-col md:flex-row md:items-end gap-4">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-foreground">
               Email Address
@@ -2063,7 +2063,7 @@ function TeamTabContent() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email address"
-              className="h-9 w-[200px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+              className="h-9 w-full md:w-[200px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
             />
           </div>
           <div className="relative">
@@ -2099,7 +2099,7 @@ function TeamTabContent() {
         </div>
         <button
           onClick={addMember}
-          className="h-9 px-4 bg-foreground text-background text-sm font-medium rounded-lg hover:bg-foreground/90 transition-colors whitespace-nowrap"
+          className="h-9 px-4 bg-foreground text-background text-sm font-medium rounded-lg hover:bg-foreground/90 transition-colors whitespace-nowrap w-full md:w-auto"
         >
           + Add team member
         </button>
@@ -2141,7 +2141,7 @@ function TeamMemberCard({
   return (
     <div className="bg-card border border-border rounded-xl p-2 flex items-center justify-between max-w-[564px]">
       <div className="flex items-center gap-2">
-        <div className="bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 flex items-center justify-center">
+        <div className="hidden md:flex bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 items-center justify-center">
           <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-white dark:text-[#8faeff]" />
         </div>
         <div className="flex flex-col gap-1">
@@ -2262,7 +2262,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
         {/* Basic Info Tab */}
         {activeTab === "Basic Info" && (
           <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <div className="flex flex-col gap-2 flex-1">
                 <label className="text-sm font-semibold text-foreground">
                   Chapter Name *
@@ -2288,7 +2288,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                 />
               </div>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <div className="flex flex-col gap-2 flex-1">
                 <label className="text-sm font-semibold text-foreground">
                   City *
