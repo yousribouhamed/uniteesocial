@@ -69,6 +69,16 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
     }
 
     revalidatePath("/admin/events");
+
+    // 📡 Emit WebSocket event to mobile app
+    try {
+      await emitWebSocketEvent("event_created", data);
+      console.log("✅ WebSocket event emitted for event creation");
+    } catch (wsError) {
+      console.warn("⚠️ WebSocket event failed (non-critical):", wsError);
+      // Don't fail the request if WebSocket fails - mobile app will poll
+    }
+
     return { success: true, data };
   } catch (err: any) {
     console.error("Exception creating event:", err);
@@ -105,6 +115,16 @@ export async function updateEvent(id: string, eventData: Partial<EventData>) {
     }
 
     revalidatePath("/admin/events");
+
+    // 📡 Emit WebSocket event to mobile app
+    try {
+      await emitWebSocketEvent("event_updated", data);
+      console.log("✅ WebSocket event emitted for event update");
+    } catch (wsError) {
+      console.warn("⚠️ WebSocket event failed (non-critical):", wsError);
+      // Don't fail the request if WebSocket fails - mobile app will poll
+    }
+
     return { success: true, data };
   } catch (err: any) {
     console.error("Exception updating event:", err);
@@ -177,5 +197,30 @@ export async function uploadEventCoverImage(base64Data: string, fileName: string
   } catch (err: any) {
     console.error("Exception uploading event cover image:", err);
     return { success: false, error: err.message || "Failed to upload image" };
+  }
+}
+
+// 📡 Helper function to emit WebSocket events to connected mobile app clients
+async function emitWebSocketEvent(eventType: string, data: any) {
+  try {
+    // Send to connected WebSocket clients
+    // This uses Supabase Realtime to broadcast to all listening clients
+    const supabase = await createClient();
+
+    // Broadcast via Supabase Realtime
+    // The mobile app listens on this channel and receives updates instantly
+    const channel = supabase.channel("events-channel");
+    await channel.send({
+      type: "broadcast",
+      event: eventType,
+      payload: { type: eventType, data },
+    });
+
+    console.log(`📡 Broadcasted ${eventType} event to all connected clients`);
+    return { success: true };
+  } catch (error) {
+    console.error("Error emitting WebSocket event:", error);
+    // Don't throw - this is non-critical, mobile app will poll instead
+    return { success: false, error };
   }
 }

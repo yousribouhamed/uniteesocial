@@ -1023,11 +1023,11 @@ function ImageUploadArea({
             <span className="text-sm font-medium text-foreground">Uploading...</span>
           </div>
         ) : value ? (
-          <div className="relative w-full h-full min-h-[120px] flex items-center justify-center group">
+          <div className="relative w-full h-full min-h-[120px] group">
             <img
               src={value}
               alt={label}
-              className="max-h-[140px] w-auto object-contain rounded-md shadow-sm"
+              className="absolute inset-0 h-full w-full object-cover rounded-md"
             />
             {!disabled && (
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md">
@@ -1072,7 +1072,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
     // OR ideally update the parent to pass the full profile.
   });
 
-  // Local state for images, separate from colors since they might be stored separately
+  // Persisted image fields in business_profiles
   const [images, setImages] = useState({
     web_login_image: "",
     home_background_image: "",
@@ -1084,10 +1084,6 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
 
   useEffect(() => {
     if (initialData) {
-      // initialData is the full profile object
-      // colors is stored as JSON string or object in the database
-      // web_login_image and home_background_image are separate TEXT columns
-
       const { colors: colorsData, web_login_image, home_background_image } = initialData;
 
       // Parse colors if it's a JSON string, otherwise use as object
@@ -1097,7 +1093,6 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         setSavedColors((prev) => ({ ...prev, ...parsedColors }));
       }
 
-      // Set images from the profile
       setImages({
         web_login_image: web_login_image || "",
         home_background_image: home_background_image || ""
@@ -1112,8 +1107,6 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
 
   const handleSave = async () => {
     try {
-      // Structure the payload correctly for the database
-      // colors is stored as JSON, images are stored as separate TEXT columns
       const result = await updateBusinessProfile({
         colors: JSON.stringify(colors),
         web_login_image: images.web_login_image || null,
@@ -1180,26 +1173,20 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         )}
       </div>
 
-      {/* Logo Uploads - Kept static for now as requested only for the two specific bottom images */}
-      <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold text-foreground">Splash Screen Logo</span>
-          <div
-            aria-disabled={!isEditing}
-            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-border cursor-pointer hover:border-muted-foreground/60" : "border-border bg-muted pointer-events-none cursor-not-allowed"}`}
-          >
-            <User className="w-4 h-4 text-muted-foreground opacity-60" />
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold text-foreground">Home Screen logo</span>
-          <div
-            aria-disabled={!isEditing}
-            className={`w-16 h-16 rounded-full border border-dashed flex items-center justify-center transition-colors ${isEditing ? "border-border cursor-pointer hover:border-muted-foreground/60" : "border-border bg-muted pointer-events-none cursor-not-allowed"}`}
-          >
-            <User className="w-4 h-4 text-muted-foreground opacity-60" />
-          </div>
-        </div>
+      {/* Logo Uploads */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ImageUploadArea
+          label="Splash Screen Logo"
+          value={images.web_login_image}
+          onUpload={updateImage("web_login_image")}
+          disabled={!isEditing}
+        />
+        <ImageUploadArea
+          label="Home Screen Logo"
+          value={images.home_background_image}
+          onUpload={updateImage("home_background_image")}
+          disabled={!isEditing}
+        />
       </div>
 
       {/* Color Row 1: Primary Color + Invert Colors */}
@@ -1228,22 +1215,6 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         <ColorInput label="Chat Background Screen Color" value={colors.chatBg} colorSwatch={colors.chatBg} onColorChange={isEditing ? updateColor("chatBg") : undefined} />
         <ColorInput label="Header Icon Color" value={colors.headerIcon} colorSwatch={colors.headerIcon} onColorChange={isEditing ? updateColor("headerIcon") : undefined} />
         <ColorInput label="Chat Send Button Color" value={colors.chatSend} colorSwatch={colors.chatSend} onColorChange={isEditing ? updateColor("chatSend") : undefined} />
-      </div>
-
-      {/* Image Uploads - Replaced with ImageUploadArea */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ImageUploadArea
-          label="Web Login Image"
-          value={images.web_login_image}
-          onUpload={updateImage("web_login_image")}
-          disabled={!isEditing}
-        />
-        <ImageUploadArea
-          label="Home Background Image"
-          value={images.home_background_image}
-          onUpload={updateImage("home_background_image")}
-          disabled={!isEditing}
-        />
       </div>
 
       {/* Divider */}
