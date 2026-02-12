@@ -70,7 +70,8 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
   const [mobileOpen, setMobileOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -84,7 +85,10 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const insideDesktop = desktopMenuRef.current?.contains(target) ?? false;
+      const insideMobile = mobileMenuRef.current?.contains(target) ?? false;
+      if (!insideDesktop && !insideMobile) {
         setShowLogoutMenu(false);
       }
     }
@@ -92,7 +96,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showLogoutMenu]);
 
-  const SidebarBody = (
+  const renderSidebarBody = (menuRef: React.RefObject<HTMLDivElement | null>) => (
     <div className="flex h-full flex-col justify-between min-h-0">
       <div className="flex flex-col gap-8">
         {/* Logo */}
@@ -283,14 +287,14 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
             </button>
           </div>
           <div className="flex-1 min-h-0">
-            {SidebarBody}
+            {renderSidebarBody(mobileMenuRef)}
           </div>
         </div>
       </div>
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col justify-between lg:w-[325px] min-h-screen bg-sidebar border-r border-sidebar-border rounded-tr-xl rounded-br-xl p-4 text-sidebar-foreground">
-        {SidebarBody}
+        {renderSidebarBody(desktopMenuRef)}
       </aside>
     </>
   );
