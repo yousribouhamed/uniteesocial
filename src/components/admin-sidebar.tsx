@@ -87,7 +87,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
   }, [showLogoutMenu]);
 
   const SidebarBody = (
-    <>
+    <div className="flex h-full flex-col justify-between min-h-0">
       <div className="flex flex-col gap-8">
         {/* Logo */}
         <div className="flex items-center gap-2.5">
@@ -251,7 +251,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 
   return (
@@ -276,7 +276,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
           onClick={() => setMobileOpen(false)}
         />
         <div
-          className={`absolute inset-y-0 left-0 w-[85%] max-w-[320px] bg-sidebar border-r border-sidebar-border p-4 text-sidebar-foreground transform transition-transform ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+          className={`absolute inset-y-0 left-0 w-[85%] max-w-[320px] bg-sidebar border-r border-sidebar-border p-4 text-sidebar-foreground transform transition-transform flex flex-col ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-semibold text-muted-foreground">Menu</span>
@@ -289,7 +289,9 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
-          {SidebarBody}
+          <div className="flex-1 min-h-0">
+            {SidebarBody}
+          </div>
         </div>
       </div>
 

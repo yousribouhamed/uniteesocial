@@ -525,7 +525,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
     <div className="bg-muted border border-border rounded-lg p-3 pb-4 flex flex-col gap-4">
       {/* Header: Title + Badges + Check-In Guests */}
       <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-2">
+        <div className="hidden md:flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-foreground leading-[18px]">
             {eventTitle}
           </h2>
@@ -1025,7 +1025,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 <h3 className="text-lg font-semibold text-foreground">Guest List</h3>
                 <span className="text-sm text-muted-foreground">All registered guests for this event</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2">
                 <button
                   onClick={() => {
                     if (selectedGuests.size === 0) return;
@@ -1076,9 +1076,52 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             </div>
 
           {/* Search + Filter Row */}
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-[373px]">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+            <div className="md:hidden flex items-center justify-end gap-2">
+              <button
+                onClick={() => {
+                  if (selectedGuests.size === 0) return;
+                  const guestsToExport = guests.filter(g => selectedGuests.has(g.id));
+                  const csvContent = [
+                    ["ID", "Name", "Email", "Registration Time", "Ticket ID", "Status"],
+                    ...guestsToExport.map(g => [g.id, g.name, g.email, g.registrationTime, g.ticketId, g.status])
+                  ].map(e => e.join(",")).join("\n");
+
+                  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement("a");
+                  link.setAttribute("href", url);
+                  link.setAttribute("download", `guests_export_${new Date().toISOString()}.csv`);
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+
+                  toastQueue.add({
+                    title: "Export Successful",
+                    description: `Exported ${selectedGuests.size} guests to CSV.`,
+                    type: "success"
+                  });
+                }}
+                disabled={selectedGuests.size === 0}
+                className={`flex items-center gap-2 h-8 px-3 text-xs font-medium rounded-lg transition-colors ${selectedGuests.size > 0
+                  ? "bg-foreground text-background hover:bg-foreground/90"
+                  : "bg-muted text-muted-foreground cursor-not-allowed"
+                  }`}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M12.25 8.75V11.0833C12.25 11.3928 12.1271 11.6895 11.9083 11.9083C11.6895 12.1271 11.3928 12.25 11.0833 12.25H2.91667C2.60725 12.25 2.3105 12.1271 2.09171 11.9083C1.87292 11.6895 1.75 11.3928 1.75 11.0833V8.75" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4.66699 5.83301L7.00033 8.16634L9.33366 5.83301" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M7 8.16634V1.74967" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Export CSV
+              </button>
+              <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
+                Add User
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-full md:w-[373px]">
                 <Search className="w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
@@ -1089,6 +1132,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 />
                 <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
               </div>
+              <div className="hidden md:block">
               <Menu>
                 <MenuButton className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
                   <Filter className="w-4 h-4" />
@@ -1147,6 +1191,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   </MenuItems>
                 </Portal>
               </Menu>
+              </div>
             </div>
           </div>
 
