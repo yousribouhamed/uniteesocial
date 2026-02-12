@@ -1080,6 +1080,8 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
     get_started_logo: "",
     home_screen_logo: "",
     favicon: "",
+    get_started_background: "",
+    forgot_password_background: "",
   });
 
   const [savedColors, setSavedColors] = useState(colors);
@@ -1103,12 +1105,16 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         get_started_logo: parsedColors?.get_started_logo || "",
         home_screen_logo: home_background_image || parsedColors?.home_screen_logo || "",
         favicon: parsedColors?.favicon || "",
+        get_started_background: parsedColors?.get_started_background || "",
+        forgot_password_background: parsedColors?.forgot_password_background || "",
       });
       setSavedImages({
         splash_screen_logo: web_login_image || parsedColors?.splash_screen_logo || "",
         get_started_logo: parsedColors?.get_started_logo || "",
         home_screen_logo: home_background_image || parsedColors?.home_screen_logo || "",
         favicon: parsedColors?.favicon || "",
+        get_started_background: parsedColors?.get_started_background || "",
+        forgot_password_background: parsedColors?.forgot_password_background || "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1123,6 +1129,8 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
           get_started_logo: images.get_started_logo || "",
           home_screen_logo: images.home_screen_logo || "",
           favicon: images.favicon || "",
+          get_started_background: images.get_started_background || "",
+          forgot_password_background: images.forgot_password_background || "",
         }),
         web_login_image: images.splash_screen_logo || null,
         home_background_image: images.home_screen_logo || null
@@ -1217,6 +1225,18 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
           onUpload={updateImage("favicon")}
           disabled={!isEditing}
           square
+        />
+        <ImageUploadArea
+          label="Get Started Background"
+          value={images.get_started_background}
+          onUpload={updateImage("get_started_background")}
+          disabled={!isEditing}
+        />
+        <ImageUploadArea
+          label="Forget Password Background"
+          value={images.forgot_password_background}
+          onUpload={updateImage("forgot_password_background")}
+          disabled={!isEditing}
         />
       </div>
 

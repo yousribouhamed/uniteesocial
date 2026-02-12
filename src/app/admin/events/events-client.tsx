@@ -549,12 +549,12 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {/* Tabs Row */}
       <div className="flex items-center justify-between">
         {/* Tabs */}
-        <div className="inline-flex items-center gap-1 bg-muted p-1 rounded-lg w-fit self-start">
+        <div className="inline-flex items-center gap-0.5 md:gap-1 bg-muted p-1 rounded-lg w-fit self-start">
           {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setDetailTab(tab)}
-              className={`relative h-9 px-4 py-2 rounded-lg text-sm md:text-base font-medium whitespace-nowrap transition-colors z-10 ${detailTab === tab
+              className={`relative h-9 px-2.5 md:px-4 py-2 rounded-lg text-xs sm:text-sm md:text-base font-medium whitespace-nowrap transition-colors z-10 ${detailTab === tab
                 ? "text-[#3f52ff] dark:text-white"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -912,9 +912,9 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {detailTab === "guests" && (
         <div className="flex flex-col gap-4">
           {/* Stats Row - unified border container */}
-          <div className="flex items-stretch border border-border rounded-xl bg-card">
+          <div className="grid grid-cols-2 md:flex md:items-stretch border border-border rounded-xl bg-card overflow-hidden">
             {/* Registered Guests */}
-            <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
+            <div className="flex-1 flex items-center justify-between p-4 col-span-2 md:col-span-1 border-b border-border md:border-b-0 md:border-r">
               <div className="flex items-center gap-2">
                 <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                   <Users className="w-4 h-4 text-muted-foreground" />
@@ -942,7 +942,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             </div>
 
             {/* Checked Out */}
-            <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
+            <div className="flex-1 flex items-center justify-between p-4 border-b border-border md:border-b-0 md:border-r">
               <div className="flex items-center gap-2">
                 <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                   <LogOut className="w-4 h-4 text-muted-foreground" />
@@ -1625,9 +1625,9 @@ function AnalyticsView() {
   return (
     <div className="flex flex-col gap-4 animate-in fade-in duration-300">
       {/* Stats Row - matching Guests tab style with unified border container */}
-      <div className="flex items-stretch border border-border rounded-lg bg-card">
+      <div className="grid grid-cols-2 md:flex md:items-stretch border border-border rounded-lg bg-card overflow-hidden">
         {/* Total Registrations */}
-        <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
+        <div className="flex-1 flex items-center justify-between p-4 col-span-2 md:col-span-1 border-b border-border md:border-b-0 md:border-r">
           <div className="flex items-center gap-2">
             <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <Users className="w-4 h-4 text-muted-foreground" />
@@ -1653,7 +1653,7 @@ function AnalyticsView() {
           <span className="text-base font-semibold text-foreground leading-[18px]">0</span>
         </div>
         {/* Checked Out Users */}
-        <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
+        <div className="flex-1 flex items-center justify-between p-4 border-b border-border md:border-b-0 md:border-r">
           <div className="flex items-center gap-2">
             <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <LogOut className="w-4 h-4 text-muted-foreground" />

@@ -441,11 +441,13 @@ function PhoneNumberInput({
   onPhoneChange,
   country,
   onCountryChange,
+  compactMobileSelector = false,
 }: {
   phone: string;
   onPhoneChange: (value: string) => void;
   country: PhoneCountry;
   onCountryChange: (value: PhoneCountry) => void;
+  compactMobileSelector?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -477,7 +479,9 @@ function PhoneNumberInput({
           className="flex items-center gap-2 px-3 h-9 hover:bg-muted/70 transition-colors"
         >
           <span className="text-sm">{flagFor(country.iso2)}</span>
-          <span className="text-sm font-semibold text-foreground">+{country.dial}</span>
+          <span className={compactMobileSelector ? "hidden sm:inline text-sm font-semibold text-foreground" : "text-sm font-semibold text-foreground"}>
+            +{country.dial}
+          </span>
           <ChevronDown className="w-4 h-4 text-muted-foreground" />
         </button>
         {open && (
@@ -940,6 +944,7 @@ function EditUserView({
                 onPhoneChange={setPhone}
                 country={phoneCountry}
                 onCountryChange={setPhoneCountry}
+                compactMobileSelector
               />
             </div>
             <div className="flex-1 flex flex-col gap-2">
