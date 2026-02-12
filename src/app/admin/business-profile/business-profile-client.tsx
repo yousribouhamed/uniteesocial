@@ -587,13 +587,17 @@ function ColorInput({
   onColorChange?: (hex: string) => void;
 }) {
   const [showPicker, setShowPicker] = useState(false);
+  const isEditable = Boolean(onColorChange);
 
   return (
     <div className="flex flex-col gap-2 flex-1 relative">
       <span className="text-sm font-semibold text-foreground">{label}</span>
       <div
-        className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg cursor-pointer hover:border-muted-foreground/60 transition-colors"
-        onClick={() => setShowPicker(!showPicker)}
+        className={`flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg transition-colors ${isEditable ? "cursor-pointer hover:border-muted-foreground/60" : "cursor-default"}`}
+        onClick={() => {
+          if (!isEditable) return;
+          setShowPicker(!showPicker);
+        }}
       >
         <div
           className="w-5 h-5 rounded shrink-0"
@@ -608,7 +612,7 @@ function ColorInput({
           }}
         />
       </div>
-      {showPicker && (
+      {showPicker && isEditable && (
         <ColorPicker
           color={colorSwatch}
           onChange={(hex) => onColorChange?.(hex)}
