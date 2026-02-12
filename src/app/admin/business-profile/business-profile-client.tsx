@@ -911,12 +911,14 @@ function ImageUploadArea({
   onUpload,
   disabled = false,
   square = false,
+  small = false,
 }: {
   label: string;
   value?: string;
   onUpload: (url: string) => void;
   disabled?: boolean;
   square?: boolean;
+  small?: boolean;
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -1021,7 +1023,7 @@ function ImageUploadArea({
         onDrop={disabled ? undefined : handleDrop}
         onClick={disabled ? undefined : handleClick}
         aria-disabled={disabled}
-        className={`border border-dashed rounded-[14px] ${square ? "aspect-square min-h-0" : "min-h-[160px]"} flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-muted border-border cursor-not-allowed pointer-events-none" :
+        className={`border border-dashed rounded-[14px] ${small ? "w-16 h-16 min-h-0 p-2" : square ? "aspect-square min-h-0 px-4 py-5" : "min-h-[160px] px-4 py-5"} flex flex-col items-center justify-center relative overflow-hidden transition-colors ${disabled ? "bg-muted border-border cursor-not-allowed pointer-events-none" :
           isDragging
             ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff] cursor-copy"
             : "bg-card border-border cursor-pointer hover:border-muted-foreground/60"
@@ -1222,6 +1224,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
           onUpload={updateImage("splash_screen_logo")}
           disabled={!isEditing}
           square
+          small
         />
         <ImageUploadArea
           label="Get Started Logo"
@@ -1229,6 +1232,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
           onUpload={updateImage("get_started_logo")}
           disabled={!isEditing}
           square
+          small
         />
         <ImageUploadArea
           label="Home Screen Logo"
@@ -1236,6 +1240,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
           onUpload={updateImage("home_screen_logo")}
           disabled={!isEditing}
           square
+          small
         />
         <ImageUploadArea
           label="Favicon"
@@ -1243,6 +1248,7 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
           onUpload={updateImage("favicon")}
           disabled={!isEditing}
           square
+          small
         />
         <ImageUploadArea
           label="Get Started Background"
