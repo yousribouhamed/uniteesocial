@@ -1173,22 +1173,6 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         )}
       </div>
 
-      {/* Logo Uploads */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ImageUploadArea
-          label="Splash Screen Logo"
-          value={images.web_login_image}
-          onUpload={updateImage("web_login_image")}
-          disabled={!isEditing}
-        />
-        <ImageUploadArea
-          label="Home Screen Logo"
-          value={images.home_background_image}
-          onUpload={updateImage("home_background_image")}
-          disabled={!isEditing}
-        />
-      </div>
-
       {/* Color Row 1: Primary Color + Invert Colors */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ColorInput label="Primary Color" value={colors.primary} colorSwatch={colors.primary} onColorChange={isEditing ? updateColor("primary") : undefined} />
@@ -1215,6 +1199,22 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         <ColorInput label="Chat Background Screen Color" value={colors.chatBg} colorSwatch={colors.chatBg} onColorChange={isEditing ? updateColor("chatBg") : undefined} />
         <ColorInput label="Header Icon Color" value={colors.headerIcon} colorSwatch={colors.headerIcon} onColorChange={isEditing ? updateColor("headerIcon") : undefined} />
         <ColorInput label="Chat Send Button Color" value={colors.chatSend} colorSwatch={colors.chatSend} onColorChange={isEditing ? updateColor("chatSend") : undefined} />
+      </div>
+
+      {/* Logo Uploads */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ImageUploadArea
+          label="Splash Screen Logo"
+          value={images.web_login_image}
+          onUpload={updateImage("web_login_image")}
+          disabled={!isEditing}
+        />
+        <ImageUploadArea
+          label="Home Screen Logo"
+          value={images.home_background_image}
+          onUpload={updateImage("home_background_image")}
+          disabled={!isEditing}
+        />
       </div>
 
       {/* Divider */}
