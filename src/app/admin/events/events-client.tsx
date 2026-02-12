@@ -541,20 +541,64 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             </span>
           </div>
         </div>
-        <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
-          Check-In Guests
-        </button>
+        <div className="flex items-center gap-2">
+          <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
+            Check-In Guests
+          </button>
+          <div className="md:hidden">
+            <Menu>
+              <MenuButton className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center hover:bg-foreground/90 transition-colors focus:outline-none data-[open]:bg-foreground/90">
+                <MoreHorizontal className="w-5 h-5 text-white" />
+              </MenuButton>
+              <Portal>
+                <MenuItems
+                  anchor="bottom end"
+                  transition
+                  className="z-[100] mt-1.5 w-[180px] bg-card border border-border rounded-xl p-1 shadow-lg focus:outline-none transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                >
+                  <MenuItem>
+                    <button
+                      onClick={() => setShowCloneModal(true)}
+                      className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/70 transition-colors group focus:outline-none"
+                    >
+                      <Copy className="w-4 h-4 text-muted-foreground" />
+                      Clone Event
+                    </button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={() => setShowSlidoModal(true)}
+                      className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-blue-100 dark:bg-blue-950/40 hover:bg-blue-100 dark:bg-blue-950/40 transition-colors text-foreground focus:outline-none"
+                    >
+                      <Code className="w-4 h-4" />
+                      Add Slido Embed
+                    </button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={() => setShowCancelModal(true)}
+                      className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors group focus:outline-none"
+                    >
+                      <XCircle className="w-4 h-4 text-destructive" />
+                      Cancel Event
+                    </button>
+                  </MenuItem>
+                </MenuItems>
+              </Portal>
+            </Menu>
+          </div>
+        </div>
       </div>
 
       {/* Tabs Row */}
       <div className="flex items-center justify-between">
         {/* Tabs */}
-        <div className="inline-flex items-center gap-0.5 md:gap-1 bg-muted p-1 rounded-lg w-fit self-start">
+        <div className="inline-flex items-center gap-1 bg-muted p-1 rounded-lg w-fit self-start">
           {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setDetailTab(tab)}
-              className={`relative h-9 px-2.5 md:px-4 py-2 rounded-lg text-xs sm:text-sm md:text-base font-medium whitespace-nowrap transition-colors z-10 ${detailTab === tab
+              className={`relative h-9 px-4 py-2 rounded-lg text-sm md:text-base font-medium whitespace-nowrap transition-colors z-10 ${detailTab === tab
                 ? "text-[#3f52ff] dark:text-white"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -577,6 +621,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
         </div>
 
         {/* Top Right Action Button */}
+        <div className="hidden md:block">
         <Menu>
           <MenuButton className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center hover:bg-foreground/90 transition-colors focus:outline-none data-[open]:bg-foreground/90">
             <MoreHorizontal className="w-5 h-5 text-white" />
@@ -617,6 +662,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             </MenuItems>
           </Portal>
         </Menu>
+        </div>
       </div>
 
       {/* Tab Content */}
@@ -914,7 +960,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
           {/* Stats Row - unified border container */}
           <div className="grid grid-cols-2 md:flex md:items-stretch border border-border rounded-xl bg-card overflow-hidden">
             {/* Registered Guests */}
-            <div className="flex-1 flex items-center justify-between p-4 col-span-2 md:col-span-1 border-b border-border md:border-b-0 md:border-r">
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-border border-b md:border-b-0 md:border-r">
               <div className="flex items-center gap-2">
                 <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                   <Users className="w-4 h-4 text-muted-foreground" />
@@ -928,7 +974,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             </div>
 
             {/* Checked In */}
-            <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
+            <div className="flex-1 flex items-center justify-between p-4 border-b border-border md:border-b-0 md:border-r">
               <div className="flex items-center gap-2">
                 <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                   <LogIn className="w-4 h-4 text-muted-foreground" />
@@ -942,7 +988,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             </div>
 
             {/* Checked Out */}
-            <div className="flex-1 flex items-center justify-between p-4 border-b border-border md:border-b-0 md:border-r">
+            <div className="flex-1 flex items-center justify-between p-4 border-r border-border md:border-r">
               <div className="flex items-center gap-2">
                 <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                   <LogOut className="w-4 h-4 text-muted-foreground" />
@@ -1627,7 +1673,7 @@ function AnalyticsView() {
       {/* Stats Row - matching Guests tab style with unified border container */}
       <div className="grid grid-cols-2 md:flex md:items-stretch border border-border rounded-lg bg-card overflow-hidden">
         {/* Total Registrations */}
-        <div className="flex-1 flex items-center justify-between p-4 col-span-2 md:col-span-1 border-b border-border md:border-b-0 md:border-r">
+        <div className="flex-1 flex items-center justify-between p-4 border-r border-border border-b md:border-b-0 md:border-r">
           <div className="flex items-center gap-2">
             <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <Users className="w-4 h-4 text-muted-foreground" />
@@ -1640,7 +1686,7 @@ function AnalyticsView() {
           <span className="text-base font-semibold text-foreground leading-[18px]">342</span>
         </div>
         {/* Checked In Users */}
-        <div className="flex-1 flex items-center justify-between p-4 border-r border-border">
+        <div className="flex-1 flex items-center justify-between p-4 border-b border-border md:border-b-0 md:border-r">
           <div className="flex items-center gap-2">
             <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <LogIn className="w-4 h-4 text-muted-foreground" />
@@ -1653,7 +1699,7 @@ function AnalyticsView() {
           <span className="text-base font-semibold text-foreground leading-[18px]">0</span>
         </div>
         {/* Checked Out Users */}
-        <div className="flex-1 flex items-center justify-between p-4 border-b border-border md:border-b-0 md:border-r">
+        <div className="flex-1 flex items-center justify-between p-4 border-r border-border md:border-r">
           <div className="flex items-center gap-2">
             <div className="bg-background border border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
               <LogOut className="w-4 h-4 text-muted-foreground" />

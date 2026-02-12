@@ -479,7 +479,7 @@ function PhoneNumberInput({
           className="flex items-center gap-2 px-3 h-9 hover:bg-muted/70 transition-colors"
         >
           <span className="text-sm">{flagFor(country.iso2)}</span>
-          <span className={compactMobileSelector ? "hidden sm:inline text-sm font-semibold text-foreground" : "text-sm font-semibold text-foreground"}>
+          <span className={compactMobileSelector ? "hidden md:inline text-sm font-semibold text-foreground" : "text-sm font-semibold text-foreground"}>
             +{country.dial}
           </span>
           <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -1486,6 +1486,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
                 onPhoneChange={setPhone}
                 country={phoneCountry}
                 onCountryChange={setPhoneCountry}
+                compactMobileSelector
               />
             </div>
             <div className="flex-1 flex flex-col gap-2">
@@ -1526,7 +1527,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
           </div>
 
           {/* Row 4: Email + Password (with Re-generate) */}
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4">
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-sm font-semibold text-foreground">Email</label>
               <div className="flex items-center h-9 px-3 bg-card border border-border rounded-lg gap-2">

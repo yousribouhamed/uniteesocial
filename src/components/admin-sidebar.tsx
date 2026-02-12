@@ -289,17 +289,6 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
-          <div className="lg:hidden flex items-center justify-between h-9 px-2 py-1.5 rounded-lg bg-muted mb-4">
-            <div className="flex items-center gap-2 flex-1">
-              <Moon className="w-4 h-4 text-foreground" />
-              <span className="text-sm font-medium text-foreground">Dark Mode</span>
-            </div>
-            <AriaSwitch
-              isSelected={mounted && resolvedTheme === "dark"}
-              onChange={(selected) => setTheme(selected ? "dark" : "light")}
-              aria-label="Toggle dark mode"
-            />
-          </div>
           {SidebarBody}
         </div>
       </div>

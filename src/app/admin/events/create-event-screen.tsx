@@ -391,12 +391,12 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
           dir={isArabic ? "rtl" : "ltr"}
         >
           {/* Header Row: Event Type Tabs + Language Selector */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             {/* Event Type Tabs */}
-            <div className="flex items-center gap-1 bg-muted p-1 rounded-lg">
+            <div className="flex items-center gap-1 bg-muted p-1 rounded-lg w-full sm:w-auto overflow-x-auto hide-scrollbar">
               <button
                 onClick={() => setEventCategory("general")}
-                className={`relative h-9 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${eventCategory === "general"
+                className={`relative h-9 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${eventCategory === "general"
                     ? "text-[#3f52ff] dark:text-white"
                     : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -415,7 +415,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               </button>
               <button
                 onClick={() => setEventCategory("match")}
-                className={`relative h-9 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${eventCategory === "match"
+                className={`relative h-9 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${eventCategory === "match"
                     ? "text-[#3f52ff] dark:text-white"
                     : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -435,7 +435,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             </div>
 
             {/* Language Selector */}
-            <div className="w-[100px]">
+            <div className="w-full sm:w-[100px]">
               <AriaSelect
                 aria-label="Language"
                 selectedKey={language}
@@ -504,15 +504,15 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </div>
 
                 {/* Home Team & Away Team Row */}
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   {/* Home Team */}
-                  <div className="flex-1 bg-card rounded-lg px-3 py-2 flex items-center justify-between">
+                  <div className="flex-1 min-w-0 bg-card rounded-lg px-3 py-2 flex items-center justify-between">
                     <span className="text-base font-medium text-foreground">
                       {t("Home Team", "الفريق المضيف", "Équipe à domicile")}<span className="text-destructive">*</span>
                     </span>
                     <Menu as="div" className="relative">
-                      <MenuButton className="flex items-center gap-1">
-                        <span className="text-sm font-medium text-muted-foreground">
+                      <MenuButton className="flex items-center gap-1 max-w-[150px] sm:max-w-none">
+                        <span className="text-sm font-medium text-muted-foreground truncate">
                           {homeTeam || t("Select Team", "اختر الفريق", "Sélectionner une équipe")}
                         </span>
                         <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -552,13 +552,13 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   </div>
 
                   {/* Away Team */}
-                  <div className="flex-1 bg-card rounded-lg px-3 py-2 flex items-center justify-between">
+                  <div className="flex-1 min-w-0 bg-card rounded-lg px-3 py-2 flex items-center justify-between">
                     <span className="text-base font-medium text-foreground">
                       {t("Away Team", "الفريق الضيف", "Équipe à l'extérieur")}<span className="text-destructive">*</span>
                     </span>
                     <Menu as="div" className="relative">
-                      <MenuButton className="flex items-center gap-1">
-                        <span className="text-sm font-medium text-muted-foreground">
+                      <MenuButton className="flex items-center gap-1 max-w-[150px] sm:max-w-none">
+                        <span className="text-sm font-medium text-muted-foreground truncate">
                           {awayTeam || t("Select Team", "اختر الفريق", "Sélectionner une équipe")}
                         </span>
                         <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -600,11 +600,11 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               </div>
 
               {/* Date/Time Section */}
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 {/* Start/End Date-Time */}
                 <div className="flex-1 bg-card rounded-lg p-1 flex flex-col">
                   {/* Start Row */}
-                  <div className="flex items-center justify-between p-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-1 gap-2">
                     <div className="flex items-center gap-2">
                       <div className="w-5 flex flex-col items-center justify-center px-1">
                         <div className="w-[10px] h-[10px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full" />
@@ -613,8 +613,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         {t("Start", "البداية", "Début")}
                       </span>
                     </div>
-                    <div className="flex gap-[2px] items-center">
-                      <div className="w-[136px]">
+                    <div className="flex gap-[2px] items-center w-full sm:w-auto">
+                      <div className="w-full sm:w-[136px]">
                         <AriaDatePicker
                           value={startDate}
                           onChange={setStartDate}
@@ -627,7 +627,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         type="text"
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
-                        className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
+                        className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-full sm:w-[70px] text-center outline-none"
                       />
                     </div>
                   </div>
@@ -636,7 +636,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   <div className="ml-[13px] h-4 border-l-[1.5px] border-dashed border-[#3f52ff]" />
 
                   {/* End Row */}
-                  <div className="flex items-center justify-between p-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-1 gap-2">
                     <div className="flex items-center gap-2">
                       <div className="w-5 flex flex-col items-center justify-center px-1">
                         <div className="w-[10px] h-[10px] border border-[#3f52ff] rounded-full" />
@@ -645,8 +645,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         {t("End", "النهاية", "Fin")}
                       </span>
                     </div>
-                    <div className="flex gap-[2px] items-center">
-                      <div className="w-[136px]">
+                    <div className="flex gap-[2px] items-center w-full sm:w-auto">
+                      <div className="w-full sm:w-[136px]">
                         <AriaDatePicker
                           value={endDate}
                           onChange={setEndDate}
@@ -659,14 +659,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         type="text"
                         value={endTime}
                         onChange={(e) => setEndTime(e.target.value)}
-                        className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
+                        className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-full sm:w-[70px] text-center outline-none"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Timezone */}
-                <div className="bg-card rounded-lg w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                <div className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
                   <Globe className="w-4 h-4 text-foreground" />
                   <span className="text-sm font-medium text-foreground">GMT+01:00</span>
                   <span className="text-xs font-normal text-muted-foreground">Algiers</span>
@@ -678,7 +678,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
                   {t("Line-Up Announcement Settings", "إعدادات إعلان التشكيلة", "Paramètres d'annonce de composition")}
                 </span>
-                <div className="bg-card rounded-lg px-3 py-2 flex items-center gap-2">
+                <div className="bg-card rounded-lg px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
                   <button
                     onClick={() => setEnableLineUpAnnouncement(!enableLineUpAnnouncement)}
                     className={`w-4 h-4 border rounded shrink-0 flex items-center justify-center ${
@@ -699,7 +699,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
                   {/* Timing Dropdown - Only shown when enabled */}
                   {enableLineUpAnnouncement && (
-                    <Menu as="div" className="relative">
+                    <Menu as="div" className="relative self-end sm:self-auto">
                       <MenuButton className="flex items-center gap-1">
                         <span className="text-sm font-medium text-muted-foreground">
                           {translateLineupTime(lineUpAnnouncementTime)}
