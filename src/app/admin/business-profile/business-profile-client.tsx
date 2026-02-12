@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AriaSwitch } from "@/components/ui/aria-switch";
-import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { motion } from "framer-motion";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import {
@@ -617,6 +616,7 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
   });
   const [savedData, setSavedData] = useState(formData);
   const [isEditing, setIsEditing] = useState(false);
+  const [timezoneQuery, setTimezoneQuery] = useState("");
 
   useEffect(() => {
     if (initialData) {
@@ -666,6 +666,31 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
   const inputBaseClass = "h-9 px-3 text-sm text-foreground border rounded-lg outline-none transition-colors";
   const inputEditClass = `${inputBaseClass} border-border bg-card focus:border-[#3f52ff]`;
   const inputReadOnlyClass = `${inputBaseClass} border-border bg-muted`;
+  const timezoneGroups = useMemo(() => {
+    const groups: Record<string, string[]> = {
+      "Americas": [],
+      "Europe & Africa": [],
+      "Middle East & Central Asia": [],
+      "Asia Pacific": [],
+      "Global": [],
+    };
+    const query = timezoneQuery.trim().toLowerCase();
+    TIMEZONES.forEach((tz) => {
+      if (query && !tz.toLowerCase().includes(query)) return;
+      let continent = "Global";
+      if (/(Pago Pago|Honolulu|Anchorage|Los Angeles|Vancouver|Denver|Calgary|Chicago|Mexico City|New York|Toronto|Caracas|Halifax|Newfoundland|Sao Paulo|Buenos Aires)/i.test(tz)) {
+        continent = "Americas";
+      } else if (/(London|Lisbon|Casablanca|Paris|Berlin|Rome|Madrid|Cairo|Jerusalem|Johannesburg|Azores)/i.test(tz)) {
+        continent = "Europe & Africa";
+      } else if (/(Istanbul|Moscow|Nairobi|Riyadh|Tehran|Dubai|Baku|Tbilisi|Kabul|Karachi|Tashkent|Yekaterinburg)/i.test(tz)) {
+        continent = "Middle East & Central Asia";
+      } else if (/(New Delhi|Mumbai|Colombo|Kathmandu|Dhaka|Almaty|Omsk|Yangon|Bangkok|Jakarta|Hanoi|Singapore|Perth|Beijing|Hong Kong|Eucla|Tokyo|Seoul|Yakutsk|Adelaide|Darwin|Sydney|Brisbane|Vladivostok|Lord Howe Island|Noumea|Magadan|Solomon Is.|Auckland|Suva|Anadyr|Chatham Islands|Nukualofa|Kiritimati)/i.test(tz)) {
+        continent = "Asia Pacific";
+      }
+      groups[continent].push(tz);
+    });
+    return Object.entries(groups).filter(([, items]) => items.length > 0);
+  }, [timezoneQuery]);
 
   return (
     <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
@@ -740,18 +765,67 @@ function GeneralSettingContent({ initialData, refreshProfile }: { initialData?: 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-muted-foreground">Time Zone</label>
           {isEditing ? (
-            <AriaSelect
-              aria-label="Select Time Zone"
-              selectedKey={formData.timezone}
-              onSelectionChange={(k) => setFormData({ ...formData, timezone: k as string })}
-              className="w-full"
-            >
-              {TIMEZONES.map((tz) => (
-                <AriaSelectItem key={tz} id={tz} textValue={tz}>
-                  {tz}
-                </AriaSelectItem>
-              ))}
-            </AriaSelect>
+            <Menu as="div" className="relative w-full">
+              {({ open }) => (
+                <>
+                  <MenuButton className={`${inputEditClass} w-full flex items-center justify-between`}>
+                    <span className="truncate text-left">
+                      {formData.timezone || "Select Time Zone"}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+                  </MenuButton>
+                  <Portal>
+                    <MenuItems
+                      anchor="bottom start"
+                      transition
+                      className="z-[100] mt-1 max-h-[340px] w-[min(560px,calc(100vw-2rem))] overflow-auto rounded-xl border border-border bg-card p-2 shadow-lg transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                    >
+                      <div className="sticky top-0 z-10 bg-card pb-2">
+                        <div className="flex items-center gap-2 h-9 px-3 py-1 bg-muted border border-border rounded-lg">
+                          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <input
+                            type="text"
+                            value={timezoneQuery}
+                            onChange={(e) => setTimezoneQuery(e.target.value)}
+                            placeholder="Search time zones..."
+                            className="w-full bg-transparent text-sm text-foreground outline-none border-none p-0"
+                          />
+                        </div>
+                      </div>
+                      {timezoneGroups.length > 0 ? (
+                        timezoneGroups.map(([continent, items]) => (
+                          <div key={continent} className="py-1">
+                            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
+                              {continent}
+                            </div>
+                            <div className="flex flex-col">
+                              {items.map((tz) => (
+                                <MenuItem key={tz}>
+                                  <button
+                                    onClick={() => {
+                                      setFormData({ ...formData, timezone: tz });
+                                      setTimezoneQuery("");
+                                    }}
+                                    className={`w-full rounded-lg px-2 py-1.5 text-left text-sm transition-colors focus:outline-none ${formData.timezone === tz
+                                      ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                      : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                      }`}
+                                  >
+                                    {tz}
+                                  </button>
+                                </MenuItem>
+                              ))}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-2 py-2 text-sm text-muted-foreground">No matching time zones</div>
+                      )}
+                    </MenuItems>
+                  </Portal>
+                </>
+              )}
+            </Menu>
           ) : (
             <div className={inputReadOnlyClass + " flex items-center"}>
               {formData.timezone || <span className="text-muted-foreground">Not set</span>}
