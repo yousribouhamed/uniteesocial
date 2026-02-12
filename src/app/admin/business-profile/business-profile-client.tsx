@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo, type ChangeEvent } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, type ChangeEvent, type Dispatch, type SetStateAction } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { motion } from "framer-motion";
@@ -35,6 +35,7 @@ import {
   ChevronLeft,
   ChevronUp,
   ExternalLink,
+  Loader2,
   Calendar, // Added for ModuleItem
   Ticket, // Added for ModuleItem
   CalendarDays, // Added for ModuleItem
@@ -1959,33 +1960,20 @@ interface TeamMember {
   avatarUrl?: string;
 }
 
-function TeamTabContent() {
+function TeamTabContent({
+  members,
+  setMembers,
+}: {
+  members: TeamMember[];
+  setMembers: Dispatch<SetStateAction<TeamMember[]>>;
+}) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [selectedRole, setSelectedRole] = useState<TeamRole>("Member");
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [memberAvatarUrl, setMemberAvatarUrl] = useState("");
   const memberAvatarInputRef = useRef<HTMLInputElement>(null);
-  const [members, setMembers] = useState<TeamMember[]>([
-    {
-      id: "1",
-      name: "Danish",
-      email: "danish.rasmussen@example.com",
-      role: "Member",
-    },
-    {
-      id: "2",
-      name: "Hamid",
-      email: "hamid.zahed@example.com",
-      role: "Co-Lead",
-    },
-    {
-      id: "3",
-      name: "Yousri",
-      email: "yybouhamed@gmail.com",
-      role: "Chapter Lead",
-    },
-  ]);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const addMember = () => {
     if (!fullName.trim() || !email.trim()) return;
@@ -2021,7 +2009,7 @@ function TeamTabContent() {
     "Chapter Lead": "bg-[#3f52ff] text-white",
   };
 
-  const handleMemberAvatarUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleMemberAvatarUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
@@ -2032,8 +2020,28 @@ function TeamTabContent() {
       }, { timeout: 3000 });
       return;
     }
-    const previewUrl = URL.createObjectURL(file);
-    setMemberAvatarUrl(previewUrl);
+    try {
+      setIsUploadingAvatar(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      const result = await uploadBrandAsset(formData);
+      setMemberAvatarUrl(result.url);
+      toastQueue.add({
+        title: "Avatar Uploaded",
+        description: "Team member avatar uploaded successfully.",
+        variant: "success",
+      }, { timeout: 2500 });
+    } catch (error) {
+      console.error(error);
+      toastQueue.add({
+        title: "Upload Failed",
+        description: "Could not upload avatar. Please try again.",
+        variant: "error",
+      }, { timeout: 3000 });
+    } finally {
+      setIsUploadingAvatar(false);
+      e.target.value = "";
+    }
   };
 
   return (
@@ -2050,7 +2058,7 @@ function TeamTabContent() {
       </div>
 
       {/* Team Member Headshot */}
-      <div className="hidden md:flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <span className="text-sm font-semibold text-foreground">
           Team Member Headshot
         </span>
@@ -2061,6 +2069,8 @@ function TeamTabContent() {
         >
           {memberAvatarUrl ? (
             <img src={memberAvatarUrl} alt="Member avatar" className="w-full h-full object-cover" />
+          ) : isUploadingAvatar ? (
+            <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
           ) : (
             <User className="w-4 h-4 text-muted-foreground opacity-60" />
           )}
@@ -2073,7 +2083,7 @@ function TeamTabContent() {
           onChange={handleMemberAvatarUpload}
         />
       </div>
-      <div className="hidden md:flex">
+      <div className="flex">
         <span className="text-xs text-muted-foreground">Upload an avatar for the member you are adding</span>
       </div>
 
@@ -2179,7 +2189,7 @@ function TeamMemberCard({
   return (
     <div className="bg-card border border-border rounded-xl p-2 flex items-center justify-between gap-2 max-w-[564px]">
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        <div className="hidden md:flex bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 items-center justify-center w-10 h-10 overflow-hidden shrink-0">
+        <div className={`hidden md:flex border border-blue-300 dark:border-blue-700/60 rounded-[9px] items-center justify-center w-10 h-10 overflow-hidden shrink-0 ${member.avatarUrl ? "p-0 bg-transparent" : "p-3 bg-blue-100 dark:bg-blue-950/40"}`}>
           {member.avatarUrl ? (
             <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
           ) : (
@@ -2257,6 +2267,82 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
   const [chapterCode, setChapterCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
+    {
+      id: "1",
+      name: "Danish",
+      email: "danish.rasmussen@example.com",
+      role: "Member",
+    },
+    {
+      id: "2",
+      name: "Hamid",
+      email: "hamid.zahed@example.com",
+      role: "Co-Lead",
+    },
+    {
+      id: "3",
+      name: "Yousri",
+      email: "yybouhamed@gmail.com",
+      role: "Chapter Lead",
+    },
+  ]);
+
+  const handleCreateChapter = async () => {
+    if (!chapterName.trim()) {
+      toastQueue.add({
+        title: "Missing Chapter Name",
+        description: "Chapter Name is required.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
+    try {
+      setCreating(true);
+      const description = JSON.stringify({
+        chapterCode: chapterCode.trim(),
+        city: city.trim(),
+        country: country.trim(),
+        venueName: venueName.trim(),
+        fullAddress: fullAddress.trim(),
+        mapSearch: searchPlace.trim(),
+        teamMembers,
+      });
+
+      const response = await fetch("/api/chapters", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: chapterName.trim(),
+          description,
+          member_count: teamMembers.length,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || "Failed to create chapter.");
+      }
+
+      toastQueue.add({
+        title: "Chapter Created",
+        description: "Chapter and team details saved successfully.",
+        variant: "success",
+      }, { timeout: 3000 });
+      onDismiss();
+    } catch (error: any) {
+      console.error(error);
+      toastQueue.add({
+        title: "Create Failed",
+        description: error?.message || "Unable to create chapter.",
+        variant: "error",
+      }, { timeout: 3500 });
+    } finally {
+      setCreating(false);
+    }
+  };
 
   return (
     <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
@@ -2434,7 +2520,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
 
         {/* Team Tab */}
         {activeTab === "Team" && (
-          <TeamTabContent />
+          <TeamTabContent members={teamMembers} setMembers={setTeamMembers} />
         )}
 
         {/* Setting Tab */}
@@ -2452,8 +2538,12 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
           >
             Dismiss
           </button>
-          <button className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
-            Create Chapter
+          <button
+            onClick={handleCreateChapter}
+            disabled={creating}
+            className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {creating ? "Creating..." : "Create Chapter"}
           </button>
         </div>
       </div>
