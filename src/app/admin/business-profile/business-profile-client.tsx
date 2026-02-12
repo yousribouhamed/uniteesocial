@@ -2041,32 +2041,20 @@ function TeamTabContent() {
 
       {/* Add Member Row */}
       <div className="flex flex-col md:flex-row md:items-end gap-4">
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-foreground">
-            Full Name
-          </label>
-          <input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="Enter full name"
-            className="h-9 w-full md:w-[180px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
-          />
-        </div>
-        <div className="flex flex-col md:flex-row md:items-end gap-4">
-          <div className="flex flex-col gap-2">
+        <div className="flex items-end gap-3 w-full md:w-auto">
+          <div className="flex flex-col gap-2 flex-1 md:flex-none">
             <label className="text-sm font-semibold text-foreground">
-              Email Address
+              Full Name
             </label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email address"
-              className="h-9 w-full md:w-[200px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Enter full name"
+              className="h-9 w-full md:w-[180px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
             />
           </div>
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
               className="h-9 px-3 flex items-center gap-2 text-sm text-foreground border border-border rounded-lg hover:border-muted-foreground/60 transition-colors bg-card"
@@ -2096,6 +2084,18 @@ function TeamTabContent() {
               </div>
             )}
           </div>
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-auto">
+          <label className="text-sm font-semibold text-foreground">
+            Email Address
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter email address"
+            className="h-9 w-full md:w-[200px] px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+          />
         </div>
         <button
           onClick={addMember}
@@ -2139,12 +2139,12 @@ function TeamMemberCard({
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
-    <div className="bg-card border border-border rounded-xl p-2 flex items-center justify-between max-w-[564px]">
-      <div className="flex items-center gap-2">
+    <div className="bg-card border border-border rounded-xl p-2 flex items-center justify-between gap-2 max-w-[564px]">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
         <div className="hidden md:flex bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 items-center justify-center">
           <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-white dark:text-[#8faeff]" />
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-0">
           <div className="flex items-center gap-1">
             <span className="text-base font-semibold text-foreground leading-[18px]">
               {member.name}
@@ -2155,12 +2155,12 @@ function TeamMemberCard({
               {member.role}
             </span>
           </div>
-          <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
+          <span className="text-xs font-medium text-muted-foreground leading-[18px] truncate">
             {member.email}
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 shrink-0">
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
@@ -2320,9 +2320,9 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
         {/* Venue Tab */}
         {activeTab === "Venue" && (
           <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
+            <div className="flex flex-col lg:flex-row gap-4">
               {/* Left: Form Fields */}
-              <div className="flex flex-col gap-4 w-[373px] shrink-0">
+              <div className="flex flex-col gap-4 w-full lg:w-[373px] shrink-0">
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-semibold text-foreground">
                     Venue Name
