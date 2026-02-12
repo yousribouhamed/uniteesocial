@@ -34,40 +34,6 @@ export async function GET(
   }
 }
 
-// GET /api/chapters/:id/announcements — Get announcements for a chapter
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    const supabase = await createClient();
-    const { searchParams } = new URL(request.url);
-    const limit = searchParams.get("limit") || "20";
-    const offset = searchParams.get("offset") || "0";
-
-    // For chapter announcements, we'll filter by category or add a chapter_id field
-    const { data: announcements, error } = await supabase
-      .from("announcements")
-      .select("*")
-      .eq("category", id)
-      .order("created_at", { ascending: false })
-      .range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
-    return NextResponse.json({ success: true, data: announcements });
-  } catch (error) {
-    console.error("Fetch chapter announcements error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
-}
-
 // PUT /api/chapters/:id — Update a chapter
 export async function PUT(
   request: Request,
