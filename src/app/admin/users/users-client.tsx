@@ -1770,28 +1770,41 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
 
         <div className="flex-1 flex flex-col min-w-0">
           {/* Navbar */}
-          <header className="sticky top-0 z-30 flex items-center justify-between pl-16 pr-4 md:px-8 py-3 bg-card border-b border-border">
-            <nav className="flex items-center gap-0.5 text-sm">
-              <span className="text-muted-foreground font-medium px-1 py-0.5">
-                <CircleUserRound className="w-4 h-4 inline mr-1" />
-              </span>
-              {editUser || viewActivityUser ? (
-                <>
-                  <button
-                    onClick={() => { setEditUser(null); setViewActivityUser(null); }}
-                    className="text-muted-foreground font-medium px-1 py-0.5 hover:text-muted-foreground transition-colors"
-                  >
-                    Users Account Management
-                  </button>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-foreground font-medium px-1 py-0.5">
-                    {editUser ? "Edit" : "View Activity"}
-                  </span>
-                </>
-              ) : (
-                <span className="text-muted-foreground font-medium px-1 py-0.5">Users Account Management</span>
-              )}
-            </nav>
+          <header className="sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Open sidebar"
+                className="lg:hidden h-9 w-9 rounded-full bg-card border border-border flex items-center justify-center text-foreground"
+                onClick={() => window.dispatchEvent(new Event("open-admin-sidebar"))}
+              >
+                <div className="flex flex-col gap-1.5">
+                  <span className="block h-0.5 w-4 bg-foreground" />
+                  <span className="block h-0.5 w-4 bg-foreground" />
+                </div>
+              </button>
+              <nav className="hidden md:flex items-center gap-0.5 text-sm">
+                <span className="text-muted-foreground font-medium px-1 py-0.5">
+                  <CircleUserRound className="w-4 h-4 inline mr-1" />
+                </span>
+                {editUser || viewActivityUser ? (
+                  <>
+                    <button
+                      onClick={() => { setEditUser(null); setViewActivityUser(null); }}
+                      className="text-muted-foreground font-medium px-1 py-0.5 hover:text-muted-foreground transition-colors"
+                    >
+                      Users Account Management
+                    </button>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-foreground font-medium px-1 py-0.5">
+                      {editUser ? "Edit" : "View Activity"}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-muted-foreground font-medium px-1 py-0.5">Users Account Management</span>
+                )}
+              </nav>
+            </div>
             <div className="bg-muted rounded-full p-[7px] relative">
               <Bell className="w-[17px] h-[17px] text-foreground" />
               {(editUser || viewActivityUser) && (
