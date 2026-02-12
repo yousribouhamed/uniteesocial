@@ -1826,7 +1826,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                 </div>
 
                 {/* Stats cards */}
-                <div className="grid grid-cols-3 border border-border rounded-xl mb-6 bg-card">
+                <div className="grid grid-cols-2 md:flex md:items-stretch border border-border rounded-xl mb-6 bg-card overflow-hidden">
                   {[
                     { label: "Total Users", sub: "All registered users", value: totalUsers, color: "text-[#3f52ff] dark:text-white", Icon: Users },
                     { label: "Active Users", sub: totalUsers > 0 ? `${((activeUsers / totalUsers) * 100).toFixed(1)}% of total` : "0%", value: activeUsers, color: "text-[#3f52ff] dark:text-white", Icon: Users },
@@ -1834,7 +1834,13 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                   ].map((card, i) => (
                     <div
                       key={card.label}
-                      className={`flex items-center justify-between px-4 py-4 ${i < 2 ? "border-r border-border" : ""}`}
+                      className={`flex-1 flex items-center justify-between px-4 py-4 ${
+                        i === 0
+                          ? "col-span-2 md:col-span-1 border-b border-border md:border-b-0 md:border-r"
+                          : i === 1
+                            ? "border-r border-border"
+                            : ""
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-[30px] h-[30px] rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
@@ -1852,9 +1858,9 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
 
                 {/* Search + Filter + Add User */}
                 <div className="bg-card border border-border rounded-xl">
-                  <div className="flex items-center justify-between px-4 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-[373px]">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between px-4 py-4">
+                    <div className="order-2 md:order-1 w-full md:w-auto">
+                      <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-full md:w-[373px]">
                         <Search className="w-4 h-4 text-muted-foreground" />
                         <input
                           type="text"
@@ -1865,11 +1871,8 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                         />
                         <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
                       </div>
-                      <button className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] transition-colors">
-                        <Filter className="w-4 h-4" />
-                      </button>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="order-1 md:order-2 flex items-center justify-end flex-wrap gap-2 w-full md:w-auto">
                       {selectedUserIds.size > 0 && (
                         <button
                           onClick={handleBulkDelete}
@@ -1882,6 +1885,9 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                           </span>
                         </button>
                       )}
+                      <button className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] transition-colors">
+                        <Filter className="w-4 h-4" />
+                      </button>
                       <button
                         onClick={handleExportCSV}
                         disabled={selectedUserIds.size === 0}
@@ -1945,7 +1951,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                   </div>
 
                   {/* Table - Design System */}
-                  <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 hide-scrollbar">
+                  <div className="w-full overflow-x-auto hide-scrollbar">
                     <table className="w-full min-w-[720px] table-auto">
                       <colgroup>
                         <col className="w-12" />

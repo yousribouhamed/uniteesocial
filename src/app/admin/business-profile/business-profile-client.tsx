@@ -892,11 +892,13 @@ function ImageUploadArea({
   value,
   onUpload,
   disabled = false,
+  square = false,
 }: {
   label: string;
   value?: string;
   onUpload: (url: string) => void;
   disabled?: boolean;
+  square?: boolean;
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -1001,7 +1003,7 @@ function ImageUploadArea({
         onDrop={disabled ? undefined : handleDrop}
         onClick={disabled ? undefined : handleClick}
         aria-disabled={disabled}
-        className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-muted border-border cursor-not-allowed pointer-events-none" :
+        className={`border border-dashed rounded-[14px] ${square ? "aspect-square min-h-0" : "min-h-[160px]"} flex flex-col items-center justify-center px-4 py-5 relative overflow-hidden transition-colors ${disabled ? "bg-muted border-border cursor-not-allowed pointer-events-none" :
           isDragging
             ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff] cursor-copy"
             : "bg-card border-border cursor-pointer hover:border-muted-foreground/60"
@@ -1074,8 +1076,10 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
 
   // Persisted image fields in business_profiles
   const [images, setImages] = useState({
-    web_login_image: "",
-    home_background_image: "",
+    splash_screen_logo: "",
+    get_started_logo: "",
+    home_screen_logo: "",
+    favicon: "",
   });
 
   const [savedColors, setSavedColors] = useState(colors);
@@ -1087,19 +1091,24 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
       const { colors: colorsData, web_login_image, home_background_image } = initialData;
 
       // Parse colors if it's a JSON string, otherwise use as object
+      let parsedColors: any = {};
       if (colorsData) {
-        const parsedColors = typeof colorsData === 'string' ? JSON.parse(colorsData) : colorsData;
+        parsedColors = typeof colorsData === 'string' ? JSON.parse(colorsData) : colorsData;
         setColors((prev) => ({ ...prev, ...parsedColors }));
         setSavedColors((prev) => ({ ...prev, ...parsedColors }));
       }
 
       setImages({
-        web_login_image: web_login_image || "",
-        home_background_image: home_background_image || ""
+        splash_screen_logo: web_login_image || parsedColors?.splash_screen_logo || "",
+        get_started_logo: parsedColors?.get_started_logo || "",
+        home_screen_logo: home_background_image || parsedColors?.home_screen_logo || "",
+        favicon: parsedColors?.favicon || "",
       });
       setSavedImages({
-        web_login_image: web_login_image || "",
-        home_background_image: home_background_image || ""
+        splash_screen_logo: web_login_image || parsedColors?.splash_screen_logo || "",
+        get_started_logo: parsedColors?.get_started_logo || "",
+        home_screen_logo: home_background_image || parsedColors?.home_screen_logo || "",
+        favicon: parsedColors?.favicon || "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1108,9 +1117,15 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
   const handleSave = async () => {
     try {
       const result = await updateBusinessProfile({
-        colors: JSON.stringify(colors),
-        web_login_image: images.web_login_image || null,
-        home_background_image: images.home_background_image || null
+        colors: JSON.stringify({
+          ...colors,
+          splash_screen_logo: images.splash_screen_logo || "",
+          get_started_logo: images.get_started_logo || "",
+          home_screen_logo: images.home_screen_logo || "",
+          favicon: images.favicon || "",
+        }),
+        web_login_image: images.splash_screen_logo || null,
+        home_background_image: images.home_screen_logo || null
       });
 
         if (result.success) {
@@ -1173,6 +1188,38 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         )}
       </div>
 
+      {/* Logo Uploads */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <ImageUploadArea
+          label="Splash Screen Logo"
+          value={images.splash_screen_logo}
+          onUpload={updateImage("splash_screen_logo")}
+          disabled={!isEditing}
+          square
+        />
+        <ImageUploadArea
+          label="Get Started Logo"
+          value={images.get_started_logo}
+          onUpload={updateImage("get_started_logo")}
+          disabled={!isEditing}
+          square
+        />
+        <ImageUploadArea
+          label="Home Screen Logo"
+          value={images.home_screen_logo}
+          onUpload={updateImage("home_screen_logo")}
+          disabled={!isEditing}
+          square
+        />
+        <ImageUploadArea
+          label="Favicon"
+          value={images.favicon}
+          onUpload={updateImage("favicon")}
+          disabled={!isEditing}
+          square
+        />
+      </div>
+
       {/* Color Row 1: Primary Color + Invert Colors */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ColorInput label="Primary Color" value={colors.primary} colorSwatch={colors.primary} onColorChange={isEditing ? updateColor("primary") : undefined} />
@@ -1199,22 +1246,6 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         <ColorInput label="Chat Background Screen Color" value={colors.chatBg} colorSwatch={colors.chatBg} onColorChange={isEditing ? updateColor("chatBg") : undefined} />
         <ColorInput label="Header Icon Color" value={colors.headerIcon} colorSwatch={colors.headerIcon} onColorChange={isEditing ? updateColor("headerIcon") : undefined} />
         <ColorInput label="Chat Send Button Color" value={colors.chatSend} colorSwatch={colors.chatSend} onColorChange={isEditing ? updateColor("chatSend") : undefined} />
-      </div>
-
-      {/* Logo Uploads */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ImageUploadArea
-          label="Splash Screen Logo"
-          value={images.web_login_image}
-          onUpload={updateImage("web_login_image")}
-          disabled={!isEditing}
-        />
-        <ImageUploadArea
-          label="Home Screen Logo"
-          value={images.home_background_image}
-          onUpload={updateImage("home_background_image")}
-          disabled={!isEditing}
-        />
       </div>
 
       {/* Divider */}
