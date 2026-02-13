@@ -54,17 +54,79 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
 
         setProgress(30);
 
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+        let response: Response;
+        try {
+          response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+            // Add cache control to prevent caching issues
+            headers: {
+              "Cache-Control": "no-cache",
+            },
+          });
+        } catch (networkError) {
+          console.error("Network error:", networkError);
+          throw new Error(
+            "Network error - please check your connection and try again"
+          );
+        }
+
+        setProgress(60);
+
+        // Check if response is JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          // Try to get the text response for debugging
+          let textResponse = "";
+          try {
+            textResponse = await response.text();
+          } catch {
+            // Ignore
+          }
+          console.error("Non-JSON response:", textResponse.substring(0, 500));
+          
+          // Provide specific error messages based on status code
+          if (response.status === 401) {
+            throw new Error(
+              "Your session has expired. Please sign in again and retry."
+            );
+          } else if (response.status === 413) {
+            throw new Error("File too large. Maximum size is 10MB");
+          } else if (response.status >= 500) {
+            throw new Error(
+              "Server error. Please try again later or contact support."
+            );
+          } else {
+            throw new Error(
+              "Server returned an invalid response. Please try again or contact support if the issue persists."
+            );
+          }
+        }
+
+        let data;
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error("JSON parse error:", parseError);
+          throw new Error(
+            "Failed to parse server response. Please try again."
+          );
+        }
 
         setProgress(80);
 
-        const data = await response.json();
-
         if (!response.ok) {
-          throw new Error(data.error || "Upload failed");
+          throw new Error(
+            data.error || `Upload failed with status ${response.status}`
+          );
+        }
+
+        // Validate response data
+        if (!data.url || !data.path) {
+          console.error("Invalid response data:", data);
+          throw new Error(
+            "Server returned incomplete data. Please try again."
+          );
         }
 
         setProgress(100);
@@ -79,6 +141,7 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Upload failed";
+        console.error("Upload error:", errorMessage);
         setError(errorMessage);
         onError?.(errorMessage);
         return null;
@@ -99,8 +162,13 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
       );
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Delete failed");
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          throw new Error(data.error || "Delete failed");
+        } else {
+          throw new Error("Delete failed - server error");
+        }
       }
 
       return true;

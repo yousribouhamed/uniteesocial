@@ -35,19 +35,44 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser();
 
+    if (authError) {
+      console.error("Auth error:", authError);
+      return NextResponse.json(
+        { error: "Authentication error", details: authError.message },
+        { status: 401 }
+      );
+    }
+
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized - Please sign in" },
+        { status: 401 }
+      );
     }
 
     // Parse the form data
-    const formData = await request.formData();
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch (e) {
+      console.error("Form data parse error:", e);
+      return NextResponse.json(
+        { error: "Invalid form data" },
+        { status: 400 }
+      );
+    }
+
     const file = formData.get("file") as File | null;
     const folder = (formData.get("folder") as string) || "general";
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No file provided" },
+        { status: 400 }
+      );
     }
 
     // Validate file type
@@ -76,11 +101,29 @@ export async function POST(request: NextRequest) {
     const storagePath = `${folder}/${filename}`;
 
     // Convert file to buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    let buffer: Buffer;
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      buffer = Buffer.from(arrayBuffer);
+    } catch (e) {
+      console.error("File buffer error:", e);
+      return NextResponse.json(
+        { error: "Failed to read file data" },
+        { status: 400 }
+      );
+    }
 
     // Use admin client to bypass RLS for storage operations
-    const adminClient = createAdminClient();
+    let adminClient;
+    try {
+      adminClient = createAdminClient();
+    } catch (e) {
+      console.error("Admin client error:", e);
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
 
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await adminClient.storage
@@ -93,7 +136,15 @@ export async function POST(request: NextRequest) {
     if (uploadError) {
       console.error("Storage upload error:", uploadError);
       return NextResponse.json(
-        { error: uploadError.message },
+        { error: uploadError.message || "Upload to storage failed" },
+        { status: 500 }
+      );
+    }
+
+    if (!uploadData || !uploadData.path) {
+      console.error("No upload data returned");
+      return NextResponse.json(
+        { error: "Upload failed - no data returned" },
         { status: 500 }
       );
     }
@@ -103,14 +154,24 @@ export async function POST(request: NextRequest) {
       .from(BUCKET_NAME)
       .getPublicUrl(uploadData.path);
 
+    if (!urlData || !urlData.publicUrl) {
+      console.error("No public URL returned");
+      return NextResponse.json(
+        { error: "Failed to get public URL" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({
+      success: true,
       url: urlData.publicUrl,
       path: uploadData.path,
     });
   } catch (error) {
     console.error("Upload error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
@@ -159,7 +220,10 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ message: "File deleted successfully" });
+    return NextResponse.json({ 
+      success: true,
+      message: "File deleted successfully" 
+    });
   } catch (error) {
     console.error("Delete error:", error);
     return NextResponse.json(
