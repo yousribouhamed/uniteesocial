@@ -32,7 +32,7 @@ export async function GET() {
     const adminClient = createAdminClient();
     const { data, error } = await adminClient
       .from("business_profiles")
-      .select("colors, updated_at")
+      .select("colors, web_login_image, updated_at")
       .maybeSingle();
 
     if (error) {
@@ -41,6 +41,13 @@ export async function GET() {
 
     const colors = parseColors(data?.colors);
     const primaryColor = normalizeHex(colors.primary);
+    
+    // Get splash logo from colors JSON or fall back to web_login_image
+    const splashLogo = colors.splash_screen_logo || 
+                       colors.splashScreenLogo || 
+                       colors.splashLogo || 
+                       data?.web_login_image || 
+                       null;
 
     return NextResponse.json(
       {
@@ -48,6 +55,7 @@ export async function GET() {
         data: {
           branding: {
             primaryColor,
+            splashLogo,
           },
           updatedAt: data?.updated_at ?? null,
         },
