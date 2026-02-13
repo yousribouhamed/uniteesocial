@@ -48,6 +48,12 @@ export async function GET() {
                        colors.splashLogo || 
                        data?.web_login_image || 
                        null;
+    
+    // Get started logo from colors JSON
+    const getStartedLogo = colors.get_started_logo || 
+                           colors.getStartedLogo || 
+                           colors.getStarted || 
+                           null;
 
     return NextResponse.json(
       {
@@ -56,6 +62,7 @@ export async function GET() {
           branding: {
             primaryColor,
             splashLogo,
+            getStartedLogo,
           },
           updatedAt: data?.updated_at ?? null,
         },
