@@ -54,6 +54,12 @@ export async function GET() {
                            colors.getStartedLogo || 
                            colors.getStarted || 
                            null;
+    
+    // Get started background from colors JSON
+    const getStartedBackground = colors.get_started_background || 
+                                  colors.getStartedBackground || 
+                                  colors.getStartedBg || 
+                                  null;
 
     return NextResponse.json(
       {
@@ -63,6 +69,7 @@ export async function GET() {
             primaryColor,
             splashLogo,
             getStartedLogo,
+            getStartedBackground,
           },
           updatedAt: data?.updated_at ?? null,
         },
