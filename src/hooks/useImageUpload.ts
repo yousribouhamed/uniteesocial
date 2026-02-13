@@ -13,6 +13,45 @@ interface UseImageUploadOptions {
   onError?: (error: string) => void;
 }
 
+// Allowed file types for client-side validation
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
+  "image/heic",
+  "image/heif",
+  "application/octet-stream", // Some HEIC files
+];
+
+const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "svg", "heic", "heif"];
+
+function getFileExtension(filename: string): string {
+  return filename.split(".").pop()?.toLowerCase() || "";
+}
+
+function isAllowedFileType(file: File): boolean {
+  // Check MIME type first
+  if (ALLOWED_TYPES.includes(file.type)) {
+    return true;
+  }
+  
+  // Fallback: check file extension
+  const ext = getFileExtension(file.name);
+  if (ALLOWED_EXTENSIONS.includes(ext)) {
+    return true;
+  }
+  
+  // Special case: HEIC files often have wrong MIME type
+  if (ext === "heic" || ext === "heif") {
+    return true;
+  }
+  
+  return false;
+}
+
 export function useImageUpload(options: UseImageUploadOptions = {}) {
   const { folder = "general", onSuccess, onError } = options;
 
@@ -27,22 +66,25 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
       setError(null);
 
       try {
-        // Validate file on client side first
-        const maxSize = 10 * 1024 * 1024; // 10MB
+        // Log file info for debugging
+        console.log("Uploading file:", {
+          name: file.name,
+          type: file.type,
+          size: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+          extension: getFileExtension(file.name),
+        });
+
+        // Validate file size (10MB)
+        const maxSize = 10 * 1024 * 1024;
         if (file.size > maxSize) {
-          throw new Error("File too large. Maximum size is 10MB");
+          throw new Error(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 10MB`);
         }
 
-        const allowedTypes = [
-          "image/jpeg",
-          "image/png",
-          "image/gif",
-          "image/webp",
-          "image/svg+xml",
-        ];
-        if (!allowedTypes.includes(file.type)) {
+        // Validate file type (by MIME type or extension)
+        if (!isAllowedFileType(file)) {
+          const ext = getFileExtension(file.name);
           throw new Error(
-            "Invalid file type. Allowed: JPG, PNG, GIF, WebP, SVG"
+            `Invalid file type: ${file.type || ext}. Allowed: JPG, PNG, GIF, WebP, SVG, HEIC`
           );
         }
 
@@ -59,7 +101,6 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
           response = await fetch("/api/upload", {
             method: "POST",
             body: formData,
-            // Add cache control to prevent caching issues
             headers: {
               "Cache-Control": "no-cache",
             },
@@ -76,7 +117,6 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
         // Check if response is JSON
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          // Try to get the text response for debugging
           let textResponse = "";
           try {
             textResponse = await response.text();
@@ -85,21 +125,14 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
           }
           console.error("Non-JSON response:", textResponse.substring(0, 500));
           
-          // Provide specific error messages based on status code
           if (response.status === 401) {
-            throw new Error(
-              "Your session has expired. Please sign in again and retry."
-            );
+            throw new Error("Your session has expired. Please sign in again and retry.");
           } else if (response.status === 413) {
             throw new Error("File too large. Maximum size is 10MB");
           } else if (response.status >= 500) {
-            throw new Error(
-              "Server error. Please try again later or contact support."
-            );
+            throw new Error("Server error. Please try again later or contact support.");
           } else {
-            throw new Error(
-              "Server returned an invalid response. Please try again or contact support if the issue persists."
-            );
+            throw new Error("Server returned an invalid response. Please try again.");
           }
         }
 
@@ -108,25 +141,19 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
           data = await response.json();
         } catch (parseError) {
           console.error("JSON parse error:", parseError);
-          throw new Error(
-            "Failed to parse server response. Please try again."
-          );
+          throw new Error("Failed to parse server response. Please try again.");
         }
 
         setProgress(80);
 
         if (!response.ok) {
-          throw new Error(
-            data.error || `Upload failed with status ${response.status}`
-          );
+          throw new Error(data.error || `Upload failed with status ${response.status}`);
         }
 
         // Validate response data
         if (!data.url || !data.path) {
           console.error("Invalid response data:", data);
-          throw new Error(
-            "Server returned incomplete data. Please try again."
-          );
+          throw new Error("Server returned incomplete data. Please try again.");
         }
 
         setProgress(100);
@@ -136,11 +163,11 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
           path: data.path,
         };
 
+        console.log("Upload successful:", result);
         onSuccess?.(result);
         return result;
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Upload failed";
+        const errorMessage = err instanceof Error ? err.message : "Upload failed";
         console.error("Upload error:", errorMessage);
         setError(errorMessage);
         onError?.(errorMessage);
@@ -173,8 +200,7 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
 
       return true;
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Delete failed";
+      const errorMessage = err instanceof Error ? err.message : "Delete failed";
       setError(errorMessage);
       onError?.(errorMessage);
       return false;

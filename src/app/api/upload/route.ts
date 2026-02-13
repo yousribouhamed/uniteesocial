@@ -5,11 +5,18 @@ import { createAdminClient } from "@/lib/supabase/admin";
 // Allowed image types
 const ALLOWED_TYPES = [
   "image/jpeg",
+  "image/jpg",
   "image/png",
   "image/gif",
   "image/webp",
   "image/svg+xml",
+  "image/heic",
+  "image/heif",
+  "application/octet-stream", // Some browsers send this for HEIC
 ];
+
+// Allowed extensions (as fallback when MIME type is missing/wrong)
+const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "svg", "heic", "heif"];
 
 // Max file size: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -18,16 +25,67 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const BUCKET_NAME = "uploads";
 
 /**
+ * Get file extension from filename
+ */
+function getFileExtension(filename: string): string {
+  return filename.split(".").pop()?.toLowerCase() || "";
+}
+
+/**
+ * Check if file type is allowed (by MIME type or extension)
+ */
+function isAllowedFileType(file: File): boolean {
+  // Check MIME type first
+  if (ALLOWED_TYPES.includes(file.type)) {
+    return true;
+  }
+  
+  // Fallback: check file extension
+  const ext = getFileExtension(file.name);
+  if (ALLOWED_EXTENSIONS.includes(ext)) {
+    return true;
+  }
+  
+  // Special case: HEIC files often have wrong MIME type
+  if (ext === "heic" || ext === "heif") {
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Get proper MIME type based on file extension
+ */
+function getProperMimeType(file: File): string {
+  const ext = getFileExtension(file.name);
+  
+  const mimeTypes: Record<string, string> = {
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    gif: "image/gif",
+    webp: "image/webp",
+    svg: "image/svg+xml",
+    heic: "image/heic",
+    heif: "image/heif",
+  };
+  
+  return mimeTypes[ext] || file.type || "application/octet-stream";
+}
+
+/**
+ * Sanitize filename - remove special characters
+ */
+function sanitizeFilename(filename: string): string {
+  return filename
+    .replace(/[^a-zA-Z0-9.-]/g, "_") // Replace special chars with underscore
+    .replace(/_{2,}/g, "_"); // Replace multiple underscores with single
+}
+
+/**
  * POST /api/upload
  * Upload an image to Supabase Storage
- *
- * Form data:
- * - file: The file to upload
- * - folder: Optional folder path (e.g., "avatars", "branding", "events")
- *
- * Returns:
- * - url: The public URL of the uploaded file
- * - path: The storage path of the file
  */
 export async function POST(request: NextRequest) {
   try {
@@ -75,20 +133,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    // Log file info for debugging
+    console.log("Upload request:", {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      extension: getFileExtension(file.name),
+    });
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      console.error("File too large:", file.size);
       return NextResponse.json(
-        {
-          error: `Invalid file type: ${file.type}. Allowed types: ${ALLOWED_TYPES.join(", ")}`,
-        },
+        { error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB` },
         { status: 400 }
       );
     }
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
+    // Validate file type (by MIME type or extension)
+    if (!isAllowedFileType(file)) {
+      console.error("Invalid file type:", file.type, "name:", file.name);
       return NextResponse.json(
-        { error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB` },
+        {
+          error: `Invalid file type: ${file.type || "unknown"}. Allowed types: JPG, PNG, GIF, WebP, SVG, HEIC`,
+        },
         { status: 400 }
       );
     }
@@ -96,8 +164,9 @@ export async function POST(request: NextRequest) {
     // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 8);
-    const extension = file.name.split(".").pop() || "jpg";
-    const filename = `${timestamp}-${randomString}.${extension}`;
+    const originalExt = getFileExtension(file.name) || "jpg";
+    const safeExt = ALLOWED_EXTENSIONS.includes(originalExt) ? originalExt : "jpg";
+    const filename = `${timestamp}-${randomString}.${safeExt}`;
     const storagePath = `${folder}/${filename}`;
 
     // Convert file to buffer
@@ -125,11 +194,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get proper MIME type (fix for HEIC and files with wrong MIME type)
+    const contentType = getProperMimeType(file);
+
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await adminClient.storage
       .from(BUCKET_NAME)
       .upload(storagePath, buffer, {
-        contentType: file.type,
+        contentType,
         upsert: false,
       });
 
@@ -162,6 +234,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log("Upload successful:", {
+      path: uploadData.path,
+      size: file.size,
+    });
+
     return NextResponse.json({
       success: true,
       url: urlData.publicUrl,
@@ -180,9 +257,6 @@ export async function POST(request: NextRequest) {
 /**
  * DELETE /api/upload
  * Delete an image from Supabase Storage
- *
- * Query params:
- * - path: The storage path of the file to delete
  */
 export async function DELETE(request: NextRequest) {
   try {
