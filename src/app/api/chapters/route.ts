@@ -61,20 +61,30 @@ export async function POST(request: Request) {
       );
     }
 
+    // Ensure city and country are strings and trimmed
+    const cleanCity = city && typeof city === 'string' ? city.trim() : null;
+    const cleanCountry = country && typeof country === 'string' ? country.trim() : null;
+    
+    console.log("🧹 Cleaned values:", { cleanCity, cleanCountry });
+
+    const insertData = {
+      name,
+      chapter_name: name,  // For app compatibility
+      description,
+      city: cleanCity,
+      country: cleanCountry,
+      cover_image: cover_image || null,
+      created_by: currentUser.id,
+      member_count: typeof member_count === "number" ? member_count : 1,
+      is_main: is_main || false,
+      visible: true,  // Must be true to show in app
+    };
+    
+    console.log("💾 Inserting to Supabase:", insertData);
+
     const { data: chapter, error } = await supabase
       .from("chapters")
-      .insert({
-        name,
-        chapter_name: name,  // For app compatibility
-        description,
-        city: city || null,
-        country: country || null,
-        cover_image: cover_image || null,
-        created_by: currentUser.id,
-        member_count: typeof member_count === "number" ? member_count : 1,
-        is_main: is_main || false,
-        visible: true,  // Must be true to show in app
-      })
+      .insert(insertData)
       .select()
       .single();
 
