@@ -46,7 +46,7 @@ import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
-import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset } from "./actions";
+import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset, uploadChapterCover } from "./actions";
 import { TIMEZONES } from "@/data/timezones";
 
 interface BusinessProfileClientProps {
@@ -2276,6 +2276,9 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
   const [chapterCode, setChapterCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
+  const [coverImage, setCoverImage] = useState<string>("");
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [creating, setCreating] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
@@ -2297,6 +2300,50 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
       role: "Chapter Lead",
     },
   ]);
+
+  const handleCoverImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toastQueue.add({
+        title: "Invalid File",
+        description: "Please upload an image file.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const result = await uploadChapterCover(formData);
+      setCoverImage(result.url);
+      setCoverImageFile(file);
+      
+      toastQueue.add({
+        title: "Image Uploaded",
+        description: "Cover image uploaded successfully.",
+        variant: "success",
+      }, { timeout: 3000 });
+    } catch (error: any) {
+      console.error(error);
+      toastQueue.add({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload image.",
+        variant: "error",
+      }, { timeout: 3000 });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleRemoveCoverImage = () => {
+    setCoverImage("");
+    setCoverImageFile(null);
+  };
 
   const handleCreateChapter = async () => {
     if (!chapterName.trim()) {
@@ -2329,7 +2376,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
           member_count: teamMembers.length,
           city: city.trim(),
           country: country.trim(),
-          cover_image: searchPlace.trim() || null,
+          cover_image: coverImage || null,
           is_main: false,
         }),
       });
@@ -2454,6 +2501,52 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                   className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                 />
               </div>
+            </div>
+
+            {/* Cover Image Upload */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-foreground">
+                Cover Image
+              </label>
+              {coverImage ? (
+                <div className="relative w-full h-40 rounded-lg overflow-hidden border border-border">
+                  <img
+                    src={coverImage}
+                    alt="Chapter cover"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    onClick={handleRemoveCoverImage}
+                    className="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                    title="Remove image"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    {uploadingImage ? (
+                      <Loader2 className="w-8 h-8 animate-spin" />
+                    ) : (
+                      <Upload className="w-8 h-8" />
+                    )}
+                    <span className="text-sm font-medium">
+                      {uploadingImage ? "Uploading..." : "Click to upload cover image"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      PNG, JPG, GIF up to 10MB
+                    </span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverImageUpload}
+                    disabled={uploadingImage}
+                    className="hidden"
+                  />
+                </label>
+              )}
             </div>
           </div>
         )}
