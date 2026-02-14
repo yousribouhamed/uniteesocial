@@ -1059,9 +1059,9 @@ function ImageUploadArea({
           <>
             <div className="mb-2">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF"/>
-                <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2"/>
-                <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white"/>
+                <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF" />
+                <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white" />
               </svg>
             </div>
             <span className={`text-sm font-medium ${isDragging ? "text-[#3f52ff] dark:text-white dark:text-[#8faeff]" : "text-foreground"}`}>
@@ -1071,6 +1071,170 @@ function ImageUploadArea({
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+// --- Chapter Cover Upload Component ---
+function ChapterCoverUpload({
+  value,
+  onUpload,
+}: {
+  value?: string;
+  onUpload: (url: string) => void;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const processFile = async (file: File) => {
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toastQueue.add({
+        title: "Invalid File Type",
+        description: "Please upload an image file.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toastQueue.add({
+        title: "File Too Large",
+        description: "Image size must be less than 10MB.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const result = await uploadChapterCover(formData);
+
+      onUpload(result.url);
+
+      toastQueue.add({
+        title: "Upload Successful",
+        description: "Cover image uploaded successfully.",
+        variant: "success",
+      }, { timeout: 3000 });
+
+    } catch (error: any) {
+      console.error("Upload failed:", error);
+      toastQueue.add({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload cover image.",
+        variant: "error",
+      }, { timeout: 4000 });
+    } finally {
+      setIsUploading(false);
+      setIsDragging(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      processFile(e.target.files[0]);
+    }
+    e.target.value = "";
+  };
+
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleRemove = () => {
+    onUpload("");
+  };
+
+  return (
+    <div
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onClick={handleClick}
+      className={`border border-dashed rounded-xl flex flex-col items-center justify-center relative overflow-hidden transition-colors cursor-pointer min-h-[140px] ${isDragging
+          ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff]"
+          : "bg-card border-border hover:border-muted-foreground/60"
+        }`}
+    >
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleFileSelect}
+      />
+
+      {isUploading ? (
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-[#3f52ff]/30 border-t-[#3f52ff] rounded-full animate-spin" />
+          <span className="text-sm font-medium text-foreground">Uploading...</span>
+        </div>
+      ) : value ? (
+        <div className="relative w-full h-full min-h-[140px] group">
+          <img
+            src={value}
+            alt="Chapter cover"
+            className="absolute inset-0 h-full w-full object-cover rounded-xl"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+            <div className="flex flex-col items-center text-white gap-1">
+              <Upload className="w-5 h-5" />
+              <span className="text-xs font-medium">Change Cover</span>
+            </div>
+          </div>
+          {/* Remove button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemove();
+            }}
+            className="absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+          >
+            <X className="w-4 h-4 text-foreground" />
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-2 py-6">
+          <div className={`w-11 h-11 rounded-full border border-border flex items-center justify-center ${isDragging ? "bg-card" : ""}`}>
+            <Upload className={`w-4 h-4 ${isDragging ? "text-[#3f52ff]" : "text-muted-foreground opacity-60"}`} />
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className={`text-sm font-medium ${isDragging ? "text-[#3f52ff]" : "text-foreground"}`}>
+              {isDragging ? "Drop to upload" : "Upload cover image"}
+            </span>
+            <span className="text-xs text-muted-foreground">Drag & drop or click to browse</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1155,19 +1319,19 @@ function BrandingContent({ initialData, refreshProfile }: { initialData?: any; r
         home_background_image: images.home_screen_logo || null
       });
 
-        if (result.success) {
-          setSavedColors(colors);
-          setSavedImages(images);
-          setIsEditing(false);
-          toastQueue.add({
-            title: "Branding Saved",
-            description: "Your branding settings have been saved successfully.",
-            variant: "success",
-          }, { timeout: 3000 });
-          if (refreshProfile) {
-            await refreshProfile();
-          }
-        } else {
+      if (result.success) {
+        setSavedColors(colors);
+        setSavedImages(images);
+        setIsEditing(false);
+        toastQueue.add({
+          title: "Branding Saved",
+          description: "Your branding settings have been saved successfully.",
+          variant: "success",
+        }, { timeout: 3000 });
+        if (refreshProfile) {
+          await refreshProfile();
+        }
+      } else {
         throw new Error(result.error);
       }
     } catch (e: any) {
@@ -1483,7 +1647,7 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
   return (
     <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             Social Links
@@ -1503,8 +1667,8 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
       </div>
 
       {/* White Card */}
-        <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
-          {/* Row 1: LinkedIn + X / Twitter */}
+      <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
+        {/* Row 1: LinkedIn + X / Twitter */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <SocialLinkInput
             label="LinkedIn"
@@ -1728,7 +1892,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
       setModules((prev) => ({ ...prev, ...initialData }));
       setSavedModules((prev) => ({ ...prev, ...initialData }));
     }
-    }, [initialData]);
+  }, [initialData]);
 
   const handleSave = async () => {
     try {
@@ -2493,6 +2657,16 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
         {/* Basic Info Tab */}
         {activeTab === "Basic Info" && (
           <div className="flex flex-col gap-4">
+            {/* Cover Image Upload */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-foreground">
+                Chapter Cover Image
+              </label>
+              <ChapterCoverUpload
+                value={coverImage}
+                onUpload={setCoverImage}
+              />
+            </div>
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex flex-col gap-2 flex-1">
                 <label className="text-sm font-semibold text-foreground">
@@ -2556,13 +2730,12 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                 onDragLeave={handleCoverDragLeave}
                 onDrop={handleCoverDrop}
                 onClick={!coverImage && !uploadingImage ? handleCoverClick : undefined}
-                className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center relative overflow-hidden transition-colors ${
-                  coverImage
+                className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center relative overflow-hidden transition-colors ${coverImage
                     ? "border-border"
                     : isDraggingCover
                       ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff] cursor-copy"
                       : "bg-card border-border cursor-pointer hover:border-muted-foreground/60"
-                }`}
+                  }`}
               >
                 <input
                   type="file"
@@ -3035,10 +3208,50 @@ function ChapterActionMenu({
   );
 }
 
+// --- DB chapter shape ---
+interface DbChapter {
+  id: string;
+  name: string;
+  description: string | null;
+  city: string | null;
+  country: string | null;
+  code: string | null;
+  member_count: number;
+  event_count: number;
+  visible: boolean;
+  status: string;
+  cover_image: string | null;
+  is_main: boolean;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Map DB chapter to the shape the UI expects
+function toDisplayChapter(ch: DbChapter) {
+  return {
+    id: ch.id,
+    name: ch.name,
+    code: ch.code || "",
+    city: ch.city || "",
+    country: ch.country || "",
+    team: ch.member_count || 0,
+    events: `${ch.event_count || 0} Events`,
+    visible: ch.visible ?? true,
+    status: (ch.status || "Active") as "Active",
+    lastUpdate: ch.updated_at
+      ? new Date(ch.updated_at).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })
+      : "",
+    updatedBy: "",
+  };
+}
+
 // --- Chapters Content ---
 function ChaptersContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [chaptersData, setChaptersData] = useState<ReturnType<typeof toDisplayChapter>[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [deleteChapter, setDeleteChapter] = useState<{
     name: string;
     code: string;
@@ -3054,11 +3267,35 @@ function ChaptersContent() {
     lastUpdate: string;
   } | null>(null);
 
-  const chaptersData = DEFAULT_CHAPTERS;
+  // Fetch chapters from DB
+  const fetchChapters = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/chapters");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        setChaptersData(json.data.map((ch: DbChapter) => toDisplayChapter(ch)));
+      } else {
+        // Fallback to DEFAULT_CHAPTERS if API fails
+        setChaptersData(DEFAULT_CHAPTERS.map((ch, i) => ({ ...ch, id: `default-${i}` })));
+      }
+    } catch {
+      setChaptersData(DEFAULT_CHAPTERS.map((ch, i) => ({ ...ch, id: `default-${i}` })));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const [visibleStates, setVisibleStates] = useState<Record<string, boolean>>(
-    () => Object.fromEntries(chaptersData.map((c) => [c.code, c.visible]))
-  );
+  useEffect(() => {
+    void fetchChapters();
+  }, [fetchChapters]);
+
+  const [visibleStates, setVisibleStates] = useState<Record<string, boolean>>({});
+
+  // Sync visibleStates when chaptersData changes
+  useEffect(() => {
+    setVisibleStates(Object.fromEntries(chaptersData.map((c) => [c.code, c.visible])));
+  }, [chaptersData]);
 
   const toggleVisible = (code: string) => {
     setVisibleStates((prev) => ({ ...prev, [code]: !prev[code] }));
@@ -3076,7 +3313,7 @@ function ChaptersContent() {
   ];
 
   if (showCreateForm) {
-    return <CreateChapterForm onDismiss={() => setShowCreateForm(false)} />;
+    return <CreateChapterForm onDismiss={() => { setShowCreateForm(false); void fetchChapters(); }} />;
   }
 
   // Extract event count number from string like "12 Events"
@@ -3111,7 +3348,7 @@ function ChaptersContent() {
               </>
             }
             subtitle="All chapters in organization"
-            value={3}
+            value={chaptersData.length}
             mobileTopValue
             isFirst
           />
@@ -3126,7 +3363,7 @@ function ChaptersContent() {
               </>
             }
             subtitle="Currently operational"
-            value={3}
+            value={chaptersData.filter(c => c.status === "Active").length}
             mobileTopValue
           />
           <StatCard
@@ -3140,7 +3377,7 @@ function ChaptersContent() {
               </>
             }
             subtitle="Shown to mobile users"
-            value={2}
+            value={chaptersData.filter(c => c.visible).length}
             mobileTopValue
           />
           <StatCard
@@ -3154,7 +3391,7 @@ function ChaptersContent() {
               </>
             }
             subtitle="Total events across chapters"
-            value={20}
+            value={chaptersData.reduce((sum, c) => sum + (parseInt(c.events) || 0), 0)}
             mobileTopValue
             isLast
           />
@@ -3222,7 +3459,20 @@ function ChaptersContent() {
                 </tr>
               </thead>
               <tbody>
-                {chaptersData
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={8} className="px-3 py-8 text-center text-sm text-muted-foreground">
+                      <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
+                      Loading chapters...
+                    </td>
+                  </tr>
+                ) : chaptersData.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-3 py-8 text-center text-sm text-muted-foreground">
+                      No chapters yet. Create your first chapter.
+                    </td>
+                  </tr>
+                ) : chaptersData
                   .filter(chapter => {
                     const query = searchQuery.toLowerCase();
                     return (

@@ -117,13 +117,13 @@ export async function uploadChapterCover(formData: FormData) {
 
     const fileExt = file.name.split(".").pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `chapter-covers/${fileName}`;
+    const filePath = `chapters/covers/${fileName}`;
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     const { error: uploadError } = await supabase.storage
-        .from("brand-assets")
+        .from("uploads")
         .upload(filePath, buffer, {
             contentType: file.type,
             upsert: false
@@ -131,12 +131,12 @@ export async function uploadChapterCover(formData: FormData) {
 
     if (uploadError) {
         console.error("Upload error:", uploadError);
-        throw new Error("Failed to upload image");
+        throw new Error("Failed to upload cover image");
     }
 
     const { data: publicUrlData } = supabase.storage
-        .from("brand-assets")
+        .from("uploads")
         .getPublicUrl(filePath);
 
-    return { url: publicUrlData.publicUrl };
+    return { url: publicUrlData.publicUrl, path: filePath };
 }
