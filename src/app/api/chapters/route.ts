@@ -52,6 +52,8 @@ export async function POST(request: Request) {
       is_main 
     } = body;
 
+    console.log("📥 API received:", { name, city, country, cover_image });
+
     if (!name) {
       return NextResponse.json(
         { error: "Chapter name is required" },
@@ -77,10 +79,16 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
+      console.error("❌ Supabase insert error:", error);
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     console.log("📚 New chapter created:", chapter.id);
+    console.log("📊 Saved data:", { 
+      city: chapter.city, 
+      country: chapter.country,
+      cover_image: chapter.cover_image 
+    });
 
     return NextResponse.json(
       { success: true, data: chapter },

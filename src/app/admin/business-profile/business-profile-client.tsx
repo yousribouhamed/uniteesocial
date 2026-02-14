@@ -2367,18 +2367,21 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
         teamMembers,
       });
 
+      const requestBody = {
+        name: chapterName.trim(),
+        description,
+        member_count: teamMembers.length,
+        city: city.trim(),
+        country: country.trim(),
+        cover_image: coverImage || null,
+        is_main: false,
+      };
+      console.log("📤 Sending to API:", requestBody);
+
       const response = await fetch("/api/chapters", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: chapterName.trim(),
-          description,
-          member_count: teamMembers.length,
-          city: city.trim(),
-          country: country.trim(),
-          cover_image: coverImage || null,
-          is_main: false,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const result = await response.json();
