@@ -42,7 +42,15 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, description, member_count } = body;
+    const { 
+      name, 
+      description, 
+      member_count,
+      city,
+      country,
+      cover_image,
+      is_main 
+    } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -55,9 +63,15 @@ export async function POST(request: Request) {
       .from("chapters")
       .insert({
         name,
+        chapter_name: name,  // For app compatibility
         description,
+        city: city || null,
+        country: country || null,
+        cover_image: cover_image || null,
         created_by: currentUser.id,
         member_count: typeof member_count === "number" ? member_count : 1,
+        is_main: is_main || false,
+        visible: true,  // Must be true to show in app
       })
       .select()
       .single();

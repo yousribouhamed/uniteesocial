@@ -2327,6 +2327,10 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
           name: chapterName.trim(),
           description,
           member_count: teamMembers.length,
+          city: city.trim(),
+          country: country.trim(),
+          cover_image: searchPlace.trim() || null,
+          is_main: false,
         }),
       });
 
