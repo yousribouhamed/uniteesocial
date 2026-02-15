@@ -67,6 +67,349 @@ interface ProfileData {
   privacy_url?: string;
 }
 
+const COUNTRY_OPTIONS = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
+  "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czechia",
+  "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+  "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
+  "Fiji", "Finland", "France",
+  "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+  "Haiti", "Honduras", "Hungary",
+  "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy",
+  "Jamaica", "Japan", "Jordan",
+  "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan",
+  "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar",
+  "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway",
+  "Oman",
+  "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
+  "Qatar",
+  "Romania", "Russia", "Rwanda",
+  "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
+  "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
+  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
+  "Vanuatu", "Vatican City", "Venezuela", "Vietnam",
+  "Yemen",
+  "Zambia", "Zimbabwe"
+];
+
+const PHONE_COUNTRIES = [
+  { name: "Afghanistan", iso2: "AF", dial: "93" },
+  { name: "Albania", iso2: "AL", dial: "355" },
+  { name: "Algeria", iso2: "DZ", dial: "213" },
+  { name: "Andorra", iso2: "AD", dial: "376" },
+  { name: "Angola", iso2: "AO", dial: "244" },
+  { name: "Antigua and Barbuda", iso2: "AG", dial: "1" },
+  { name: "Argentina", iso2: "AR", dial: "54" },
+  { name: "Armenia", iso2: "AM", dial: "374" },
+  { name: "Australia", iso2: "AU", dial: "61" },
+  { name: "Austria", iso2: "AT", dial: "43" },
+  { name: "Azerbaijan", iso2: "AZ", dial: "994" },
+  { name: "Bahamas", iso2: "BS", dial: "1" },
+  { name: "Bahrain", iso2: "BH", dial: "973" },
+  { name: "Bangladesh", iso2: "BD", dial: "880" },
+  { name: "Barbados", iso2: "BB", dial: "1" },
+  { name: "Belarus", iso2: "BY", dial: "375" },
+  { name: "Belgium", iso2: "BE", dial: "32" },
+  { name: "Belize", iso2: "BZ", dial: "501" },
+  { name: "Benin", iso2: "BJ", dial: "229" },
+  { name: "Bhutan", iso2: "BT", dial: "975" },
+  { name: "Bolivia", iso2: "BO", dial: "591" },
+  { name: "Bosnia and Herzegovina", iso2: "BA", dial: "387" },
+  { name: "Botswana", iso2: "BW", dial: "267" },
+  { name: "Brazil", iso2: "BR", dial: "55" },
+  { name: "Brunei", iso2: "BN", dial: "673" },
+  { name: "Bulgaria", iso2: "BG", dial: "359" },
+  { name: "Burkina Faso", iso2: "BF", dial: "226" },
+  { name: "Burundi", iso2: "BI", dial: "257" },
+  { name: "Cabo Verde", iso2: "CV", dial: "238" },
+  { name: "Cambodia", iso2: "KH", dial: "855" },
+  { name: "Cameroon", iso2: "CM", dial: "237" },
+  { name: "Canada", iso2: "CA", dial: "1" },
+  { name: "Central African Republic", iso2: "CF", dial: "236" },
+  { name: "Chad", iso2: "TD", dial: "235" },
+  { name: "Chile", iso2: "CL", dial: "56" },
+  { name: "China", iso2: "CN", dial: "86" },
+  { name: "Colombia", iso2: "CO", dial: "57" },
+  { name: "Comoros", iso2: "KM", dial: "269" },
+  { name: "Congo (Congo-Brazzaville)", iso2: "CG", dial: "242" },
+  { name: "Costa Rica", iso2: "CR", dial: "506" },
+  { name: "Croatia", iso2: "HR", dial: "385" },
+  { name: "Cuba", iso2: "CU", dial: "53" },
+  { name: "Cyprus", iso2: "CY", dial: "357" },
+  { name: "Czechia", iso2: "CZ", dial: "420" },
+  { name: "Democratic Republic of the Congo", iso2: "CD", dial: "243" },
+  { name: "Denmark", iso2: "DK", dial: "45" },
+  { name: "Djibouti", iso2: "DJ", dial: "253" },
+  { name: "Dominica", iso2: "DM", dial: "1" },
+  { name: "Dominican Republic", iso2: "DO", dial: "1" },
+  { name: "Ecuador", iso2: "EC", dial: "593" },
+  { name: "Egypt", iso2: "EG", dial: "20" },
+  { name: "El Salvador", iso2: "SV", dial: "503" },
+  { name: "Equatorial Guinea", iso2: "GQ", dial: "240" },
+  { name: "Eritrea", iso2: "ER", dial: "291" },
+  { name: "Estonia", iso2: "EE", dial: "372" },
+  { name: "Eswatini", iso2: "SZ", dial: "268" },
+  { name: "Ethiopia", iso2: "ET", dial: "251" },
+  { name: "Fiji", iso2: "FJ", dial: "679" },
+  { name: "Finland", iso2: "FI", dial: "358" },
+  { name: "France", iso2: "FR", dial: "33" },
+  { name: "Gabon", iso2: "GA", dial: "241" },
+  { name: "Gambia", iso2: "GM", dial: "220" },
+  { name: "Georgia", iso2: "GE", dial: "995" },
+  { name: "Germany", iso2: "DE", dial: "49" },
+  { name: "Ghana", iso2: "GH", dial: "233" },
+  { name: "Greece", iso2: "GR", dial: "30" },
+  { name: "Grenada", iso2: "GD", dial: "1" },
+  { name: "Guatemala", iso2: "GT", dial: "502" },
+  { name: "Guinea", iso2: "GN", dial: "224" },
+  { name: "Guinea-Bissau", iso2: "GW", dial: "245" },
+  { name: "Guyana", iso2: "GY", dial: "592" },
+  { name: "Haiti", iso2: "HT", dial: "509" },
+  { name: "Honduras", iso2: "HN", dial: "504" },
+  { name: "Hungary", iso2: "HU", dial: "36" },
+  { name: "Iceland", iso2: "IS", dial: "354" },
+  { name: "India", iso2: "IN", dial: "91" },
+  { name: "Indonesia", iso2: "ID", dial: "62" },
+  { name: "Iran", iso2: "IR", dial: "98" },
+  { name: "Iraq", iso2: "IQ", dial: "964" },
+  { name: "Ireland", iso2: "IE", dial: "353" },
+  { name: "Israel", iso2: "IL", dial: "972" },
+  { name: "Italy", iso2: "IT", dial: "39" },
+  { name: "Jamaica", iso2: "JM", dial: "1" },
+  { name: "Japan", iso2: "JP", dial: "81" },
+  { name: "Jordan", iso2: "JO", dial: "962" },
+  { name: "Kazakhstan", iso2: "KZ", dial: "7" },
+  { name: "Kenya", iso2: "KE", dial: "254" },
+  { name: "Kiribati", iso2: "KI", dial: "686" },
+  { name: "Kuwait", iso2: "KW", dial: "965" },
+  { name: "Kyrgyzstan", iso2: "KG", dial: "996" },
+  { name: "Laos", iso2: "LA", dial: "856" },
+  { name: "Latvia", iso2: "LV", dial: "371" },
+  { name: "Lebanon", iso2: "LB", dial: "961" },
+  { name: "Lesotho", iso2: "LS", dial: "266" },
+  { name: "Liberia", iso2: "LR", dial: "231" },
+  { name: "Libya", iso2: "LY", dial: "218" },
+  { name: "Liechtenstein", iso2: "LI", dial: "423" },
+  { name: "Lithuania", iso2: "LT", dial: "370" },
+  { name: "Luxembourg", iso2: "LU", dial: "352" },
+  { name: "Madagascar", iso2: "MG", dial: "261" },
+  { name: "Malawi", iso2: "MW", dial: "265" },
+  { name: "Malaysia", iso2: "MY", dial: "60" },
+  { name: "Maldives", iso2: "MV", dial: "960" },
+  { name: "Mali", iso2: "ML", dial: "223" },
+  { name: "Malta", iso2: "MT", dial: "356" },
+  { name: "Marshall Islands", iso2: "MH", dial: "692" },
+  { name: "Mauritania", iso2: "MR", dial: "222" },
+  { name: "Mauritius", iso2: "MU", dial: "230" },
+  { name: "Mexico", iso2: "MX", dial: "52" },
+  { name: "Micronesia", iso2: "FM", dial: "691" },
+  { name: "Moldova", iso2: "MD", dial: "373" },
+  { name: "Monaco", iso2: "MC", dial: "377" },
+  { name: "Mongolia", iso2: "MN", dial: "976" },
+  { name: "Montenegro", iso2: "ME", dial: "382" },
+  { name: "Morocco", iso2: "MA", dial: "212" },
+  { name: "Mozambique", iso2: "MZ", dial: "258" },
+  { name: "Myanmar", iso2: "MM", dial: "95" },
+  { name: "Namibia", iso2: "NA", dial: "264" },
+  { name: "Nauru", iso2: "NR", dial: "674" },
+  { name: "Nepal", iso2: "NP", dial: "977" },
+  { name: "Netherlands", iso2: "NL", dial: "31" },
+  { name: "New Zealand", iso2: "NZ", dial: "64" },
+  { name: "Nicaragua", iso2: "NI", dial: "505" },
+  { name: "Niger", iso2: "NE", dial: "227" },
+  { name: "Nigeria", iso2: "NG", dial: "234" },
+  { name: "North Korea", iso2: "KP", dial: "850" },
+  { name: "North Macedonia", iso2: "MK", dial: "389" },
+  { name: "Norway", iso2: "NO", dial: "47" },
+  { name: "Oman", iso2: "OM", dial: "968" },
+  { name: "Pakistan", iso2: "PK", dial: "92" },
+  { name: "Palau", iso2: "PW", dial: "680" },
+  { name: "Panama", iso2: "PA", dial: "507" },
+  { name: "Papua New Guinea", iso2: "PG", dial: "675" },
+  { name: "Paraguay", iso2: "PY", dial: "595" },
+  { name: "Peru", iso2: "PE", dial: "51" },
+  { name: "Philippines", iso2: "PH", dial: "63" },
+  { name: "Poland", iso2: "PL", dial: "48" },
+  { name: "Portugal", iso2: "PT", dial: "351" },
+  { name: "Qatar", iso2: "QA", dial: "974" },
+  { name: "Romania", iso2: "RO", dial: "40" },
+  { name: "Russia", iso2: "RU", dial: "7" },
+  { name: "Rwanda", iso2: "RW", dial: "250" },
+  { name: "Saint Kitts and Nevis", iso2: "KN", dial: "1" },
+  { name: "Saint Lucia", iso2: "LC", dial: "1" },
+  { name: "Saint Vincent and the Grenadines", iso2: "VC", dial: "1" },
+  { name: "Samoa", iso2: "WS", dial: "685" },
+  { name: "San Marino", iso2: "SM", dial: "378" },
+  { name: "Sao Tome and Principe", iso2: "ST", dial: "239" },
+  { name: "Saudi Arabia", iso2: "SA", dial: "966" },
+  { name: "Senegal", iso2: "SN", dial: "221" },
+  { name: "Serbia", iso2: "RS", dial: "381" },
+  { name: "Seychelles", iso2: "SC", dial: "248" },
+  { name: "Sierra Leone", iso2: "SL", dial: "232" },
+  { name: "Singapore", iso2: "SG", dial: "65" },
+  { name: "Slovakia", iso2: "SK", dial: "421" },
+  { name: "Slovenia", iso2: "SI", dial: "386" },
+  { name: "Solomon Islands", iso2: "SB", dial: "677" },
+  { name: "Somalia", iso2: "SO", dial: "252" },
+  { name: "South Africa", iso2: "ZA", dial: "27" },
+  { name: "South Korea", iso2: "KR", dial: "82" },
+  { name: "South Sudan", iso2: "SS", dial: "211" },
+  { name: "Spain", iso2: "ES", dial: "34" },
+  { name: "Sri Lanka", iso2: "LK", dial: "94" },
+  { name: "Sudan", iso2: "SD", dial: "249" },
+  { name: "Suriname", iso2: "SR", dial: "597" },
+  { name: "Sweden", iso2: "SE", dial: "46" },
+  { name: "Switzerland", iso2: "CH", dial: "41" },
+  { name: "Syria", iso2: "SY", dial: "963" },
+  { name: "Taiwan", iso2: "TW", dial: "886" },
+  { name: "Tajikistan", iso2: "TJ", dial: "992" },
+  { name: "Tanzania", iso2: "TZ", dial: "255" },
+  { name: "Thailand", iso2: "TH", dial: "66" },
+  { name: "Timor-Leste", iso2: "TL", dial: "670" },
+  { name: "Togo", iso2: "TG", dial: "228" },
+  { name: "Tonga", iso2: "TO", dial: "676" },
+  { name: "Trinidad and Tobago", iso2: "TT", dial: "1" },
+  { name: "Tunisia", iso2: "TN", dial: "216" },
+  { name: "Turkey", iso2: "TR", dial: "90" },
+  { name: "Turkmenistan", iso2: "TM", dial: "993" },
+  { name: "Tuvalu", iso2: "TV", dial: "688" },
+  { name: "Uganda", iso2: "UG", dial: "256" },
+  { name: "Ukraine", iso2: "UA", dial: "380" },
+  { name: "United Arab Emirates", iso2: "AE", dial: "971" },
+  { name: "United Kingdom", iso2: "GB", dial: "44" },
+  { name: "United States", iso2: "US", dial: "1" },
+  { name: "Uruguay", iso2: "UY", dial: "598" },
+  { name: "Uzbekistan", iso2: "UZ", dial: "998" },
+  { name: "Vanuatu", iso2: "VU", dial: "678" },
+  { name: "Vatican City", iso2: "VA", dial: "379" },
+  { name: "Venezuela", iso2: "VE", dial: "58" },
+  { name: "Vietnam", iso2: "VN", dial: "84" },
+  { name: "Yemen", iso2: "YE", dial: "967" },
+  { name: "Zambia", iso2: "ZM", dial: "260" },
+  { name: "Zimbabwe", iso2: "ZW", dial: "263" },
+];
+
+const flagFor = (iso2: string) =>
+  iso2
+    .toUpperCase()
+    .split("")
+    .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
+    .join("");
+
+const COUNTRY_ISO_LOOKUP = Object.fromEntries(
+  PHONE_COUNTRIES.map((c) => [c.name, c.iso2])
+);
+
+const COUNTRY_SELECT_OPTIONS = COUNTRY_OPTIONS.map((name) => ({
+  value: name,
+  label: name,
+  iso2: COUNTRY_ISO_LOOKUP[name],
+}));
+
+type SelectOption = {
+  value: string;
+  label: string;
+  iso2?: string;
+};
+
+function SearchableSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: SelectOption[];
+  placeholder: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const id = window.setTimeout(() => inputRef.current?.focus(), 0);
+    return () => window.clearTimeout(id);
+  }, [open]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!containerRef.current) return;
+      if (!containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+        setSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selected = options.find((option) => option.value === value);
+  const filtered = options.filter((option) =>
+    option.label.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full h-9 px-3 bg-card border border-border rounded-lg flex items-center gap-2 text-sm text-left"
+      >
+        <span className="text-sm">
+          {selected?.iso2 ? flagFor(selected.iso2) : "🏳️"}
+        </span>
+        <span className={selected ? "text-foreground" : "text-muted-foreground"}>
+          {selected?.label || placeholder}
+        </span>
+        <ChevronDown className="ml-auto w-4 h-4 text-muted-foreground" />
+      </button>
+      {open && (
+        <div className="absolute z-50 mt-1 w-full bg-card border border-border rounded-lg shadow-lg">
+          <div className="p-2 border-b border-border">
+            <div className="flex items-center gap-2 h-8 px-2 border border-border rounded-md">
+              <Search className="w-4 h-4 text-muted-foreground" />
+              <input
+                ref={inputRef}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search"
+                className="flex-1 text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
+              />
+            </div>
+          </div>
+          <div className="max-h-56 overflow-y-auto py-1">
+            {filtered.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                  setSearch("");
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted/70 transition-colors"
+              >
+                <span className="w-6">
+                  {option.iso2 ? flagFor(option.iso2) : "🏳️"}
+                </span>
+                <span className="flex-1 text-left">{option.label}</span>
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="px-3 py-2 text-sm text-muted-foreground">No matches</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const topTabs = ["Tenant Setup", "Social Links", "Legal and T&C", "Chapters"] as const;
 type TopTab = (typeof topTabs)[number];
 
@@ -1183,19 +1526,19 @@ function ChapterCoverUpload({ value, onUpload }: { value?: string; onUpload: (ur
           </button>
         </div>
       ) : (
-        <>
+        <div className="flex flex-col items-center justify-center p-6 text-center">
           <div className="mb-2">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF" />
-              <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2" />
-              <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 11.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white" />
+            <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1.44444" y="1.44444" width="49.1111" height="49.1111" rx="24.5556" fill="#3F52FF" />
+              <rect x="1.44444" y="1.44444" width="49.1111" height="49.1111" rx="24.5556" stroke="white" strokeWidth="2.88889" />
+              <path fillRule="evenodd" clipRule="evenodd" d="M26 14.8055H25.9393C23.9619 14.8055 22.3947 14.8055 21.1438 14.9327C19.8611 15.0627 18.7908 15.3371 17.8548 15.9625C17.1071 16.4644 16.4644 17.1071 15.9625 17.8548C15.3357 18.7908 15.0627 19.8625 14.9327 21.1438C14.8055 22.3947 14.8055 23.9619 14.8055 25.9393V26.0607C14.8055 28.0381 14.8055 29.6053 14.9327 30.8562C15.0627 32.1389 15.3371 33.2092 15.9625 34.1452C16.4623 34.8949 17.1051 35.5377 17.8548 36.0374C18.7908 36.6643 19.8625 36.9373 21.1438 37.0673C22.3947 37.1944 23.9619 37.1944 25.9393 37.1944H26.0607C28.0381 37.1944 29.6053 37.1944 30.8562 37.0673C32.1389 36.9373 33.2092 36.6629 34.1452 36.0389C34.893 35.5366 35.5357 34.8934 36.0374 34.1452C36.6643 33.2092 36.9373 32.1374 37.0673 30.8562C37.1944 29.6053 37.1944 28.0381 37.0673 21.1438C36.9373 19.8611 36.6629 18.7908 36.0389 17.8548C35.5366 17.107 34.8934 16.4643 34.1452 15.9625C33.2092 15.3357 32.1374 15.0627 30.8562 14.9327C29.6053 14.8055 28.0381 14.8055 26.0607 14.8055H26ZM29.3511 27.1339C29.5764 26.8305 30.4128 25.8801 31.4975 26.5561C32.188 26.9822 32.7687 27.5585 33.3898 28.1739C33.6267 28.4108 33.7942 28.6794 33.9083 28.9669C34.2463 29.8335 34.0701 30.8779 33.709 31.7373C33.5047 32.2374 33.1945 32.6873 32.7998 33.056C32.4051 33.4248 31.9352 33.7038 31.4224 33.8737C30.9628 34.0191 30.4832 34.0917 30.0011 34.0889H21.4789C20.631 34.0889 19.8813 33.8867 19.266 33.5068C18.8803 33.2684 18.8124 32.7195 19.0984 32.3642C19.5741 31.7701 20.0489 31.1721 20.5227 30.5702C21.4298 29.419 22.0408 29.0839 22.7211 29.3771C22.9955 29.4984 23.2729 29.6804 23.5574 29.8725C24.3158 30.3882 25.3702 31.096 26.7583 30.3275C27.7088 29.7945 28.2605 28.8831 28.7401 28.0872L28.7488 28.0728L28.8499 27.9067C29.0051 27.6416 29.1724 27.3837 29.3511 27.1339ZM19.9333 22.4611C19.9333 21.0672 21.0658 19.9333 22.4611 19.9333C23.1315 19.9333 23.7745 20.1996 24.2485 20.6737C24.7226 21.1477 24.9889 21.7907 24.9889 22.4611C24.9889 23.1315 24.7226 23.7745 24.2485 24.2485C23.7745 24.7226 23.1315 24.9889 22.4611 24.9889C21.0658 24.9889 19.9333 23.855 19.9333 22.4611Z" fill="white" />
             </svg>
           </div>
-          <span className={`text-sm font-medium ${isDragging ? "text-[#3f52ff] dark:text-white dark:text-[#8faeff]" : "text-foreground"}`}>
+          <span className="text-sm font-medium text-foreground">
             {isDragging ? "Drop to upload" : "Upload chapter cover"}
           </span>
-          <span className="text-xs text-muted-foreground/70 mt-1">All files · Up to 10MB</span>
-        </>
+          <span className="text-xs text-muted-foreground/70 mt-1">PNG, JPG, GIF, WebP · Up to 10MB</span>
+        </div>
       )}
     </div>
   );
@@ -2566,16 +2909,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
         {/* Basic Info Tab */}
         {activeTab === "Basic Info" && (
           <div className="flex flex-col gap-4">
-            {/* Cover Image Upload */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-foreground">
-                Chapter Cover Image
-              </label>
-              <ChapterCoverUpload
-                value={coverImage}
-                onUpload={setCoverImage}
-              />
-            </div>
+
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex flex-col gap-2 flex-1">
                 <label className="text-sm font-semibold text-foreground">
@@ -2619,12 +2953,11 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                 <label className="text-sm font-semibold text-foreground">
                   Country *
                 </label>
-                <input
-                  type="text"
+                <SearchableSelect
                   value={country}
-                  onChange={(e) => setCountry(e.target.value)}
+                  onChange={setCountry}
+                  options={COUNTRY_SELECT_OPTIONS}
                   placeholder="eg. UAE"
-                  className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
                 />
               </div>
             </div>
@@ -2687,7 +3020,11 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                 ) : (
                   <>
                     <div className="mb-2">
-                      <Upload className={`w-8 h-8 ${isDraggingCover ? "text-[#3f52ff]" : "text-muted-foreground"}`} />
+                      <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1.44444" y="1.44444" width="49.1111" height="49.1111" rx="24.5556" fill="#3F52FF" />
+                        <rect x="1.44444" y="1.44444" width="49.1111" height="49.1111" rx="24.5556" stroke="white" strokeWidth="2.88889" />
+                        <path fillRule="evenodd" clipRule="evenodd" d="M26 14.8055H25.9393C23.9619 14.8055 22.3947 14.8055 21.1438 14.9327C19.8611 15.0627 18.7908 15.3371 17.8548 15.9625C17.1071 16.4644 16.4644 17.1071 15.9625 17.8548C15.3357 18.7908 15.0627 19.8625 14.9327 21.1438C14.8055 22.3947 14.8055 23.9619 14.8055 25.9393V26.0607C14.8055 28.0381 14.8055 29.6053 14.9327 30.8562C15.0627 32.1389 15.3371 33.2092 15.9625 34.1452C16.4623 34.8949 17.1051 35.5377 17.8548 36.0374C18.7908 36.6643 19.8625 36.9373 21.1438 37.0673C22.3947 37.1944 23.9619 37.1944 25.9393 37.1944H26.0607C28.0381 37.1944 29.6053 37.1944 30.8562 37.0673C32.1389 36.9373 33.2092 36.6629 34.1452 36.0389C34.893 35.5366 35.5357 34.8934 36.0374 34.1452C36.6643 33.2092 36.9373 32.1374 37.0673 30.8562C37.1944 29.6053 37.1944 28.0381 37.1944 26.0607V25.9393C37.1944 23.9619 37.1944 22.3947 37.0673 21.1438C36.9373 19.8611 36.6629 18.7908 36.0389 17.8548C35.5366 17.107 34.8934 16.4643 34.1452 15.9625C33.2092 15.3357 32.1374 15.0627 30.8562 14.9327C29.6053 14.8055 28.0381 14.8055 26.0607 14.8055H26ZM29.3511 27.1339C29.5764 26.8305 30.4128 25.8801 31.4975 26.5561C32.188 26.9822 32.7687 27.5585 33.3898 28.1739C33.6267 28.4108 33.7942 28.6794 33.9083 28.9669C34.2463 29.8335 34.0701 30.8779 33.709 31.7373C33.5047 32.2374 33.1945 32.6873 32.7998 33.056C32.4051 33.4248 31.9352 33.7038 31.4224 33.8737C30.9628 34.0191 30.4832 34.0917 30.0011 34.0889H21.4789C20.631 34.0889 19.8813 33.8867 19.266 33.5068C18.8803 33.2684 18.8124 32.7195 19.0984 32.3642C19.5741 31.7701 20.0489 31.1721 20.5227 30.5702C21.4298 29.419 22.0408 29.0839 22.7211 29.3771C22.9955 29.4984 23.2729 29.6804 23.5574 29.8725C24.3158 30.3882 25.3702 31.096 26.7583 30.3275C27.7088 29.7945 28.2605 28.8831 28.7401 28.0872L28.7488 28.0728L28.8499 27.9067C29.0051 27.6416 29.1724 27.3837 29.3511 27.1339ZM19.9333 22.4611C19.9333 21.0672 21.0658 19.9333 22.4611 19.9333C23.1315 19.9333 23.7745 20.1996 24.2485 20.6737C24.7226 21.1477 24.9889 21.7907 24.9889 22.4611C24.9889 33.1315 24.7226 23.7745 24.2485 24.2485C23.7745 24.7226 23.1315 24.9889 22.4611 24.9889C21.0658 24.9889 19.9333 23.855 19.9333 22.4611Z" fill="white" />
+                      </svg>
                     </div>
                     <span className={`text-sm font-medium ${isDraggingCover ? "text-[#3f52ff] dark:text-[#8faeff]" : "text-foreground"}`}>
                       {isDraggingCover ? "Drop to upload" : "Drag & drop or click to upload"}
