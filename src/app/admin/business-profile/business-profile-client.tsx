@@ -3304,6 +3304,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
 
 // --- View Chapter Panel ---
 interface ViewChapterData {
+  id: string;
   name: string;
   code: string;
   city: string;
@@ -3312,6 +3313,16 @@ interface ViewChapterData {
   events: string;
   lastUpdate: string;
   coverImage?: string | null;
+  venue_name?: string;
+  full_address?: string;
+  sort_order?: number;
+  notifications?: {
+    enableNotifications: boolean;
+    autoNotifyNewEvents: boolean;
+    autoNotifyNewUpdates: boolean;
+    autoNotifyAnnouncements: boolean;
+  };
+  created_at?: string;
 }
 
 function ViewChapterPanel({
@@ -3323,27 +3334,28 @@ function ViewChapterPanel({
   onClose: () => void;
   onNavigate?: (direction: "prev" | "next") => void;
 }) {
-  const [notifications, setNotifications] = useState({
-    enableNotifications: false,
-    autoNotifyNewEvents: true,
-    autoNotifyNewUpdates: false,
-    autoNotifyAnnouncements: true,
-  });
+  const [notifications, setNotifications] = useState(
+    chapter.notifications || {
+      enableNotifications: false,
+      autoNotifyNewEvents: true,
+      autoNotifyNewUpdates: false,
+      autoNotifyAnnouncements: true,
+    }
+  );
 
   const toggleNotification = (key: keyof typeof notifications) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  const createdDate = chapter.created_at
+    ? new Date(chapter.created_at).toLocaleDateString()
+    : "—";
 
   const eventCount = (() => {
     const match = chapter.events.match(/\d+/);
     return match ? match[0] : "0";
   })();
 
-  const teamMembers = [
-    { name: "Danish", email: "danish.rasmussen@example.com", role: "Member" },
-    { name: "Hamid", email: "hamid.zahed@example.com", role: "Co-Lead" },
-    { name: "Yousri", email: "yybouhamed@gmail.com", role: "Chapter Lead" },
-  ];
 
   return (
     <div className="fixed inset-y-0 right-0 z-[100] flex justify-end pointer-events-none">
@@ -3398,7 +3410,7 @@ function ViewChapterPanel({
                 {chapter.name} Chapter
               </span>
               <span className="text-[16px] text-[#d8e6ff] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                {chapter.country}
+                {chapter.city}{chapter.city && chapter.country ? ", " : ""}{chapter.country}
               </span>
             </div>
             <button className="px-3 py-1.5 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors shrink-0">
@@ -3419,11 +3431,11 @@ function ViewChapterPanel({
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Sort Order</span>
-              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>1</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{chapter.sort_order ?? "—"}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Created</span>
-              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>11/28/2025</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{createdDate}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Last Updated</span>
@@ -3451,11 +3463,11 @@ function ViewChapterPanel({
           <div className="flex gap-12">
             <div className="flex flex-col gap-1 shrink-0">
               <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Venue Name</span>
-              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Manhattan Community Center</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{chapter.venue_name || "Not set"}</span>
             </div>
             <div className="flex flex-col gap-1 flex-1">
               <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Address</span>
-              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>123 Madison Avenue, New York, NY 10016</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{chapter.full_address || "Not set"}</span>
             </div>
           </div>
         </div>
@@ -3471,7 +3483,7 @@ function ViewChapterPanel({
             Chapter Story
           </span>
           <p className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-            The {chapter.name} Chapter brings together professionals and enthusiasts in the heart of Manhattan. Join us for networking events, workshops, and community building. Our vibrant community hosts monthly meetups, quarterly conferences, and annual galas that bring together industry leaders and innovators from across the tri-state area.
+            The {chapter.name} Chapter brings together professionals and enthusiasts in the heart of {chapter.city}. Join us for networking events, workshops, and community building.
           </p>
         </div>
 
@@ -3485,31 +3497,20 @@ function ViewChapterPanel({
           <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Team Members
           </span>
-          <div className="flex flex-col gap-2">
-            {teamMembers.map((member) => (
-              <div
-                key={member.email}
-                className="bg-white border border-[#d5dde2] rounded-[12px] p-2 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-[9px] p-3 flex items-center justify-center">
-                    <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[16px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                      {member.name}
-                    </span>
-                    <span className="text-[12px] font-semibold text-[#859bab] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                      {member.email}
-                    </span>
-                  </div>
-                </div>
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#3f52ff] text-white">
-                  {member.role}
-                </span>
+          {chapter.team > 0 ? (
+            <div className="flex items-center gap-2">
+              <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-[9px] p-3 flex items-center justify-center">
+                <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
               </div>
-            ))}
-          </div>
+              <span className="text-[16px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+                {chapter.team} team member{chapter.team !== 1 ? "s" : ""}
+              </span>
+            </div>
+          ) : (
+            <span className="text-[14px] text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+              No team members assigned yet
+            </span>
+          )}
         </div>
 
         {/* Divider */}
@@ -3799,6 +3800,7 @@ function ChaptersContent() {
 
   const handleRowClick = (chapter: any) => {
     setViewChapter({
+      id: chapter.id,
       name: chapter.name,
       code: chapter.code,
       city: chapter.city,
@@ -3807,6 +3809,16 @@ function ChaptersContent() {
       events: chapter.events,
       lastUpdate: chapter.updated_at ? new Date(chapter.updated_at).toLocaleDateString() : "—",
       coverImage: chapter.cover_image,
+      venue_name: chapter.venue_name || "",
+      full_address: chapter.full_address || "",
+      sort_order: chapter.sort_order ?? 999,
+      notifications: chapter.notifications || {
+        enableNotifications: false,
+        autoNotifyNewEvents: true,
+        autoNotifyNewUpdates: false,
+        autoNotifyAnnouncements: true,
+      },
+      created_at: chapter.created_at,
     });
   };
 
@@ -4054,17 +4066,7 @@ function ChaptersContent() {
                       {/* Action */}
                       <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
                         <ChapterActionMenu
-                          onView={() => {
-                            setViewChapter({
-                              name: chapter.name,
-                              code: chapter.code,
-                              city: chapter.city,
-                              country: chapter.country,
-                              team: chapter.team,
-                              events: chapter.events,
-                              lastUpdate: chapter.updated_at ? new Date(chapter.updated_at).toLocaleDateString() : "—",
-                            });
-                          }}
+                          onView={() => handleRowClick(chapter)}
                           onEdit={() => {
                             setEditChapterData({
                               id: chapter.id,
