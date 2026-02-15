@@ -3692,7 +3692,19 @@ function ChaptersContent() {
       const res = await fetch("/api/chapters");
       const result = await res.json();
       if (result.success && result.data) {
-        setChaptersData(result.data);
+        // Normalize DB field names (some chapters may use chapter_name/chapter_code)
+        const normalized = result.data.map((ch: any) => ({
+          ...ch,
+          name: ch.chapter_name || ch.name || "",
+          code: ch.chapter_code || ch.code || ch.id?.substring(0, 8) || "",
+          city: ch.city || "",
+          country: ch.country || "",
+          events: ch.events || "0 Events",
+          team: ch.team_member_count || ch.team || 0,
+          status: ch.status || "Active",
+          visible: ch.visible !== false,
+        }));
+        setChaptersData(normalized);
       }
     } catch (err) {
       console.error("Failed to fetch chapters:", err);
@@ -3787,10 +3799,10 @@ function ChaptersContent() {
   const filteredChapters = chaptersData.filter(chapter => {
     const query = searchQuery.toLowerCase();
     return (
-      chapter.name.toLowerCase().includes(query) ||
-      chapter.city.toLowerCase().includes(query) ||
-      chapter.country.toLowerCase().includes(query) ||
-      chapter.code.toLowerCase().includes(query)
+      (chapter.name || "").toLowerCase().includes(query) ||
+      (chapter.city || "").toLowerCase().includes(query) ||
+      (chapter.country || "").toLowerCase().includes(query) ||
+      (chapter.code || "").toLowerCase().includes(query)
     );
   });
 
@@ -3984,16 +3996,7 @@ function ChaptersContent() {
                       </div>
                     </td>
                   </tr>
-                ) : chaptersData
-                  .filter(chapter => {
-                    const query = searchQuery.toLowerCase();
-                    return (
-                      chapter.name.toLowerCase().includes(query) ||
-                      chapter.city.toLowerCase().includes(query) ||
-                      chapter.country.toLowerCase().includes(query) ||
-                      chapter.code.toLowerCase().includes(query)
-                    );
-                  })
+                ) : filteredChapters
                   .map((chapter) => (
                     <tr
                       key={chapter.id}
