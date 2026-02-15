@@ -2636,15 +2636,27 @@ function TeamTabContent({
 
       {/* Team Members List */}
       <div className="flex flex-col gap-2">
-        {members.map((member) => (
-          <TeamMemberCard
-            key={member.id}
-            member={member}
-            onRemove={() => removeMember(member.id)}
-            onRoleChange={(role) => updateMemberRole(member.id, role)}
-            badgeClass={roleBadgeColor[member.role]}
-          />
-        ))}
+        {members.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center bg-card border border-border rounded-xl border-dashed">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+              <Users className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <h3 className="text-sm font-semibold text-foreground mb-1">No team members yet</h3>
+            <p className="text-xs text-muted-foreground max-w-[200px]">
+              Add team members above to help manage this chapter.
+            </p>
+          </div>
+        ) : (
+          members.map((member) => (
+            <TeamMemberCard
+              key={member.id}
+              member={member}
+              onRemove={() => removeMember(member.id)}
+              onRoleChange={(role) => updateMemberRole(member.id, role)}
+              badgeClass={roleBadgeColor[member.role]}
+            />
+          ))
+        )}
       </div>
     </div>
   );
@@ -2777,26 +2789,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
   const toggleNotification = (key: keyof typeof notifications) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-    {
-      id: "1",
-      name: "Danish",
-      email: "danish.rasmussen@example.com",
-      role: "Member",
-    },
-    {
-      id: "2",
-      name: "Hamid",
-      email: "hamid.zahed@example.com",
-      role: "Co-Lead",
-    },
-    {
-      id: "3",
-      name: "Yousri",
-      email: "yybouhamed@gmail.com",
-      role: "Chapter Lead",
-    },
-  ]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
 
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [isDraggingCover, setIsDraggingCover] = useState(false);
