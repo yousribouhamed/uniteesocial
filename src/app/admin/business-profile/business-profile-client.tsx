@@ -3191,17 +3191,12 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                 Sort Order
               </label>
               <div className="relative w-full max-w-[460px]">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 10L8 14L12 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M4 6L8 2L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
                 <input
                   type="number"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(Number(e.target.value))}
-                  className="h-9 w-full pl-9 pr-8 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="Enter sort order"
+                  className="h-9 w-full px-3 pr-8 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-0">
                   <button
@@ -3245,28 +3240,28 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                 </p>
               </div>
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between max-w-[373px]">
+                <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-foreground">Enable Notifications</span>
                   <AriaSwitch
                     isSelected={notifications.enableNotifications}
                     onChange={() => toggleNotification("enableNotifications")}
                   />
                 </div>
-                <div className="flex items-center justify-between max-w-[373px]">
+                <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-foreground">Auto-Notify New Events</span>
                   <AriaSwitch
                     isSelected={notifications.autoNotifyNewEvents}
                     onChange={() => toggleNotification("autoNotifyNewEvents")}
                   />
                 </div>
-                <div className="flex items-center justify-between max-w-[373px]">
+                <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-foreground">Auto-Notify New Updates</span>
                   <AriaSwitch
                     isSelected={notifications.autoNotifyNewUpdates}
                     onChange={() => toggleNotification("autoNotifyNewUpdates")}
                   />
                 </div>
-                <div className="flex items-center justify-between max-w-[373px]">
+                <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-foreground">Auto-Notify Announcements</span>
                   <AriaSwitch
                     isSelected={notifications.autoNotifyAnnouncements}
