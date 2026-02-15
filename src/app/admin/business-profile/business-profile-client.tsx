@@ -2811,10 +2811,29 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
       return;
     }
 
-    // Use local preview URL (no server upload)
+    // Show local preview immediately, then upload to Supabase
     const previewUrl = URL.createObjectURL(file);
     setCoverImage(previewUrl);
     setIsDraggingCover(false);
+    setUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const result = await uploadChapterCover(formData);
+      setCoverImage(result.url);
+    } catch (err) {
+      console.error("Cover upload failed:", err);
+      setCoverImage("");
+      toastQueue.add({
+        title: "Upload Failed",
+        description: "Failed to upload cover image. Please try again.",
+        variant: "error",
+      }, { timeout: 3000 });
+    } finally {
+      URL.revokeObjectURL(previewUrl);
+      setUploadingImage(false);
+    }
   };
 
   const handleCoverDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -3396,7 +3415,7 @@ function ViewChapterPanel({
 
         {/* Hero Image */}
         <div className="mx-4 h-[257px] rounded-[12px] bg-gradient-to-b from-[#4a6fa5] to-[#2d3e50] relative overflow-hidden flex flex-col justify-end p-4">
-          {chapter.coverImage ? (
+          {chapter.coverImage && !chapter.coverImage.startsWith("blob:") ? (
             <img
               src={chapter.coverImage}
               alt={chapter.name}
