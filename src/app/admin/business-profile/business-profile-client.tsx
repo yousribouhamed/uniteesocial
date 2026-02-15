@@ -46,7 +46,7 @@ import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
-import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset, uploadChapterCover } from "./actions";
+import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset } from "./actions";
 import { TIMEZONES } from "@/data/timezones";
 
 interface BusinessProfileClientProps {
@@ -1118,33 +1118,10 @@ function ChapterCoverUpload({
       return;
     }
 
-    try {
-      setIsUploading(true);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const result = await uploadChapterCover(formData);
-
-      onUpload(result.url);
-
-      toastQueue.add({
-        title: "Upload Successful",
-        description: "Cover image uploaded successfully.",
-        variant: "success",
-      }, { timeout: 3000 });
-
-    } catch (error: any) {
-      console.error("Upload failed:", error);
-      toastQueue.add({
-        title: "Upload Failed",
-        description: error.message || "Failed to upload cover image.",
-        variant: "error",
-      }, { timeout: 4000 });
-    } finally {
-      setIsUploading(false);
-      setIsDragging(false);
-    }
+    // Use local preview URL (no server upload)
+    const previewUrl = URL.createObjectURL(file);
+    onUpload(previewUrl);
+    setIsDragging(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -1181,8 +1158,8 @@ function ChapterCoverUpload({
       onDrop={handleDrop}
       onClick={handleClick}
       className={`border border-dashed rounded-xl flex flex-col items-center justify-center relative overflow-hidden transition-colors cursor-pointer min-h-[140px] ${isDragging
-          ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff]"
-          : "bg-card border-border hover:border-muted-foreground/60"
+        ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff]"
+        : "bg-card border-border hover:border-muted-foreground/60"
         }`}
     >
       <input
@@ -2486,31 +2463,10 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
       return;
     }
 
-    try {
-      setUploadingImage(true);
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const result = await uploadChapterCover(formData);
-      setCoverImage(result.url);
-
-
-      toastQueue.add({
-        title: "Image Uploaded",
-        description: "Cover image uploaded successfully.",
-        variant: "success",
-      }, { timeout: 3000 });
-    } catch (error: any) {
-      console.error(error);
-      toastQueue.add({
-        title: "Upload Failed",
-        description: error.message || "Failed to upload image.",
-        variant: "error",
-      }, { timeout: 3000 });
-    } finally {
-      setUploadingImage(false);
-      setIsDraggingCover(false);
-    }
+    // Use local preview URL (no server upload)
+    const previewUrl = URL.createObjectURL(file);
+    setCoverImage(previewUrl);
+    setIsDraggingCover(false);
   };
 
   const handleCoverDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -2559,56 +2515,13 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
       return;
     }
 
-    try {
-      setCreating(true);
-      const description = JSON.stringify({
-        chapterCode: chapterCode.trim(),
-        city: city.trim(),
-        country: country.trim(),
-        venueName: venueName.trim(),
-        fullAddress: fullAddress.trim(),
-        mapSearch: searchPlace.trim(),
-        teamMembers,
-      });
-
-      const requestBody = {
-        name: chapterName.trim(),
-        description,
-        member_count: teamMembers.length,
-        city: city.trim(),
-        country: country.trim(),
-        cover_image: coverImage || null,
-        is_main: false,
-      };
-      console.log("📤 Sending to API:", requestBody);
-
-      const response = await fetch("/api/chapters", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
-
-      const result = await response.json();
-      if (!response.ok || !result?.success) {
-        throw new Error(result?.error || "Failed to create chapter.");
-      }
-
-      toastQueue.add({
-        title: "Chapter Created",
-        description: "Chapter and team details saved successfully.",
-        variant: "success",
-      }, { timeout: 3000 });
-      onDismiss();
-    } catch (error: any) {
-      console.error(error);
-      toastQueue.add({
-        title: "Create Failed",
-        description: error?.message || "Unable to create chapter.",
-        variant: "error",
-      }, { timeout: 3500 });
-    } finally {
-      setCreating(false);
-    }
+    // Frontend-only: just show success and dismiss
+    toastQueue.add({
+      title: "Chapter Created",
+      description: "Chapter details saved successfully.",
+      variant: "success",
+    }, { timeout: 3000 });
+    onDismiss();
   };
 
   return (
@@ -2731,10 +2644,10 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
                 onDrop={handleCoverDrop}
                 onClick={!coverImage && !uploadingImage ? handleCoverClick : undefined}
                 className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center relative overflow-hidden transition-colors ${coverImage
-                    ? "border-border"
-                    : isDraggingCover
-                      ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff] cursor-copy"
-                      : "bg-card border-border cursor-pointer hover:border-muted-foreground/60"
+                  ? "border-border"
+                  : isDraggingCover
+                    ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff] cursor-copy"
+                    : "bg-card border-border cursor-pointer hover:border-muted-foreground/60"
                   }`}
               >
                 <input
@@ -3209,49 +3122,14 @@ function ChapterActionMenu({
 }
 
 // --- DB chapter shape ---
-interface DbChapter {
-  id: string;
-  name: string;
-  description: string | null;
-  city: string | null;
-  country: string | null;
-  code: string | null;
-  member_count: number;
-  event_count: number;
-  visible: boolean;
-  status: string;
-  cover_image: string | null;
-  is_main: boolean;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// Map DB chapter to the shape the UI expects
-function toDisplayChapter(ch: DbChapter) {
-  return {
-    id: ch.id,
-    name: ch.name,
-    code: ch.code || "",
-    city: ch.city || "",
-    country: ch.country || "",
-    team: ch.member_count || 0,
-    events: `${ch.event_count || 0} Events`,
-    visible: ch.visible ?? true,
-    status: (ch.status || "Active") as "Active",
-    lastUpdate: ch.updated_at
-      ? new Date(ch.updated_at).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })
-      : "",
-    updatedBy: "",
-  };
-}
-
 // --- Chapters Content ---
 function ChaptersContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [chaptersData, setChaptersData] = useState<ReturnType<typeof toDisplayChapter>[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [chaptersData, setChaptersData] = useState(
+    DEFAULT_CHAPTERS.map((ch, i) => ({ ...ch, id: `default-${i}` }))
+  );
+  const [isLoading] = useState(false);
   const [deleteChapter, setDeleteChapter] = useState<{
     name: string;
     code: string;
@@ -3266,29 +3144,6 @@ function ChaptersContent() {
     events: string;
     lastUpdate: string;
   } | null>(null);
-
-  // Fetch chapters from DB
-  const fetchChapters = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const res = await fetch("/api/chapters");
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        setChaptersData(json.data.map((ch: DbChapter) => toDisplayChapter(ch)));
-      } else {
-        // Fallback to DEFAULT_CHAPTERS if API fails
-        setChaptersData(DEFAULT_CHAPTERS.map((ch, i) => ({ ...ch, id: `default-${i}` })));
-      }
-    } catch {
-      setChaptersData(DEFAULT_CHAPTERS.map((ch, i) => ({ ...ch, id: `default-${i}` })));
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchChapters();
-  }, [fetchChapters]);
 
   const [visibleStates, setVisibleStates] = useState<Record<string, boolean>>({});
 
@@ -3313,7 +3168,7 @@ function ChaptersContent() {
   ];
 
   if (showCreateForm) {
-    return <CreateChapterForm onDismiss={() => { setShowCreateForm(false); void fetchChapters(); }} />;
+    return <CreateChapterForm onDismiss={() => { setShowCreateForm(false); }} />;
   }
 
   // Extract event count number from string like "12 Events"
