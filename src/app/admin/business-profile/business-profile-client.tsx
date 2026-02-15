@@ -3346,23 +3346,14 @@ function ViewChapterPanel({
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex justify-end">
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-      />
+    <div className="fixed inset-y-0 right-0 z-[100] flex justify-end pointer-events-none">
       {/* Drawer */}
       <motion.div
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-        className="relative bg-white rounded-l-[24px] w-[562px] h-full overflow-y-auto shadow-xl flex flex-col gap-6 py-4"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-l-[24px] w-[562px] h-full overflow-y-auto shadow-xl flex flex-col gap-6 py-4 pointer-events-auto"
       >
         {/* Top Navigation */}
         <div className="flex items-center justify-between px-4">
