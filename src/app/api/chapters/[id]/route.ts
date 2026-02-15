@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // GET /api/chapters/:id — Get chapter details and announcements
 export async function GET(
@@ -80,7 +81,17 @@ export async function PUT(
     if (is_main !== undefined) updateData.is_main = is_main;
     if (event_count !== undefined) updateData.event_count = event_count;
 
-    const { data: updated, error } = await supabase
+    // Use admin client to bypass PostgREST schema cache issues
+    const adminSupabase = createAdminClient();
+
+    // Reload PostgREST schema cache to ensure columns added via ALTER TABLE
+    // (city, country, cover_image, etc.) are recognized and not silently dropped
+    const { error: rpcError } = await adminSupabase.rpc('reload_schema_cache');
+    if (rpcError) {
+      console.warn('reload_schema_cache RPC not available:', rpcError.message);
+    }
+
+    const { data: updated, error } = await adminSupabase
       .from("chapters")
       .update(updateData)
       .eq("id", id)

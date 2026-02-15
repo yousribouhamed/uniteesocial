@@ -126,6 +126,14 @@ export async function POST(request: Request) {
     // added via ALTER TABLE (city, country, cover_image, etc.), causing them
     // to be silently dropped and saved as NULL.
     const adminSupabase = createAdminClient();
+
+    // Reload PostgREST schema cache to ensure columns added via ALTER TABLE
+    // (city, country, cover_image, etc.) are recognized and not silently dropped
+    const { error: rpcError } = await adminSupabase.rpc('reload_schema_cache');
+    if (rpcError) {
+      console.warn('reload_schema_cache RPC not available:', rpcError.message);
+    }
+
     const { data: chapter, error } = await adminSupabase
       .from("chapters")
       .insert(insertData)
