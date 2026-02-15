@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // GET /api/chapters — List all chapters
 export async function GET(request: Request) {
@@ -64,7 +65,7 @@ export async function POST(request: Request) {
     // Ensure city and country are strings and trimmed
     const cleanCity = city && typeof city === 'string' ? city.trim() : null;
     const cleanCountry = country && typeof country === 'string' ? country.trim() : null;
-    
+
     console.log("🧹 Cleaned values:", { cleanCity, cleanCountry });
 
     const insertData = {
@@ -79,10 +80,15 @@ export async function POST(request: Request) {
       is_main: is_main || false,
       visible: true,  // Must be true to show in app
     };
-    
+
     console.log("💾 Inserting to Supabase:", insertData);
 
-    const { data: chapter, error } = await supabase
+    // Use admin client (service_role key) to bypass PostgREST schema cache
+    // and RLS restrictions. The anon-key client may not recognize columns
+    // added via ALTER TABLE (city, country, cover_image, etc.), causing them
+    // to be silently dropped and saved as NULL.
+    const adminSupabase = createAdminClient();
+    const { data: chapter, error } = await adminSupabase
       .from("chapters")
       .insert(insertData)
       .select()

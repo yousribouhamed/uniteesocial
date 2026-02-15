@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo, type ChangeEvent, type Dispatch, type SetStateAction } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, type ChangeEvent, type DragEvent, type Dispatch, type SetStateAction } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { motion } from "framer-motion";
@@ -2268,7 +2268,7 @@ const createChapterTabs = ["Basic Info", "Venue", "Team", "Setting"] as const;
 type CreateChapterTab = (typeof createChapterTabs)[number];
 
 function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
-  const [activeTab, setActiveTab] = useState<CreateChapterTab>("Venue");
+  const [activeTab, setActiveTab] = useState<CreateChapterTab>("Basic Info");
   const [venueName, setVenueName] = useState("");
   const [fullAddress, setFullAddress] = useState("");
   const [searchPlace, setSearchPlace] = useState("");
@@ -2277,7 +2277,6 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [coverImage, setCoverImage] = useState<string>("");
-  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [creating, setCreating] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
@@ -2301,14 +2300,23 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
     },
   ]);
 
-  const handleCoverImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const [isDraggingCover, setIsDraggingCover] = useState(false);
 
+  const processCoverFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       toastQueue.add({
         title: "Invalid File",
-        description: "Please upload an image file.",
+        description: "Please upload an image file (PNG, JPG, GIF, WebP).",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toastQueue.add({
+        title: "File Too Large",
+        description: "Image size must be less than 10MB.",
         variant: "error",
       }, { timeout: 3000 });
       return;
@@ -2321,8 +2329,8 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
 
       const result = await uploadChapterCover(formData);
       setCoverImage(result.url);
-      setCoverImageFile(file);
-      
+
+
       toastQueue.add({
         title: "Image Uploaded",
         description: "Cover image uploaded successfully.",
@@ -2337,12 +2345,44 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
       }, { timeout: 3000 });
     } finally {
       setUploadingImage(false);
+      setIsDraggingCover(false);
+    }
+  };
+
+  const handleCoverDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingCover(true);
+  };
+
+  const handleCoverDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingCover(false);
+  };
+
+  const handleCoverDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingCover(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processCoverFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleCoverFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      processCoverFile(e.target.files[0]);
+    }
+    e.target.value = "";
+  };
+
+  const handleCoverClick = () => {
+    if (coverInputRef.current) {
+      coverInputRef.current.value = "";
+      coverInputRef.current.click();
     }
   };
 
   const handleRemoveCoverImage = () => {
     setCoverImage("");
-    setCoverImageFile(null);
   };
 
   const handleCreateChapter = async () => {
@@ -2506,50 +2546,74 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
               </div>
             </div>
 
-            {/* Cover Image Upload */}
+            {/* Cover Image Dropzone */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-foreground">
                 Cover Image
               </label>
-              {coverImage ? (
-                <div className="relative w-full h-40 rounded-lg overflow-hidden border border-border">
-                  <img
-                    src={coverImage}
-                    alt="Chapter cover"
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    onClick={handleRemoveCoverImage}
-                    className="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
-                    title="Remove image"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    {uploadingImage ? (
-                      <Loader2 className="w-8 h-8 animate-spin" />
-                    ) : (
-                      <Upload className="w-8 h-8" />
-                    )}
-                    <span className="text-sm font-medium">
-                      {uploadingImage ? "Uploading..." : "Click to upload cover image"}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      PNG, JPG, GIF up to 10MB
-                    </span>
+              <div
+                onDragOver={handleCoverDragOver}
+                onDragLeave={handleCoverDragLeave}
+                onDrop={handleCoverDrop}
+                onClick={!coverImage && !uploadingImage ? handleCoverClick : undefined}
+                className={`border border-dashed rounded-[14px] min-h-[160px] flex flex-col items-center justify-center relative overflow-hidden transition-colors ${
+                  coverImage
+                    ? "border-border"
+                    : isDraggingCover
+                      ? "bg-blue-50 border-[#3f52ff] dark:bg-blue-950/40 dark:border-[#8faeff] cursor-copy"
+                      : "bg-card border-border cursor-pointer hover:border-muted-foreground/60"
+                }`}
+              >
+                <input
+                  type="file"
+                  ref={coverInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleCoverFileSelect}
+                  disabled={uploadingImage}
+                />
+
+                {uploadingImage ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-4 border-[#3f52ff]/30 border-t-[#3f52ff] rounded-full animate-spin" />
+                    <span className="text-sm font-medium text-foreground">Uploading...</span>
                   </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverImageUpload}
-                    disabled={uploadingImage}
-                    className="hidden"
-                  />
-                </label>
-              )}
+                ) : coverImage ? (
+                  <div className="relative w-full h-[160px] group">
+                    <img
+                      src={coverImage}
+                      alt="Chapter cover"
+                      className="absolute inset-0 h-full w-full object-cover rounded-md"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors rounded-md flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                      <button
+                        onClick={(e: any) => { e.stopPropagation(); handleCoverClick(); }}
+                        className="p-2 bg-white/90 hover:bg-white text-foreground rounded-full transition-colors"
+                        title="Replace image"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e: any) => { e.stopPropagation(); handleRemoveCoverImage(); }}
+                        className="p-2 bg-white/90 hover:bg-white text-red-600 rounded-full transition-colors"
+                        title="Remove image"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-2">
+                      <Upload className={`w-8 h-8 ${isDraggingCover ? "text-[#3f52ff]" : "text-muted-foreground"}`} />
+                    </div>
+                    <span className={`text-sm font-medium ${isDraggingCover ? "text-[#3f52ff] dark:text-[#8faeff]" : "text-foreground"}`}>
+                      {isDraggingCover ? "Drop to upload" : "Drag & drop or click to upload"}
+                    </span>
+                    <span className="text-xs text-muted-foreground/70 mt-1">PNG, JPG, GIF, WebP · Up to 10MB</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}
