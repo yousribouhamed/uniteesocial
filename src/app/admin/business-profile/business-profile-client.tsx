@@ -3390,11 +3390,11 @@ function ViewChapterPanel({
         <div className="flex items-center justify-between px-4">
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-[#f0f2f5] flex items-center justify-center hover:bg-[#e3e8ed] transition-colors"
+            className="w-8 h-8 rounded-lg bg-[#22292f] flex items-center justify-center hover:bg-[#22292f]/80 transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 12L6 8L10 4" stroke="#668091" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M7 12L3 8L7 4" stroke="#668091" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M6 12L10 8L6 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M9 12L13 8L9 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
           <div className="flex items-center gap-1">
@@ -3464,7 +3464,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full h-2 bg-[#ECEFF2]" />
+        <div className="w-full h-2 bg-[#ECEFF2] -my-3 shrink-0" />
 
         {/* Venue Information */}
         <div className="flex flex-col gap-6 px-4">
@@ -3490,7 +3490,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full h-2 bg-[#ECEFF2]" />
+        <div className="w-full h-2 bg-[#ECEFF2] -my-3 shrink-0" />
 
         {/* Chapter Story */}
         <div className="flex flex-col gap-6 px-4">
@@ -3503,7 +3503,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full h-2 bg-[#ECEFF2]" />
+        <div className="w-full h-2 bg-[#ECEFF2] -my-3 shrink-0" />
 
         {/* Team Members */}
         <div className="flex flex-col gap-6 px-4">
@@ -3527,7 +3527,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full h-2 bg-[#ECEFF2]" />
+        <div className="w-full h-2 bg-[#ECEFF2] -my-3 shrink-0" />
 
         {/* Notifications Default */}
         <div className="flex flex-col gap-6 px-4">
@@ -3567,7 +3567,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full h-2 bg-[#ECEFF2]" />
+        <div className="w-full h-2 bg-[#ECEFF2] -my-3 shrink-0" />
 
         {/* Linked Events */}
         <div className="flex flex-col gap-6 px-4 pb-4">
