@@ -3414,7 +3414,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Hero Image */}
-        <div className="mx-4 w-[530px] h-[257px] rounded-[12px] bg-gradient-to-b from-[#4a6fa5] to-[#2d3e50] relative overflow-hidden flex flex-col justify-end p-4">
+        <div className="mx-4 w-[530px] h-[257px] min-h-[257px] shrink-0 rounded-[12px] bg-gradient-to-b from-[#4a6fa5] to-[#2d3e50] relative overflow-hidden flex flex-col justify-end p-4">
           {chapter.coverImage && !chapter.coverImage.startsWith("blob:") ? (
             <img
               src={chapter.coverImage}
