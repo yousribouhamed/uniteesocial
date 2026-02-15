@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo, type ChangeEvent, type DragEvent, type Dispatch, type SetStateAction } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AriaSwitch } from "@/components/ui/aria-switch";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import {
   Bell,
@@ -32,7 +32,6 @@ import {
   Pencil,
   Trash2,
   AlertCircle,
-  ChevronLeft,
   ChevronUp,
   ExternalLink,
   Loader2,
@@ -45,8 +44,7 @@ import {
 import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 import { toastQueue } from "@/components/ui/aria-toast";
 
-
-import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset } from "./actions";
+import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset, uploadChapterCover, getChapters, updateChapterVisibility, deleteChapter as deleteChapterAction } from "./actions";
 import { TIMEZONES } from "@/data/timezones";
 
 interface BusinessProfileClientProps {
@@ -2874,6 +2872,16 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
       return;
     }
 
+    // Validate cover image is not a blob URL
+    if (coverImage && coverImage.startsWith('blob:')) {
+      toastQueue.add({
+        title: "Image Upload Pending",
+        description: "Please wait for the image to finish uploading or try uploading again.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
     setCreating(true);
     try {
       const payload = {
@@ -3303,14 +3311,17 @@ interface ViewChapterData {
   team: number;
   events: string;
   lastUpdate: string;
+  coverImage?: string | null;
 }
 
 function ViewChapterPanel({
   chapter,
   onClose,
+  onNavigate,
 }: {
   chapter: ViewChapterData;
   onClose: () => void;
+  onNavigate?: (direction: "prev" | "next") => void;
 }) {
   const [notifications, setNotifications] = useState({
     enableNotifications: false,
@@ -3335,51 +3346,71 @@ function ViewChapterPanel({
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex justify-end">
+      {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
         className="absolute inset-0 bg-black/40"
         onClick={onClose}
       />
+      {/* Drawer */}
       <motion.div
-        initial={{ opacity: 0, y: 12, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        className="relative bg-card rounded-3xl w-[562px] max-h-[90vh] overflow-y-auto shadow-xl flex flex-col gap-6 py-4"
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+        className="relative bg-white rounded-l-[24px] w-[562px] h-full overflow-y-auto shadow-xl flex flex-col gap-6 py-4"
       >
         {/* Top Navigation */}
         <div className="flex items-center justify-between px-4">
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted transition-colors"
+            className="w-8 h-8 rounded-lg bg-[#f0f2f5] flex items-center justify-center hover:bg-[#e3e8ed] transition-colors"
           >
-            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 12L6 8L10 4" stroke="#668091" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M7 12L3 8L7 4" stroke="#668091" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
           <div className="flex items-center gap-1">
-            <button className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted transition-colors">
-              <ChevronUp className="w-4 h-4 text-muted-foreground" />
+            <button
+              onClick={() => onNavigate?.("prev")}
+              className="w-8 h-8 rounded-lg bg-[#f0f2f5] flex items-center justify-center hover:bg-[#e3e8ed] transition-colors"
+            >
+              <ChevronUp className="w-4 h-4 text-[#668091]" />
             </button>
-            <button className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted transition-colors">
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            <button
+              onClick={() => onNavigate?.("next")}
+              className="w-8 h-8 rounded-lg bg-[#f0f2f5] flex items-center justify-center hover:bg-[#e3e8ed] transition-colors"
+            >
+              <ChevronDown className="w-4 h-4 text-[#668091]" />
             </button>
           </div>
         </div>
 
         {/* Hero Image */}
-        <div className="mx-4 h-[257px] rounded-xl bg-gradient-to-b from-[#4a6fa5] to-[#2d3e50] relative overflow-hidden flex flex-col justify-end p-4">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70" />
-          <div className="relative flex items-end justify-between w-full">
-            <div className="flex flex-col gap-1">
-              <span className="text-xl font-semibold text-[#d8e6ff] leading-[18px]">
+        <div className="mx-4 h-[257px] rounded-[12px] bg-gradient-to-b from-[#4a6fa5] to-[#2d3e50] relative overflow-hidden flex flex-col justify-end p-4">
+          {chapter.coverImage ? (
+            <img
+              src={chapter.coverImage}
+              alt={chapter.name}
+              className="absolute inset-0 w-full h-full object-cover rounded-[12px]"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70 rounded-[12px]" />
+          <div className="relative flex items-end justify-between w-full gap-2.5">
+            <div className="flex flex-col gap-1 flex-1 min-w-0">
+              <span className="text-[20px] font-semibold text-[#d8e6ff] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                 {chapter.name} Chapter
               </span>
-              <span className="text-base text-[#d8e6ff] leading-[18px]">
+              <span className="text-[16px] text-[#d8e6ff] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                 {chapter.country}
               </span>
             </div>
-            <button className="px-3 py-1.5 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors">
+            <button className="px-3 py-1.5 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors shrink-0">
               Edit
             </button>
           </div>
@@ -3387,96 +3418,102 @@ function ViewChapterPanel({
 
         {/* Basic Information */}
         <div className="flex flex-col gap-6 px-4">
-          <span className="text-xl font-semibold text-foreground leading-[18px]">
+          <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Basic Information
           </span>
           <div className="flex gap-12">
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Chapter ID</span>
-              <span className="text-base text-foreground leading-[18px]">{chapter.code}</span>
+              <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Chapter ID</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{chapter.code}</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Sort Order</span>
-              <span className="text-base text-foreground leading-[18px]">1</span>
+              <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Sort Order</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>1</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Created</span>
-              <span className="text-base text-foreground leading-[18px]">11/28/2025</span>
+              <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Created</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>11/28/2025</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Last Updated</span>
-              <span className="text-base text-foreground leading-[18px]">{chapter.lastUpdate}</span>
+              <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Last Updated</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{chapter.lastUpdate}</span>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-muted mx-4" />
+        <div className="w-full px-4">
+          <div className="h-px bg-[#e3e8ed]" />
+        </div>
 
         {/* Venue Information */}
         <div className="flex flex-col gap-6 px-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xl font-semibold text-foreground leading-[18px]">
+          <div className="flex items-start justify-between">
+            <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               Venue Information
             </span>
-            <button className="flex items-center gap-1.5 px-3 py-1.5 bg-foreground text-background text-xs font-medium rounded-lg hover:bg-foreground/90 transition-colors">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 bg-[#22292f] text-white text-xs font-medium rounded-lg hover:bg-[#22292f]/90 transition-colors">
               View on maps
               <ExternalLink className="w-3 h-3" />
             </button>
           </div>
           <div className="flex gap-12">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Venue Name</span>
-              <span className="text-base text-foreground leading-[18px]">Manhattan Community Center</span>
+            <div className="flex flex-col gap-1 shrink-0">
+              <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Venue Name</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Manhattan Community Center</span>
             </div>
             <div className="flex flex-col gap-1 flex-1">
-              <span className="text-sm font-semibold text-muted-foreground leading-[18px]">Address</span>
-              <span className="text-base text-foreground leading-[18px]">123 Madison Avenue, {chapter.city}, {chapter.country}</span>
+              <span className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Address</span>
+              <span className="text-[16px] text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>123 Madison Avenue, New York, NY 10016</span>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-muted mx-4" />
+        <div className="w-full px-4">
+          <div className="h-px bg-[#e3e8ed]" />
+        </div>
 
         {/* Chapter Story */}
         <div className="flex flex-col gap-6 px-4">
-          <span className="text-xl font-semibold text-foreground leading-[18px]">
+          <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Chapter Story
           </span>
-          <p className="text-sm font-semibold text-muted-foreground leading-[18px]">
-            The {chapter.name} Chapter brings together professionals and enthusiasts in the heart of {chapter.city}. Join us for networking events, workshops, and community building. Our vibrant community hosts monthly meetups, quarterly conferences, and annual galas that bring together industry leaders and innovators.
+          <p className="text-[14px] font-semibold text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+            The {chapter.name} Chapter brings together professionals and enthusiasts in the heart of Manhattan. Join us for networking events, workshops, and community building. Our vibrant community hosts monthly meetups, quarterly conferences, and annual galas that bring together industry leaders and innovators from across the tri-state area.
           </p>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-muted mx-4" />
+        <div className="w-full px-4">
+          <div className="h-px bg-[#e3e8ed]" />
+        </div>
 
         {/* Team Members */}
         <div className="flex flex-col gap-6 px-4">
-          <span className="text-xl font-semibold text-foreground leading-[18px]">
+          <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Team Members
           </span>
           <div className="flex flex-col gap-2">
             {teamMembers.map((member) => (
               <div
                 key={member.email}
-                className="bg-card border border-border rounded-xl p-2 flex items-center justify-between"
+                className="bg-white border border-[#d5dde2] rounded-[12px] p-2 flex items-center justify-between"
               >
                 <div className="flex items-center gap-2">
-                  <div className="bg-blue-100 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 rounded-[9px] p-3 flex items-center justify-center">
-                    <CircleUserRound className="w-4 h-4 text-[#3f52ff] dark:text-white dark:text-[#8faeff]" />
+                  <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-[9px] p-3 flex items-center justify-center">
+                    <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-base font-semibold text-foreground leading-[18px]">
+                    <span className="text-[16px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                       {member.name}
                     </span>
-                    <span className="text-xs font-semibold text-muted-foreground leading-[18px]">
+                    <span className="text-[12px] font-semibold text-[#859bab] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                       {member.email}
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#3f52ff] text-white">
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#3f52ff] text-white">
                   {member.role}
                 </span>
               </div>
@@ -3485,37 +3522,39 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-muted mx-4" />
+        <div className="w-full px-4">
+          <div className="h-px bg-[#e3e8ed]" />
+        </div>
 
         {/* Notifications Default */}
         <div className="flex flex-col gap-6 px-4">
-          <span className="text-xl font-semibold text-foreground leading-[18px]">
+          <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Notifications Default
           </span>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground">Enable Notifications</span>
+              <span className="text-[14px] text-[#22292f]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Enable Notifications</span>
               <AriaSwitch
                 isSelected={notifications.enableNotifications}
                 onChange={() => toggleNotification("enableNotifications")}
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground">Auto-Notify New Events</span>
+              <span className="text-[14px] text-[#22292f]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Auto-Notify New Events</span>
               <AriaSwitch
                 isSelected={notifications.autoNotifyNewEvents}
                 onChange={() => toggleNotification("autoNotifyNewEvents")}
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground">Auto-Notify New Updates</span>
+              <span className="text-[14px] text-[#22292f]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Auto-Notify New Updates</span>
               <AriaSwitch
                 isSelected={notifications.autoNotifyNewUpdates}
                 onChange={() => toggleNotification("autoNotifyNewUpdates")}
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground">Auto-Notify Announcements</span>
+              <span className="text-[14px] text-[#22292f]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Auto-Notify Announcements</span>
               <AriaSwitch
                 isSelected={notifications.autoNotifyAnnouncements}
                 onChange={() => toggleNotification("autoNotifyAnnouncements")}
@@ -3525,23 +3564,25 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-muted mx-4" />
+        <div className="w-full px-4">
+          <div className="h-px bg-[#e3e8ed]" />
+        </div>
 
         {/* Linked Events */}
-        <div className="flex flex-col gap-6 px-4 pb-2">
-          <span className="text-xl font-semibold text-foreground leading-[18px]">
+        <div className="flex flex-col gap-6 px-4 pb-4">
+          <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Linked Events
           </span>
           <div className="flex items-end justify-between">
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-foreground leading-[18px]">
+              <span className="text-[14px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                 {eventCount} Events linked to this chapter
               </span>
-              <span className="text-sm text-muted-foreground leading-[18px]">
+              <span className="text-[14px] text-[#668091] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                 Events use this chapter for filtering and mobile display
               </span>
             </div>
-            <button className="px-3 py-1.5 bg-foreground text-background text-xs font-medium rounded-lg hover:bg-foreground/90 transition-colors">
+            <button className="px-3 py-1.5 bg-[#22292f] text-white text-xs font-medium rounded-lg hover:bg-[#22292f]/90 transition-colors shrink-0">
               View Events
             </button>
           </div>
@@ -3640,15 +3681,7 @@ function ChaptersContent() {
     code: string;
     events: string;
   } | null>(null);
-  const [viewChapter, setViewChapter] = useState<{
-    name: string;
-    code: string;
-    city: string;
-    country: string;
-    team: number;
-    events: string;
-    lastUpdate: string;
-  } | null>(null);
+  const [viewChapter, setViewChapter] = useState<ViewChapterData | null>(null);
 
   const [visibleStates, setVisibleStates] = useState<Record<string, boolean>>({});
 
@@ -3749,6 +3782,41 @@ function ChaptersContent() {
   const getEventCount = (events: string) => {
     const match = events.match(/\d+/);
     return match ? match[0] : "0";
+  };
+
+  const filteredChapters = chaptersData.filter(chapter => {
+    const query = searchQuery.toLowerCase();
+    return (
+      chapter.name.toLowerCase().includes(query) ||
+      chapter.city.toLowerCase().includes(query) ||
+      chapter.country.toLowerCase().includes(query) ||
+      chapter.code.toLowerCase().includes(query)
+    );
+  });
+
+  const handleRowClick = (chapter: any) => {
+    setViewChapter({
+      name: chapter.name,
+      code: chapter.code,
+      city: chapter.city,
+      country: chapter.country,
+      team: chapter.team,
+      events: chapter.events,
+      lastUpdate: chapter.updated_at ? new Date(chapter.updated_at).toLocaleDateString() : "—",
+      coverImage: chapter.cover_image,
+    });
+  };
+
+  const handleNavigate = (direction: "prev" | "next") => {
+    if (!viewChapter) return;
+    const currentIndex = filteredChapters.findIndex(
+      (ch: any) => ch.code === viewChapter.code && ch.name === viewChapter.name
+    );
+    if (currentIndex === -1) return;
+    const nextIndex = direction === "prev" ? currentIndex - 1 : currentIndex + 1;
+    if (nextIndex < 0 || nextIndex >= filteredChapters.length) return;
+    const nextChapter = filteredChapters[nextIndex];
+    handleRowClick(nextChapter);
   };
 
   return (
@@ -3929,7 +3997,8 @@ function ChaptersContent() {
                   .map((chapter) => (
                     <tr
                       key={chapter.id}
-                      className="border-b border-border last:border-b-0"
+                      className="border-b border-border last:border-b-0 cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => handleRowClick(chapter)}
                     >
                       {/* Chapter */}
                       <td className="px-3 py-3">
@@ -3962,7 +4031,7 @@ function ChaptersContent() {
                         {chapter.events}
                       </td>
                       {/* Visible Toggle */}
-                      <td className="px-3 py-3">
+                      <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
                         <AriaSwitch
                           isSelected={visibleStates[chapter.id]}
                           onChange={() => toggleVisible(chapter)}
@@ -3989,7 +4058,7 @@ function ChaptersContent() {
                         </div>
                       </td>
                       {/* Action */}
-                      <td className="px-3 py-3">
+                      <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
                         <ChapterActionMenu
                           onView={() => {
                             setViewChapter({
@@ -4034,14 +4103,16 @@ function ChaptersContent() {
           </div>
         </div>
       </div>
-
       {/* View Chapter Panel */}
-      {viewChapter && (
-        <ViewChapterPanel
-          chapter={viewChapter}
-          onClose={() => setViewChapter(null)}
-        />
-      )}
+      <AnimatePresence>
+        {viewChapter && (
+          <ViewChapterPanel
+            chapter={viewChapter}
+            onClose={() => setViewChapter(null)}
+            onNavigate={handleNavigate}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Delete Chapter Confirmation Modal */}
       {deleteChapter && (
