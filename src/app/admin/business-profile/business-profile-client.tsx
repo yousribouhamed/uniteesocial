@@ -2405,6 +2405,17 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
   const [coverImage, setCoverImage] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [sortOrder, setSortOrder] = useState(999);
+  const [notifications, setNotifications] = useState({
+    enableNotifications: false,
+    autoNotifyNewEvents: true,
+    autoNotifyNewUpdates: false,
+    autoNotifyAnnouncements: true,
+  });
+
+  const toggleNotification = (key: keyof typeof notifications) => {
+    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
       id: "1",
@@ -2769,8 +2780,97 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
 
         {/* Setting Tab */}
         {activeTab === "Setting" && (
-          <div className="flex flex-col gap-4 min-h-[200px] items-center justify-center text-muted-foreground">
-            <span className="text-sm">Chapter settings will appear here</span>
+          <div className="flex flex-col gap-4">
+            {/* Sort Order */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-foreground">
+                Sort Order
+              </label>
+              <div className="relative w-full max-w-[460px]">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 10L8 14L12 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M4 6L8 2L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <input
+                  type="number"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(Number(e.target.value))}
+                  className="h-9 w-full pl-9 pr-8 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-0">
+                  <button
+                    type="button"
+                    onClick={() => setSortOrder((prev) => prev + 1)}
+                    className="text-muted-foreground hover:text-foreground transition-colors p-0 leading-none"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 7.5L6 4.5L9 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSortOrder((prev) => Math.max(0, prev - 1))}
+                    className="text-muted-foreground hover:text-foreground transition-colors p-0 leading-none"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.2" />
+                  <path d="M7 6.5V10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                  <circle cx="7" cy="4.5" r="0.75" fill="currentColor" />
+                </svg>
+                <span className="text-xs">Lower numbers appear first. Used for mobile app and dropdown ordering.</span>
+              </div>
+            </div>
+
+            {/* Notification Defaults */}
+            <div className="bg-muted rounded-lg p-3 flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-semibold text-foreground leading-[18px]">
+                  Notification Defaults
+                </h3>
+                <p className="text-xs text-muted-foreground leading-[18px]">
+                  Configure automatic notifications for chapter members
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between max-w-[373px]">
+                  <span className="text-sm font-semibold text-foreground">Enable Notifications</span>
+                  <AriaSwitch
+                    isSelected={notifications.enableNotifications}
+                    onChange={() => toggleNotification("enableNotifications")}
+                  />
+                </div>
+                <div className="flex items-center justify-between max-w-[373px]">
+                  <span className="text-sm font-semibold text-foreground">Auto-Notify New Events</span>
+                  <AriaSwitch
+                    isSelected={notifications.autoNotifyNewEvents}
+                    onChange={() => toggleNotification("autoNotifyNewEvents")}
+                  />
+                </div>
+                <div className="flex items-center justify-between max-w-[373px]">
+                  <span className="text-sm font-semibold text-foreground">Auto-Notify New Updates</span>
+                  <AriaSwitch
+                    isSelected={notifications.autoNotifyNewUpdates}
+                    onChange={() => toggleNotification("autoNotifyNewUpdates")}
+                  />
+                </div>
+                <div className="flex items-center justify-between max-w-[373px]">
+                  <span className="text-sm font-semibold text-foreground">Auto-Notify Announcements</span>
+                  <AriaSwitch
+                    isSelected={notifications.autoNotifyAnnouncements}
+                    onChange={() => toggleNotification("autoNotifyAnnouncements")}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
