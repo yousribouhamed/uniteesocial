@@ -29,7 +29,6 @@ import { AriaSlider } from "@/components/ui/aria-slider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
-import { DEFAULT_CHAPTERS } from "@/data/chapters";
 
 interface CreateEventScreenProps {
   onClose: () => void;
@@ -82,6 +81,23 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [locationMaskName, setLocationMaskName] = useState("");
   const [virtualMeetingUrl, setVirtualMeetingUrl] = useState("");
   const [virtualAdditionalInfo, setVirtualAdditionalInfo] = useState("");
+
+  const [chapters, setChapters] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchChapters = async () => {
+      try {
+        const res = await fetch("/api/chapters");
+        const json = await res.json();
+        if (json.success && json.data) {
+          setChapters(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch chapters", err);
+      }
+    };
+    fetchChapters();
+  }, []);
   const [eventDescription, setEventDescription] = useState("");
   const [chapter, setChapter] = useState("Dubai Chapter");
   const [ticketGoLive, setTicketGoLive] = useState("Custom Date");
@@ -258,7 +274,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       endDate,
       endTime,
       locationType: isMatchEvent ? matchLocationType : locationType,
-      location: isMatchEvent 
+      location: isMatchEvent
         ? (matchLocationType === "onsite" ? stadiumVenueName : livestreamUrl)
         : locationInput,
       geoFenceRadius,
@@ -268,7 +284,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       chapter,
       ticketGoLive,
       capacity,
-      type: (isMatchEvent 
+      type: (isMatchEvent
         ? (matchLocationType === "virtual" ? "Online" : "Onsite")
         : (locationType === "virtual" ? "Online" : "Onsite")) as "Onsite" | "Online" | "Hybrid",
       // Match-specific fields
@@ -310,17 +326,17 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             {/* Centered Upload Icon */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF"/>
-                <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2"/>
-                <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white"/>
+                <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF" />
+                <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white" />
               </svg>
             </div>
             {/* Hover overlay for changing image */}
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF"/>
-                <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2"/>
-                <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white"/>
+                <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF" />
+                <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white" />
               </svg>
             </div>
           </div>
@@ -452,8 +468,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <button
                 onClick={() => setEventCategory("general")}
                 className={`relative h-9 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${eventCategory === "general"
-                    ? "text-[#3f52ff] dark:text-white"
-                    : "text-muted-foreground hover:text-foreground"
+                  ? "text-[#3f52ff] dark:text-white"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 {eventCategory === "general" && (
@@ -471,8 +487,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <button
                 onClick={() => setEventCategory("match")}
                 className={`relative h-9 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${eventCategory === "match"
-                    ? "text-[#3f52ff] dark:text-white"
-                    : "text-muted-foreground hover:text-foreground"
+                  ? "text-[#3f52ff] dark:text-white"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 {eventCategory === "match" && (
@@ -543,11 +559,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           <MenuItem key={l}>
                             <button
                               onClick={() => setLeague(l)}
-                              className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
-                                league === l
+                              className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${league === l
                                   ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
                                   : "text-foreground data-[focus]:bg-muted hover:bg-muted"
-                              }`}
+                                }`}
                             >
                               {l}
                             </button>
@@ -581,7 +596,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           {/* Create Team Option */}
                           <MenuItem>
                             <button
-                              onClick={() => {/* Handle create team */}}
+                              onClick={() => {/* Handle create team */ }}
                               className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
                             >
                               {t("+ Create Team", "+ إنشاء فريق", "+ Créer une équipe")}
@@ -591,11 +606,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                             <MenuItem key={t}>
                               <button
                                 onClick={() => setHomeTeam(t)}
-                                className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
-                                  homeTeam === t
+                                className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${homeTeam === t
                                     ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
                                     : "text-foreground data-[focus]:bg-muted hover:bg-muted"
-                                }`}
+                                  }`}
                               >
                                 {t}
                               </button>
@@ -627,7 +641,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           {/* Create Team Option */}
                           <MenuItem>
                             <button
-                              onClick={() => {/* Handle create team */}}
+                              onClick={() => {/* Handle create team */ }}
                               className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
                             >
                               {t("+ Create Team", "+ إنشاء فريق", "+ Créer une équipe")}
@@ -637,11 +651,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                             <MenuItem key={t}>
                               <button
                                 onClick={() => setAwayTeam(t)}
-                                className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${
-                                  awayTeam === t
+                                className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${awayTeam === t
                                     ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
                                     : "text-foreground data-[focus]:bg-muted hover:bg-muted"
-                                }`}
+                                  }`}
                               >
                                 {t}
                               </button>
@@ -736,15 +749,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 <div className="bg-card rounded-lg px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
                   <button
                     onClick={() => setEnableLineUpAnnouncement(!enableLineUpAnnouncement)}
-                    className={`w-4 h-4 border rounded shrink-0 flex items-center justify-center ${
-                      enableLineUpAnnouncement
+                    className={`w-4 h-4 border rounded shrink-0 flex items-center justify-center ${enableLineUpAnnouncement
                         ? "bg-[#3f52ff] dark:bg-[#3f52ff] border-[#3f52ff]"
                         : "bg-card border-border"
-                    }`}
+                      }`}
                   >
                     {enableLineUpAnnouncement && (
                       <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </button>
@@ -767,20 +779,19 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           transition
                           className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                         >
-                        {lineupOptions.map((time) => (
-                          <MenuItem key={time}>
-                            <button
-                              onClick={() => setLineUpAnnouncementTime(time)}
-                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
-                                lineUpAnnouncementTime === time
-                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
-                                }`}
-                            >
-                              {translateLineupTime(time)}
-                            </button>
-                          </MenuItem>
-                        ))}
+                          {lineupOptions.map((time) => (
+                            <MenuItem key={time}>
+                              <button
+                                onClick={() => setLineUpAnnouncementTime(time)}
+                                className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${lineUpAnnouncementTime === time
+                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                  }`}
+                              >
+                                {translateLineupTime(time)}
+                              </button>
+                            </MenuItem>
+                          ))}
                         </MenuItems>
                       </Portal>
                     </Menu>
@@ -848,8 +859,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   <button
                     onClick={() => setMatchLocationType("onsite")}
                     className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "onsite"
-                        ? "text-[#3f52ff] dark:text-white"
-                        : "text-muted-foreground hover:text-foreground"
+                      ? "text-[#3f52ff] dark:text-white"
+                      : "text-muted-foreground hover:text-foreground"
                       }`}
                   >
                     {matchLocationType === "onsite" && (
@@ -867,8 +878,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   <button
                     onClick={() => setMatchLocationType("virtual")}
                     className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "virtual"
-                        ? "text-[#3f52ff] dark:text-white"
-                        : "text-muted-foreground hover:text-foreground"
+                      ? "text-[#3f52ff] dark:text-white"
+                      : "text-muted-foreground hover:text-foreground"
                       }`}
                   >
                     {matchLocationType === "virtual" && (
@@ -918,14 +929,12 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                         </div>
                         <button
                           onClick={() => setMatchLocationMasking(!matchLocationMasking)}
-                          className={`relative w-[42px] h-[24px] rounded-full transition-colors ${
-                            matchLocationMasking ? "bg-[#3f52ff] dark:bg-[#3f52ff]" : "bg-muted"
-                          }`}
+                          className={`relative w-[42px] h-[24px] rounded-full transition-colors ${matchLocationMasking ? "bg-[#3f52ff] dark:bg-[#3f52ff]" : "bg-muted"
+                            }`}
                         >
                           <div
-                            className={`absolute top-1 w-[16px] h-[16px] bg-card rounded-full shadow transition-all ${
-                              matchLocationMasking ? "left-[22px]" : "left-1"
-                            }`}
+                            className={`absolute top-1 w-[16px] h-[16px] bg-card rounded-full shadow transition-all ${matchLocationMasking ? "left-[22px]" : "left-1"
+                              }`}
                           />
                         </button>
                       </div>
@@ -1029,11 +1038,10 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           <MenuItem key={option}>
                             <button
                               onClick={() => setTicketGoLive(option)}
-                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
-                                ticketGoLive === option
+                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${ticketGoLive === option
                                   ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
                                   : "text-foreground data-[focus]:bg-muted hover:bg-muted"
-                              }`}
+                                }`}
                             >
                               {translateTicketGoLive(option)}
                             </button>
@@ -1207,546 +1215,543 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               />
 
               {/* Date/Time Section */}
-          <div className="flex flex-col gap-2">
-            <div className="flex sm:flex-row flex-col gap-2">
-              {/* Start/End Date-Time */}
-              <div className="flex-1 bg-card rounded-lg p-1 flex flex-col">
-                {/* Start Row */}
-                <div className="flex items-center justify-between p-1">
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 flex flex-col items-center justify-center px-1">
-                      <div className="w-[10px] h-[10px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full" />
-                    </div>
-                    <span className="text-sm font-normal text-foreground">
-                      {t("Start", "البداية", "Début")}
-                    </span>
-                  </div>
-                  <div className="flex gap-[2px] items-center">
-                    <div className="w-[136px]">
-                      <AriaDatePicker
-                        value={startDate}
-                        onChange={setStartDate}
-                        groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
-                        inputClassName="text-base font-normal text-foreground justify-center"
-                        showButton={false}
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Vertical Divider */}
-                <div className="ml-[13px] h-4 border-l-[1.5px] border-dashed border-[#3f52ff]" />
-
-                {/* End Row */}
-                <div className="flex items-center justify-between p-1">
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 flex flex-col items-center justify-center px-1">
-                      <div className="w-[10px] h-[10px] border border-[#3f52ff] rounded-full" />
-                    </div>
-                    <span className="text-sm font-normal text-foreground">
-                      {t("End", "النهاية", "Fin")}
-                    </span>
-                  </div>
-                  <div className="flex gap-[2px] items-center">
-                    <div className="w-[136px]">
-                      <AriaDatePicker
-                        value={endDate}
-                        onChange={setEndDate}
-                        groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
-                        inputClassName="text-base font-normal text-foreground justify-center"
-                        showButton={false}
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Timezone */}
-              <div className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
-                <Globe className="w-4 h-4 text-foreground" />
-                  <span className="text-sm font-medium text-foreground">GMT+01:00</span>
-                  <span className="text-xs font-normal text-muted-foreground">Algiers</span>
-                </div>
-            </div>
-
-            {/* Duration */}
-            <div className="bg-card rounded-lg px-3 py-2 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-foreground" />
-              <span className="text-base font-medium text-foreground flex-1">
-                {t("Duration", "المدة", "Durée")}
-              </span>
-              <span className="text-base font-medium text-muted-foreground">{calculateDuration()}</span>
-            </div>
-          </div>
-
-          {/* Event Location Section */}
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
-              {t("Event Location", "موقع الحدث", "Lieu de l'événement")}
-            </span>
-
-            {/* Location Type Tabs */}
-            <div className="flex items-center bg-muted rounded-lg p-[6px] w-full">
-              <button
-                onClick={() => setLocationType("onsite")}
-                className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${locationType === "onsite"
-                    ? "text-[#3f52ff] dark:text-white"
-                    : "text-muted-foreground hover:text-foreground"
-                  }`}
-              >
-                {locationType === "onsite" && (
-                  <motion.div
-                    layoutId="locationTypeIndicator"
-                    className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <span className="relative z-10 w-full text-center">
-                  {t("On site", "حضوري", "Sur site")}
-                </span>
-              </button>
-              <button
-                onClick={() => setLocationType("virtual")}
-                className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${locationType === "virtual"
-                    ? "text-[#3f52ff] dark:text-white"
-                    : "text-muted-foreground hover:text-foreground"
-                  }`}
-              >
-                {locationType === "virtual" && (
-                  <motion.div
-                    layoutId="locationTypeIndicator"
-                    className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <span className="relative z-10 w-full text-center">
-                  {t("Virtual", "افتراضي", "Virtuel")}
-                </span>
-              </button>
-            </div>
-
-            {/* Location Content */}
-            <div className="bg-card rounded-lg p-3 flex flex-col gap-6">
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-foreground mt-0.5" />
-                <span className="text-base font-medium text-foreground">
-                  {t("Add event location", "إضافة موقع الحدث", "Ajouter un lieu")}
-                </span>
-              </div>
-
-              {locationType === "onsite" ? (
-                <>
-                  {/* Location Input */}
-                  <div className="flex flex-col gap-1">
-                    <input
-                      type="text"
-                      placeholder={t("Enter the location", "أدخل الموقع", "Entrez le lieu")}
-                      value={locationInput}
-                      onChange={(e) => setLocationInput(e.target.value)}
-                      className={`h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right" : ""}`}
-                    />
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <div className="w-3 h-3 border border-border rounded-full" />
-                      <span>
-                        {t(
-                          "Type to search (Google Typeahead Search integration)",
-                          "اكتب للبحث (تكامل بحث جوجل)",
-                          "Tapez pour rechercher (intégration Google)"
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Map Placeholder */}
-                  <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-muted">
-                    <Image
-                      src="/img/map-placeholder.jpg"
-                      alt="Map"
-                      fill
-                      className="object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                    {/* Map Pin Icon Overlay */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full">
-                      <div className="relative">
-                        <div className="w-8 h-8 bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full flex items-center justify-center">
-                          <div className="w-3 h-3 bg-card rounded-full" />
-                        </div>
-                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-transparent border-t-[#3f52ff]" />
-                      </div>
-                    </div>
-                    {/* Radius Circle */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-[#3f52ff] rounded-full bg-[#3f52ff] dark:bg-[#3f52ff]/10" />
-                  </div>
-
-                  {/* Geo-Fence Radius */}
-                  <div className="flex flex-col gap-2">
-                    <AriaSlider
-                      label={t("Geo-Fence Radius", "نطاق السياج الجغرافي", "Rayon de géorepérage")}
-                      unit={t("meters", "متر", "mètres")}
-                      minValue={0}
-                      maxValue={1000}
-                      value={geoFenceRadius}
-                      onChange={(v) => setGeoFenceRadius(v as number)}
-                    />
-                    <p className="text-xs text-muted-foreground text-center">
-                      {t(
-                        "Define the radius for location-based check-in verification",
-                        "حدد النطاق للتحقق من الحضور حسب الموقع",
-                        "Définir le rayon pour la vérification"
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Location Masking */}
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-semibold text-foreground">
-                          {t("Location Name", "اسم الموقع", "Nom du lieu")}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {t(
-                            "Enter the location name to display on the event",
-                            "أدخل اسم الموقع لعرضه في الحدث",
-                            "Entrez le nom du lieu à afficher"
-                          )}
-                        </span>
-                      </div>
-                      <AriaSwitch
-                        isSelected={locationMasking}
-                        onChange={setLocationMasking}
-                      />
-                    </div>
-
-                    {/* Additional Info Textarea */}
-                    <textarea
-                      placeholder={t("Additional Informations", "معلومات إضافية", "Informations supplémentaires")}
-                      value={locationMaskName}
-                      onChange={(e) => setLocationMaskName(e.target.value)}
-                      className={`w-full h-[72px] px-3 py-2 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none ${isArabic ? "text-right" : ""}`}
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Virtual Meeting URL Input */}
-                  <div className="flex flex-col gap-2">
-                    <div className="relative">
-                      <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
-                        <Link className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                      <input
-                        type="url"
-                        placeholder={t("https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-", "https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-", "https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-")}
-                        value={virtualMeetingUrl}
-                        onChange={(e) => setVirtualMeetingUrl(e.target.value)}
-                        className={`w-full h-10 ${isArabic ? "pr-10 pl-10 text-right" : "pl-10 pr-10"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
-                      />
-                      {virtualMeetingUrl && (
-                        <div className={`absolute ${isArabic ? "left-3" : "right-3"} top-1/2 -translate-y-1/2`}>
-                          <CheckCircle className="w-5 h-5 text-emerald-700 dark:text-emerald-300" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Additional Info Textarea */}
-                    <textarea
-                      placeholder={t("Additional Informations", "معلومات إضافية", "Informations supplémentaires")}
-                      value={virtualAdditionalInfo}
-                      onChange={(e) => setVirtualAdditionalInfo(e.target.value)}
-                      className={`w-full h-[72px] px-3 py-2 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none ${isArabic ? "text-right" : ""}`}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Event Description */}
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
-              {t("Event Description", "وصف الحدث", "Description de l'événement")}
-            </span>
-            <div className="bg-card border border-border rounded-lg p-3 flex flex-col gap-2">
-              <textarea
-                placeholder={t("Placeholder", "اكتب وصفاً", "Saisir une description")}
-                value={eventDescription}
-                onChange={(e) => setEventDescription(e.target.value)}
-                maxLength={280}
-                className="w-full h-[100px] text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none"
-              />
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
-                  {eventDescription.length}/280 {t("characters", "حرفًا", "caractères")}
-                </span>
-                <button className="text-muted-foreground hover:text-muted-foreground">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M13.333 8.667V12.667C13.333 13.0203 13.1927 13.3594 12.9426 13.6095C12.6925 13.8595 12.3536 14 12 14H3.333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.667V4C2 3.64638 2.14048 3.30724 2.39052 3.05719C2.64057 2.80714 2.97971 2.667 3.333 2.667H7.333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M11.333 1.333L14.666 4.666L8 11.333H4.667V8L11.333 1.333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Options */}
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
-              {t("Additional Options", "خيارات إضافية", "Options supplémentaires")}
-            </span>
-            <div className="bg-card rounded-lg overflow-hidden">
-              {/* Event Chapter */}
-              <Menu as="div" className="relative">
-                <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-border hover:bg-background transition-colors">
-                  <Tag className="w-4 h-4 text-foreground" />
-                  <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
-                    {t("Event Chapter", "الفصل", "Chapitre")}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm font-medium text-muted-foreground">{chapter}</span>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </MenuButton>
-                <Portal>
-                  <MenuItems
-                    anchor="bottom end"
-                    transition
-                    className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
-                  >
-                    {DEFAULT_CHAPTERS.map((ch) => (
-                      <MenuItem key={ch.code}>
-                        <button
-                          onClick={() => setChapter(ch.name)}
-                          className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
-                            chapter === ch.name
-                              ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                              : "text-foreground data-[focus]:bg-muted hover:bg-muted"
-                          }`}
-                        >
-                          {ch.name}
-                        </button>
-                      </MenuItem>
-                    ))}
-                  </MenuItems>
-                </Portal>
-              </Menu>
-
-              {/* Tickets Go Live */}
-              <Menu as="div" className="relative">
-              <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-border hover:bg-background transition-colors">
-                <Ticket className="w-4 h-4 text-foreground" />
-                <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
-                  {t("When tickets should go live?", "متى يجب تفعيل بيع التذاكر؟", "Quand les billets doivent-ils être en vente ?")}
-                </span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    {translateTicketGoLive(ticketGoLive)}
-                  </span>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                </div>
-              </MenuButton>
-                <Portal>
-                  <MenuItems
-                    anchor="bottom end"
-                    transition
-                    className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
-                  >
-                  {ticketGoLiveOptions.map((option) => (
-                    <MenuItem key={option}>
-                      <button
-                        onClick={() => setTicketGoLive(option)}
-                        className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
-                          ticketGoLive === option
-                            ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                            : "text-foreground data-[focus]:bg-muted hover:bg-muted"
-                        }`}
-                      >
-                        {translateTicketGoLive(option)}
-                      </button>
-                    </MenuItem>
-                  ))}
-                  </MenuItems>
-                </Portal>
-              </Menu>
-
-              {/* Capacity */}
-              <Menu as="div" className="relative">
-              <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-background transition-colors">
-                <Users className="w-4 h-4 text-foreground" />
-                <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
-                  {t("Capacity", "السعة", "Capacité")}
-                </span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium text-muted-foreground">{capacity}</span>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                </div>
-              </MenuButton>
-                <Portal>
-                  <MenuItems
-                    anchor="bottom end"
-                    transition
-                    className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
-                  >
-                    {["Unlimited", "50", "100", "200", "300", "500", "1000"].map((option) => (
-                      <MenuItem key={option}>
-                        <button
-                          onClick={() => setCapacity(option)}
-                          className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${
-                            capacity === option
-                              ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                              : "text-foreground data-[focus]:bg-muted hover:bg-muted"
-                          }`}
-                        >
-                          {option}
-                        </button>
-                      </MenuItem>
-                    ))}
-                  </MenuItems>
-                </Portal>
-              </Menu>
-            </div>
-          </div>
-
-          {/* Mobile: Event Preview Card (above CTA) */}
-          <div className="lg:hidden w-full bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
-            {/* Cover Image */}
-            <div
-              className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
-              onClick={() => {
-                // Trigger the file input from the desktop preview card
-                const fileInput = document.getElementById('event-cover-upload');
-                fileInput?.click();
-              }}
-            >
-              {coverImage ? (
-                <img
-                  src={coverImage}
-                  alt="Event cover"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-muted" />
-              )}
-              {/* Centered Upload Icon */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF"/>
-                  <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2"/>
-                  <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white"/>
-                </svg>
-              </div>
-              {/* Hover overlay for changing image */}
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF"/>
-                  <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2"/>
-                  <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white"/>
-                </svg>
-              </div>
-            </div>
-
-            {/* Event Info */}
-            <div className="flex flex-col gap-4">
-              {/* Title + Badges */}
               <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-semibold text-foreground leading-[18px]">
-                  {eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement")}
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
-                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
-                    </svg>
-                    {chapter}
+                <div className="flex sm:flex-row flex-col gap-2">
+                  {/* Start/End Date-Time */}
+                  <div className="flex-1 bg-card rounded-lg p-1 flex flex-col">
+                    {/* Start Row */}
+                    <div className="flex items-center justify-between p-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 flex flex-col items-center justify-center px-1">
+                          <div className="w-[10px] h-[10px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full" />
+                        </div>
+                        <span className="text-sm font-normal text-foreground">
+                          {t("Start", "البداية", "Début")}
+                        </span>
+                      </div>
+                      <div className="flex gap-[2px] items-center">
+                        <div className="w-[136px]">
+                          <AriaDatePicker
+                            value={startDate}
+                            onChange={setStartDate}
+                            groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
+                            inputClassName="text-base font-normal text-foreground justify-center"
+                            showButton={false}
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={startTime}
+                          onChange={(e) => setStartTime(e.target.value)}
+                          className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Vertical Divider */}
+                    <div className="ml-[13px] h-4 border-l-[1.5px] border-dashed border-[#3f52ff]" />
+
+                    {/* End Row */}
+                    <div className="flex items-center justify-between p-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 flex flex-col items-center justify-center px-1">
+                          <div className="w-[10px] h-[10px] border border-[#3f52ff] rounded-full" />
+                        </div>
+                        <span className="text-sm font-normal text-foreground">
+                          {t("End", "النهاية", "Fin")}
+                        </span>
+                      </div>
+                      <div className="flex gap-[2px] items-center">
+                        <div className="w-[136px]">
+                          <AriaDatePicker
+                            value={endDate}
+                            onChange={setEndDate}
+                            groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
+                            inputClassName="text-base font-normal text-foreground justify-center"
+                            showButton={false}
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={endTime}
+                          onChange={(e) => setEndTime(e.target.value)}
+                          className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-[70px] text-center outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Timezone */}
+                  <div className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                    <Globe className="w-4 h-4 text-foreground" />
+                    <span className="text-sm font-medium text-foreground">GMT+01:00</span>
+                    <span className="text-xs font-normal text-muted-foreground">Algiers</span>
+                  </div>
+                </div>
+
+                {/* Duration */}
+                <div className="bg-card rounded-lg px-3 py-2 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-foreground" />
+                  <span className="text-base font-medium text-foreground flex-1">
+                    {t("Duration", "المدة", "Durée")}
                   </span>
-                  <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
-                    {locationType === "virtual"
-                      ? t("Online", "عبر الإنترنت", "En ligne")
-                      : t("Onsite", "حضوري", "Sur site")}
-                  </span>
+                  <span className="text-base font-medium text-muted-foreground">{calculateDuration()}</span>
                 </div>
               </div>
 
-              {/* Date & Venue Row */}
-              <div className="flex items-start gap-8 flex-wrap">
-                {/* Date Section */}
-                <div className="flex items-center gap-2">
-                  {/* Date Box */}
-                  <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
-                    <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
-                      <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
-                        {startDate ? (() => {
-                          const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
-                          return months[startDate.month - 1];
-                        })() : "OCT."}
+              {/* Event Location Section */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
+                  {t("Event Location", "موقع الحدث", "Lieu de l'événement")}
+                </span>
+
+                {/* Location Type Tabs */}
+                <div className="flex items-center bg-muted rounded-lg p-[6px] w-full">
+                  <button
+                    onClick={() => setLocationType("onsite")}
+                    className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${locationType === "onsite"
+                      ? "text-[#3f52ff] dark:text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
+                  >
+                    {locationType === "onsite" && (
+                      <motion.div
+                        layoutId="locationTypeIndicator"
+                        className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                      />
+                    )}
+                    <span className="relative z-10 w-full text-center">
+                      {t("On site", "حضوري", "Sur site")}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setLocationType("virtual")}
+                    className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${locationType === "virtual"
+                      ? "text-[#3f52ff] dark:text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
+                  >
+                    {locationType === "virtual" && (
+                      <motion.div
+                        layoutId="locationTypeIndicator"
+                        className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                      />
+                    )}
+                    <span className="relative z-10 w-full text-center">
+                      {t("Virtual", "افتراضي", "Virtuel")}
+                    </span>
+                  </button>
+                </div>
+
+                {/* Location Content */}
+                <div className="bg-card rounded-lg p-3 flex flex-col gap-6">
+                  <div className="flex items-start gap-2">
+                    <MapPin className="w-4 h-4 text-foreground mt-0.5" />
+                    <span className="text-base font-medium text-foreground">
+                      {t("Add event location", "إضافة موقع الحدث", "Ajouter un lieu")}
+                    </span>
+                  </div>
+
+                  {locationType === "onsite" ? (
+                    <>
+                      {/* Location Input */}
+                      <div className="flex flex-col gap-1">
+                        <input
+                          type="text"
+                          placeholder={t("Enter the location", "أدخل الموقع", "Entrez le lieu")}
+                          value={locationInput}
+                          onChange={(e) => setLocationInput(e.target.value)}
+                          className={`h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right" : ""}`}
+                        />
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <div className="w-3 h-3 border border-border rounded-full" />
+                          <span>
+                            {t(
+                              "Type to search (Google Typeahead Search integration)",
+                              "اكتب للبحث (تكامل بحث جوجل)",
+                              "Tapez pour rechercher (intégration Google)"
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Map Placeholder */}
+                      <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-muted">
+                        <Image
+                          src="/img/map-placeholder.jpg"
+                          alt="Map"
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                        {/* Map Pin Icon Overlay */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full">
+                          <div className="relative">
+                            <div className="w-8 h-8 bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full flex items-center justify-center">
+                              <div className="w-3 h-3 bg-card rounded-full" />
+                            </div>
+                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-transparent border-t-[#3f52ff]" />
+                          </div>
+                        </div>
+                        {/* Radius Circle */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-[#3f52ff] rounded-full bg-[#3f52ff] dark:bg-[#3f52ff]/10" />
+                      </div>
+
+                      {/* Geo-Fence Radius */}
+                      <div className="flex flex-col gap-2">
+                        <AriaSlider
+                          label={t("Geo-Fence Radius", "نطاق السياج الجغرافي", "Rayon de géorepérage")}
+                          unit={t("meters", "متر", "mètres")}
+                          minValue={0}
+                          maxValue={1000}
+                          value={geoFenceRadius}
+                          onChange={(v) => setGeoFenceRadius(v as number)}
+                        />
+                        <p className="text-xs text-muted-foreground text-center">
+                          {t(
+                            "Define the radius for location-based check-in verification",
+                            "حدد النطاق للتحقق من الحضور حسب الموقع",
+                            "Définir le rayon pour la vérification"
+                          )}
+                        </p>
+                      </div>
+
+                      {/* Location Masking */}
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-sm font-semibold text-foreground">
+                              {t("Location Name", "اسم الموقع", "Nom du lieu")}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {t(
+                                "Enter the location name to display on the event",
+                                "أدخل اسم الموقع لعرضه في الحدث",
+                                "Entrez le nom du lieu à afficher"
+                              )}
+                            </span>
+                          </div>
+                          <AriaSwitch
+                            isSelected={locationMasking}
+                            onChange={setLocationMasking}
+                          />
+                        </div>
+
+                        {/* Additional Info Textarea */}
+                        <textarea
+                          placeholder={t("Additional Informations", "معلومات إضافية", "Informations supplémentaires")}
+                          value={locationMaskName}
+                          onChange={(e) => setLocationMaskName(e.target.value)}
+                          className={`w-full h-[72px] px-3 py-2 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none ${isArabic ? "text-right" : ""}`}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Virtual Meeting URL Input */}
+                      <div className="flex flex-col gap-2">
+                        <div className="relative">
+                          <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                            <Link className="w-4 h-4 text-muted-foreground" />
+                          </div>
+                          <input
+                            type="url"
+                            placeholder={t("https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-", "https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-", "https://docs.google.com/document/d/1UWGMM_Q6NLjZ9m1Kvx-")}
+                            value={virtualMeetingUrl}
+                            onChange={(e) => setVirtualMeetingUrl(e.target.value)}
+                            className={`w-full h-10 ${isArabic ? "pr-10 pl-10 text-right" : "pl-10 pr-10"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                          />
+                          {virtualMeetingUrl && (
+                            <div className={`absolute ${isArabic ? "left-3" : "right-3"} top-1/2 -translate-y-1/2`}>
+                              <CheckCircle className="w-5 h-5 text-emerald-700 dark:text-emerald-300" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Additional Info Textarea */}
+                        <textarea
+                          placeholder={t("Additional Informations", "معلومات إضافية", "Informations supplémentaires")}
+                          value={virtualAdditionalInfo}
+                          onChange={(e) => setVirtualAdditionalInfo(e.target.value)}
+                          className={`w-full h-[72px] px-3 py-2 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none ${isArabic ? "text-right" : ""}`}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Event Description */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
+                  {t("Event Description", "وصف الحدث", "Description de l'événement")}
+                </span>
+                <div className="bg-card border border-border rounded-lg p-3 flex flex-col gap-2">
+                  <textarea
+                    placeholder={t("Placeholder", "اكتب وصفاً", "Saisir une description")}
+                    value={eventDescription}
+                    onChange={(e) => setEventDescription(e.target.value)}
+                    maxLength={280}
+                    className="w-full h-[100px] text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none"
+                  />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      {eventDescription.length}/280 {t("characters", "حرفًا", "caractères")}
+                    </span>
+                    <button className="text-muted-foreground hover:text-muted-foreground">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M13.333 8.667V12.667C13.333 13.0203 13.1927 13.3594 12.9426 13.6095C12.6925 13.8595 12.3536 14 12 14H3.333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.667V4C2 3.64638 2.14048 3.30724 2.39052 3.05719C2.64057 2.80714 2.97971 2.667 3.333 2.667H7.333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M11.333 1.333L14.666 4.666L8 11.333H4.667V8L11.333 1.333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Options */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
+                  {t("Additional Options", "خيارات إضافية", "Options supplémentaires")}
+                </span>
+                <div className="bg-card rounded-lg overflow-hidden">
+                  {/* Event Chapter */}
+                  <Menu as="div" className="relative">
+                    <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-border hover:bg-background transition-colors">
+                      <Tag className="w-4 h-4 text-foreground" />
+                      <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                        {t("Event Chapter", "الفصل", "Chapitre")}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-muted-foreground">{chapter}</span>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    </MenuButton>
+                    <Portal>
+                      <MenuItems
+                        anchor="bottom end"
+                        transition
+                        className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                      >
+                        {chapters.map((ch) => (
+                          <MenuItem key={ch.id}>
+                            <button
+                              onClick={() => setChapter(ch.name)}
+                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${chapter === ch.name
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                }`}
+                            >
+                              {ch.name}
+                            </button>
+                          </MenuItem>
+                        ))}
+                      </MenuItems>
+                    </Portal>
+                  </Menu>
+
+                  {/* Tickets Go Live */}
+                  <Menu as="div" className="relative">
+                    <MenuButton className="w-full px-3 py-2 flex items-center gap-2 border-b border-border hover:bg-background transition-colors">
+                      <Ticket className="w-4 h-4 text-foreground" />
+                      <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                        {t("When tickets should go live?", "متى يجب تفعيل بيع التذاكر؟", "Quand les billets doivent-ils être en vente ?")}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {translateTicketGoLive(ticketGoLive)}
+                        </span>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    </MenuButton>
+                    <Portal>
+                      <MenuItems
+                        anchor="bottom end"
+                        transition
+                        className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                      >
+                        {ticketGoLiveOptions.map((option) => (
+                          <MenuItem key={option}>
+                            <button
+                              onClick={() => setTicketGoLive(option)}
+                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${ticketGoLive === option
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                }`}
+                            >
+                              {translateTicketGoLive(option)}
+                            </button>
+                          </MenuItem>
+                        ))}
+                      </MenuItems>
+                    </Portal>
+                  </Menu>
+
+                  {/* Capacity */}
+                  <Menu as="div" className="relative">
+                    <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-background transition-colors">
+                      <Users className="w-4 h-4 text-foreground" />
+                      <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                        {t("Capacity", "السعة", "Capacité")}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-muted-foreground">{capacity}</span>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    </MenuButton>
+                    <Portal>
+                      <MenuItems
+                        anchor="bottom end"
+                        transition
+                        className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                      >
+                        {["Unlimited", "50", "100", "200", "300", "500", "1000"].map((option) => (
+                          <MenuItem key={option}>
+                            <button
+                              onClick={() => setCapacity(option)}
+                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${capacity === option
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                }`}
+                            >
+                              {option}
+                            </button>
+                          </MenuItem>
+                        ))}
+                      </MenuItems>
+                    </Portal>
+                  </Menu>
+                </div>
+              </div>
+
+              {/* Mobile: Event Preview Card (above CTA) */}
+              <div className="lg:hidden w-full bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
+                {/* Cover Image */}
+                <div
+                  className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
+                  onClick={() => {
+                    // Trigger the file input from the desktop preview card
+                    const fileInput = document.getElementById('event-cover-upload');
+                    fileInput?.click();
+                  }}
+                >
+                  {coverImage ? (
+                    <img
+                      src={coverImage}
+                      alt="Event cover"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted" />
+                  )}
+                  {/* Centered Upload Icon */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF" />
+                      <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2" />
+                      <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white" />
+                    </svg>
+                  </div>
+                  {/* Hover overlay for changing image */}
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF" />
+                      <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2" />
+                      <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Event Info */}
+                <div className="flex flex-col gap-4">
+                  {/* Title + Badges */}
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-lg font-semibold text-foreground leading-[18px]">
+                      {eventTitle || t("Event name", "اسم الحدث", "Nom de l'événement")}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
+                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                        </svg>
+                        {chapter}
+                      </span>
+                      <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
+                        {locationType === "virtual"
+                          ? t("Online", "عبر الإنترنت", "En ligne")
+                          : t("Onsite", "حضوري", "Sur site")}
                       </span>
                     </div>
-                    <div className="flex-1 flex items-center justify-center">
-                      <span className="text-base font-medium text-muted-foreground leading-none">{startDate?.day || "25"}</span>
-                    </div>
                   </div>
-                  {/* Date Text */}
-                  <div className="flex flex-col gap-px">
-                    <span className="text-base font-medium text-foreground leading-[24px]">
-                      {formatDateForDisplay(startDate)}
-                    </span>
-                    <span className="text-sm font-normal text-muted-foreground leading-[21px]">
-                      {startTime} - {endTime} UTC+4
-                    </span>
-                  </div>
-                </div>
 
-                {/* Venue Section */}
-                <div className="flex items-center gap-2">
-                  {/* Location Icon Box */}
-                  <div className="w-10 h-10 border border-border rounded-lg flex items-center justify-center">
-                    <MapPin className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-base font-medium text-foreground leading-[24px]">
-                      {locationInput ? locationInput.split(",")[0] : t("Venue", "الموقع", "Lieu")}
-                    </span>
-                    <span className="text-sm font-normal text-muted-foreground leading-[21px]">
-                      {locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || t("Dubai, Dubai", "دبي، دبي", "Dubai, Dubai") : t("Dubai, Dubai", "دبي، دبي", "Dubai, Dubai")}
-                    </span>
+                  {/* Date & Venue Row */}
+                  <div className="flex items-start gap-8 flex-wrap">
+                    {/* Date Section */}
+                    <div className="flex items-center gap-2">
+                      {/* Date Box */}
+                      <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
+                        <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
+                          <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
+                            {startDate ? (() => {
+                              const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
+                              return months[startDate.month - 1];
+                            })() : "OCT."}
+                          </span>
+                        </div>
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-base font-medium text-muted-foreground leading-none">{startDate?.day || "25"}</span>
+                        </div>
+                      </div>
+                      {/* Date Text */}
+                      <div className="flex flex-col gap-px">
+                        <span className="text-base font-medium text-foreground leading-[24px]">
+                          {formatDateForDisplay(startDate)}
+                        </span>
+                        <span className="text-sm font-normal text-muted-foreground leading-[21px]">
+                          {startTime} - {endTime} UTC+4
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Venue Section */}
+                    <div className="flex items-center gap-2">
+                      {/* Location Icon Box */}
+                      <div className="w-10 h-10 border border-border rounded-lg flex items-center justify-center">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-base font-medium text-foreground leading-[24px]">
+                          {locationInput ? locationInput.split(",")[0] : t("Venue", "الموقع", "Lieu")}
+                        </span>
+                        <span className="text-sm font-normal text-muted-foreground leading-[21px]">
+                          {locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || t("Dubai, Dubai", "دبي، دبي", "Dubai, Dubai") : t("Dubai, Dubai", "دبي، دبي", "Dubai, Dubai")}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Create Event Button */}
-          <button
-            onClick={handleSubmit}
-            disabled={isSaving}
-            className="w-full h-10 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {t("Creating...", "جارٍ الإنشاء...", "Création...")}
-              </>
-            ) : (
-              t("+ Create Event", "+ إنشاء حدث", "+ Créer un événement")
-            )}
-          </button>
+              {/* Create Event Button */}
+              <button
+                onClick={handleSubmit}
+                disabled={isSaving}
+                className="w-full h-10 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {t("Creating...", "جارٍ الإنشاء...", "Création...")}
+                  </>
+                ) : (
+                  t("+ Create Event", "+ إنشاء حدث", "+ Créer un événement")
+                )}
+              </button>
             </>
           )}
         </div>
@@ -1866,15 +1871,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setNewLeagueVisible(!newLeagueVisible)}
-                  className={`w-4 h-4 rounded shrink-0 flex items-center justify-center shadow-sm ${
-                    newLeagueVisible
+                  className={`w-4 h-4 rounded shrink-0 flex items-center justify-center shadow-sm ${newLeagueVisible
                       ? "bg-[#3f52ff] dark:bg-[#3f52ff]"
                       : "bg-card border border-border"
-                  }`}
+                    }`}
                 >
                   {newLeagueVisible && (
                     <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-                      <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   )}
                 </button>

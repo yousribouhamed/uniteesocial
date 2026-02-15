@@ -44,7 +44,7 @@ import {
 } from "lucide-react";
 import AdminSidebar, { type CurrentUser } from "@/components/admin-sidebar";
 import { toastQueue } from "@/components/ui/aria-toast";
-import { DEFAULT_CHAPTERS } from "@/data/chapters";
+
 
 import { getBusinessProfile, updateBusinessProfile, uploadBrandAsset } from "./actions";
 import { TIMEZONES } from "@/data/timezones";
@@ -2736,20 +2736,38 @@ function TeamMemberCard({
 const createChapterTabs = ["Basic Info", "Venue", "Team", "Setting"] as const;
 type CreateChapterTab = (typeof createChapterTabs)[number];
 
-function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
+interface EditChapterData {
+  id: string;
+  name: string;
+  code: string;
+  city: string;
+  country: string;
+  cover_image?: string;
+  venue_name?: string;
+  full_address?: string;
+  sort_order?: number;
+  notifications?: any;
+}
+
+function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss: () => void; onChapterSaved?: () => void; editData?: EditChapterData | null }) {
   const [activeTab, setActiveTab] = useState<CreateChapterTab>("Basic Info");
-  const [venueName, setVenueName] = useState("");
-  const [fullAddress, setFullAddress] = useState("");
+  const [venueName, setVenueName] = useState(editData?.venue_name || "");
+  const [fullAddress, setFullAddress] = useState(editData?.full_address || "");
   const [searchPlace, setSearchPlace] = useState("");
-  const [chapterName, setChapterName] = useState("");
-  const [chapterCode, setChapterCode] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [coverImage, setCoverImage] = useState<string>("");
+  const [chapterName, setChapterName] = useState(editData?.name || "");
+  const [chapterCode, setChapterCode] = useState(editData?.code || "");
+  const [city, setCity] = useState(editData?.city || "");
+  const [country, setCountry] = useState(editData?.country || "");
+  const [coverImage, setCoverImage] = useState<string>(editData?.cover_image || "");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [sortOrder, setSortOrder] = useState(999);
-  const [notifications, setNotifications] = useState({
+  const [sortOrder, setSortOrder] = useState(editData?.sort_order ?? 999);
+  const [notifications, setNotifications] = useState<{
+    enableNotifications: boolean;
+    autoNotifyNewEvents: boolean;
+    autoNotifyNewUpdates: boolean;
+    autoNotifyAnnouncements: boolean;
+  }>(editData?.notifications || {
     enableNotifications: false,
     autoNotifyNewEvents: true,
     autoNotifyNewUpdates: false,
@@ -2854,13 +2872,69 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
       return;
     }
 
-    // Frontend-only: just show success and dismiss
-    toastQueue.add({
-      title: "Chapter Created",
-      description: "Chapter details saved successfully.",
-      variant: "success",
-    }, { timeout: 3000 });
-    onDismiss();
+    if (!chapterCode.trim()) {
+      toastQueue.add({
+        title: "Missing Chapter Code",
+        description: "Chapter Code is required.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const payload = {
+        name: chapterName.trim(),
+        code: chapterCode.trim(),
+        city: city.trim(),
+        country: country.trim(),
+        cover_image: coverImage,
+        venue_name: venueName.trim(),
+        full_address: fullAddress.trim(),
+        sort_order: sortOrder,
+        notifications,
+        team: teamMembers.length,
+      };
+
+      let res: Response;
+      if (editData?.id) {
+        res = await fetch(`/api/chapters/${editData.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        res = await fetch("/api/chapters", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to save chapter");
+      }
+
+      toastQueue.add({
+        title: editData?.id ? "Chapter Updated" : "Chapter Created",
+        description: editData?.id ? "Chapter updated successfully." : "Chapter details saved successfully.",
+        variant: "success",
+      }, { timeout: 3000 });
+
+      onChapterSaved?.();
+      onDismiss();
+    } catch (err: any) {
+      console.error("Save chapter error:", err);
+      toastQueue.add({
+        title: "Error",
+        description: err.message || "Failed to save chapter.",
+        variant: "error",
+      }, { timeout: 3000 });
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -2868,7 +2942,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
       {/* Section Header */}
       <div className="flex flex-col gap-2 px-2">
         <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
-          Create New Chapter
+          {editData?.id ? "Edit Chapter" : "Create New Chapter"}
         </h1>
         <p className="text-base font-semibold text-muted-foreground leading-[18px]">
           Fill in all required fields to create a new chapter. All fields marked
@@ -3224,7 +3298,7 @@ function CreateChapterForm({ onDismiss }: { onDismiss: () => void }) {
             disabled={creating}
             className="px-4 py-2 bg-[#3f52ff] text-white text-sm font-medium rounded-lg hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {creating ? "Creating..." : "Create Chapter"}
+            {creating ? (editData?.id ? "Saving..." : "Creating...") : (editData?.id ? "Save Changes" : "Create Chapter")}
           </button>
         </div>
       </div>
@@ -3544,13 +3618,36 @@ function ChapterActionMenu({
 }
 
 // --- DB chapter shape ---
+interface ChapterRow {
+  id: string;
+  name: string;
+  code: string;
+  city: string;
+  country: string;
+  team: number;
+  events: string;
+  visible: boolean;
+  status: string;
+  cover_image?: string;
+  venue_name?: string;
+  full_address?: string;
+  sort_order?: number;
+  notifications?: any;
+  updated_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // --- Chapters Content ---
 function ChaptersContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [chaptersData, setChaptersData] = useState<any[]>([]);
-  const [isLoading] = useState(false);
+  const [editChapterData, setEditChapterData] = useState<EditChapterData | null>(null);
+  const [chaptersData, setChaptersData] = useState<ChapterRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteChapter, setDeleteChapter] = useState<{
+    id: string;
     name: string;
     code: string;
     events: string;
@@ -3567,13 +3664,76 @@ function ChaptersContent() {
 
   const [visibleStates, setVisibleStates] = useState<Record<string, boolean>>({});
 
+  // Fetch chapters from API
+  const fetchChapters = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/chapters");
+      const result = await res.json();
+      if (result.success && result.data) {
+        setChaptersData(result.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch chapters:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Load chapters on mount
+  useEffect(() => {
+    fetchChapters();
+  }, [fetchChapters]);
+
   // Sync visibleStates when chaptersData changes
   useEffect(() => {
     setVisibleStates(Object.fromEntries(chaptersData.map((c) => [c.code, c.visible])));
   }, [chaptersData]);
 
-  const toggleVisible = (code: string) => {
-    setVisibleStates((prev) => ({ ...prev, [code]: !prev[code] }));
+  const toggleVisible = async (chapter: ChapterRow) => {
+    const newVisible = !visibleStates[chapter.code];
+    setVisibleStates((prev) => ({ ...prev, [chapter.code]: newVisible }));
+    try {
+      await fetch(`/api/chapters/${chapter.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ visible: newVisible }),
+      });
+    } catch (err) {
+      console.error("Failed to toggle visibility:", err);
+      // Revert on error
+      setVisibleStates((prev) => ({ ...prev, [chapter.code]: !newVisible }));
+    }
+  };
+
+  const handleDeleteChapter = async () => {
+    if (!deleteChapter) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/chapters/${deleteChapter.id}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to delete chapter");
+      }
+      toastQueue.add({
+        title: "Chapter Deleted",
+        description: `"${deleteChapter.name}" has been deleted.`,
+        variant: "success",
+      }, { timeout: 3000 });
+      setDeleteChapter(null);
+      fetchChapters();
+    } catch (err: any) {
+      console.error("Delete chapter error:", err);
+      toastQueue.add({
+        title: "Error",
+        description: err.message || "Failed to delete chapter.",
+        variant: "error",
+      }, { timeout: 3000 });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const tableHeaders = [
@@ -3588,7 +3748,13 @@ function ChaptersContent() {
   ];
 
   if (showCreateForm) {
-    return <CreateChapterForm onDismiss={() => { setShowCreateForm(false); }} />;
+    return (
+      <CreateChapterForm
+        onDismiss={() => { setShowCreateForm(false); setEditChapterData(null); }}
+        onChapterSaved={fetchChapters}
+        editData={editChapterData}
+      />
+    );
   }
 
   // Extract event count number from string like "12 Events"
@@ -3811,7 +3977,7 @@ function ChaptersContent() {
                       <td className="px-3 py-3">
                         <AriaSwitch
                           isSelected={visibleStates[chapter.code]}
-                          onChange={() => toggleVisible(chapter.code)}
+                          onChange={() => toggleVisible(chapter)}
                         />
                       </td>
                       {/* Status */}
@@ -3825,11 +3991,11 @@ function ChaptersContent() {
                       <td className="px-3 py-3">
                         <div className="flex flex-col">
                           <span className="text-sm text-foreground">
-                            {chapter.lastUpdate}
+                            {chapter.updated_at ? new Date(chapter.updated_at).toLocaleDateString() : "—"}
                           </span>
-                          {chapter.updatedBy && (
+                          {chapter.updated_by && (
                             <span className="text-xs text-muted-foreground">
-                              {chapter.updatedBy}
+                              {chapter.updated_by}
                             </span>
                           )}
                         </div>
@@ -3845,14 +4011,27 @@ function ChaptersContent() {
                               country: chapter.country,
                               team: chapter.team,
                               events: chapter.events,
-                              lastUpdate: chapter.lastUpdate,
+                              lastUpdate: chapter.updated_at ? new Date(chapter.updated_at).toLocaleDateString() : "—",
                             });
                           }}
                           onEdit={() => {
-                            // Edit logic if any, currently just placeholder in original
+                            setEditChapterData({
+                              id: chapter.id,
+                              name: chapter.name,
+                              code: chapter.code,
+                              city: chapter.city,
+                              country: chapter.country,
+                              cover_image: chapter.cover_image,
+                              venue_name: chapter.venue_name,
+                              full_address: chapter.full_address,
+                              sort_order: chapter.sort_order,
+                              notifications: chapter.notifications,
+                            });
+                            setShowCreateForm(true);
                           }}
                           onDelete={() => {
                             setDeleteChapter({
+                              id: chapter.id,
                               name: chapter.name,
                               code: chapter.code,
                               events: chapter.events,
@@ -3931,10 +4110,11 @@ function ChaptersContent() {
                 Dismiss
               </button>
               <button
-                onClick={() => setDeleteChapter(null)}
-                className="flex-1 h-10 px-4 text-sm font-medium text-white bg-destructive rounded-lg hover:bg-destructive/90 transition-colors"
+                onClick={handleDeleteChapter}
+                disabled={isDeleting}
+                className="flex-1 h-10 px-4 text-sm font-medium text-white bg-destructive rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Delete Chapter
+                {isDeleting ? "Deleting..." : "Delete Chapter"}
               </button>
             </div>
           </motion.div>

@@ -46,7 +46,6 @@ import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue, parseDate } from "@internationalized/date";
 import { toastQueue } from "@/components/ui/aria-toast";
-import { DEFAULT_CHAPTERS } from "@/data/chapters";
 import { getEvents, createEvent, updateEvent, deleteEvent, EventData } from "./actions";
 import { CreateEventScreen, EventFormData } from "./create-event-screen";
 import { CloneEventModal } from "@/components/clone-event-modal";
@@ -641,46 +640,46 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
 
         {/* Top Right Action Button */}
         <div className="hidden md:block">
-        <Menu>
-          <MenuButton className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center hover:bg-foreground/90 transition-colors focus:outline-none data-[open]:bg-foreground/90">
-            <MoreHorizontal className="w-5 h-5 text-white" />
-          </MenuButton>
-          <Portal>
-            <MenuItems
-              anchor="bottom end"
-              transition
-              className="z-[100] mt-1.5 w-[180px] bg-card border border-border rounded-xl p-1 shadow-lg focus:outline-none transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
-            >
-              <MenuItem>
-                <button
-                  onClick={() => setShowCloneModal(true)}
-                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/70 transition-colors group focus:outline-none"
-                >
-                  <Copy className="w-4 h-4 text-muted-foreground" />
-                  Clone Event
-                </button>
-              </MenuItem>
-              <MenuItem>
-                <button
-                  onClick={() => setShowSlidoModal(true)}
-                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-blue-100 dark:bg-blue-950/40 hover:bg-blue-100 dark:bg-blue-950/40 transition-colors text-foreground focus:outline-none"
-                >
-                  <Code className="w-4 h-4" />
-                  Add Slido Embed
-                </button>
-              </MenuItem>
-              <MenuItem>
-                <button
-                  onClick={() => setShowCancelModal(true)}
-                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors group focus:outline-none"
-                >
-                  <XCircle className="w-4 h-4 text-destructive" />
-                  Cancel Event
-                </button>
-              </MenuItem>
-            </MenuItems>
-          </Portal>
-        </Menu>
+          <Menu>
+            <MenuButton className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center hover:bg-foreground/90 transition-colors focus:outline-none data-[open]:bg-foreground/90">
+              <MoreHorizontal className="w-5 h-5 text-white" />
+            </MenuButton>
+            <Portal>
+              <MenuItems
+                anchor="bottom end"
+                transition
+                className="z-[100] mt-1.5 w-[180px] bg-card border border-border rounded-xl p-1 shadow-lg focus:outline-none transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+              >
+                <MenuItem>
+                  <button
+                    onClick={() => setShowCloneModal(true)}
+                    className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/70 transition-colors group focus:outline-none"
+                  >
+                    <Copy className="w-4 h-4 text-muted-foreground" />
+                    Clone Event
+                  </button>
+                </MenuItem>
+                <MenuItem>
+                  <button
+                    onClick={() => setShowSlidoModal(true)}
+                    className="flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm font-medium data-[focus]:bg-blue-100 dark:bg-blue-950/40 hover:bg-blue-100 dark:bg-blue-950/40 transition-colors text-foreground focus:outline-none"
+                  >
+                    <Code className="w-4 h-4" />
+                    Add Slido Embed
+                  </button>
+                </MenuItem>
+                <MenuItem>
+                  <button
+                    onClick={() => setShowCancelModal(true)}
+                    className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors group focus:outline-none"
+                  >
+                    <XCircle className="w-4 h-4 text-destructive" />
+                    Cancel Event
+                  </button>
+                </MenuItem>
+              </MenuItems>
+            </Portal>
+          </Menu>
         </div>
       </div>
 
@@ -1098,125 +1097,125 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               </div>
             </div>
 
-          {/* Search + Filter Row */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-            <div className="md:hidden flex items-center justify-end gap-2">
-              <button
-                onClick={() => {
-                  if (selectedGuests.size === 0) return;
-                  const guestsToExport = guests.filter(g => selectedGuests.has(g.id));
-                  const csvContent = [
-                    ["ID", "Name", "Email", "Registration Time", "Ticket ID", "Status"],
-                    ...guestsToExport.map(g => [g.id, g.name, g.email, g.registrationTime, g.ticketId, g.status])
-                  ].map(e => e.join(",")).join("\n");
+            {/* Search + Filter Row */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+              <div className="md:hidden flex items-center justify-end gap-2">
+                <button
+                  onClick={() => {
+                    if (selectedGuests.size === 0) return;
+                    const guestsToExport = guests.filter(g => selectedGuests.has(g.id));
+                    const csvContent = [
+                      ["ID", "Name", "Email", "Registration Time", "Ticket ID", "Status"],
+                      ...guestsToExport.map(g => [g.id, g.name, g.email, g.registrationTime, g.ticketId, g.status])
+                    ].map(e => e.join(",")).join("\n");
 
-                  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-                  const url = URL.createObjectURL(blob);
-                  const link = document.createElement("a");
-                  link.setAttribute("href", url);
-                  link.setAttribute("download", `guests_export_${new Date().toISOString()}.csv`);
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
+                    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `guests_export_${new Date().toISOString()}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
 
-                  toastQueue.add({
-                    title: "Export Successful",
-                    description: `Exported ${selectedGuests.size} guests to CSV.`,
-                    type: "success"
-                  });
-                }}
-                disabled={selectedGuests.size === 0}
-                className={`flex items-center gap-2 h-8 px-3 text-xs font-medium rounded-lg transition-colors ${selectedGuests.size > 0
-                  ? "bg-foreground text-background hover:bg-foreground/90"
-                  : "bg-muted text-muted-foreground cursor-not-allowed"
-                  }`}
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M12.25 8.75V11.0833C12.25 11.3928 12.1271 11.6895 11.9083 11.9083C11.6895 12.1271 11.3928 12.25 11.0833 12.25H2.91667C2.60725 12.25 2.3105 12.1271 2.09171 11.9083C1.87292 11.6895 1.75 11.3928 1.75 11.0833V8.75" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M4.66699 5.83301L7.00033 8.16634L9.33366 5.83301" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M7 8.16634V1.74967" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Export CSV
-              </button>
-              <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
-                Add User
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-full md:w-[373px]">
-                <Search className="w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search Name, Email"
-                  value={guestSearchQuery}
-                  onChange={(e) => setGuestSearchQuery(e.target.value)}
-                  className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none border-none p-0 focus:ring-0"
-                />
-                <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
+                    toastQueue.add({
+                      title: "Export Successful",
+                      description: `Exported ${selectedGuests.size} guests to CSV.`,
+                      type: "success"
+                    });
+                  }}
+                  disabled={selectedGuests.size === 0}
+                  className={`flex items-center gap-2 h-8 px-3 text-xs font-medium rounded-lg transition-colors ${selectedGuests.size > 0
+                    ? "bg-foreground text-background hover:bg-foreground/90"
+                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                    }`}
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M12.25 8.75V11.0833C12.25 11.3928 12.1271 11.6895 11.9083 11.9083C11.6895 12.1271 11.3928 12.25 11.0833 12.25H2.91667C2.60725 12.25 2.3105 12.1271 2.09171 11.9083C1.87292 11.6895 1.75 11.3928 1.75 11.0833V8.75" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M4.66699 5.83301L7.00033 8.16634L9.33366 5.83301" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M7 8.16634V1.74967" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Export CSV
+                </button>
+                <button className="flex items-center gap-1 h-8 px-3 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
+                  Add User
+                </button>
               </div>
-              <div className="hidden md:block">
-              <Menu>
-                <MenuButton className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
-                  <Filter className="w-4 h-4" />
-                  {guestStatusFilter !== "all" && (
-                    <span className="bg-card text-[#3f52ff] dark:text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                      1
-                    </span>
-                  )}
-                </MenuButton>
-                <Portal>
-                  <MenuItems
-                    anchor="bottom end"
-                    transition
-                    className="z-[100] mt-1 bg-card border border-border rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
-                  >
-                    <MenuItem>
-                      <button
-                        onClick={() => setGuestStatusFilter("all")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
+
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <div className="flex items-center gap-2 h-9 px-3 py-1 bg-card border border-border rounded-lg w-full md:w-[373px]">
+                  <Search className="w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search Name, Email"
+                    value={guestSearchQuery}
+                    onChange={(e) => setGuestSearchQuery(e.target.value)}
+                    className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none border-none p-0 focus:ring-0"
+                  />
+                  <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
+                </div>
+                <div className="hidden md:block">
+                  <Menu>
+                    <MenuButton className="flex items-center gap-1.5 px-3 py-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white rounded-lg text-sm font-medium hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors">
+                      <Filter className="w-4 h-4" />
+                      {guestStatusFilter !== "all" && (
+                        <span className="bg-card text-[#3f52ff] dark:text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                          1
+                        </span>
+                      )}
+                    </MenuButton>
+                    <Portal>
+                      <MenuItems
+                        anchor="bottom end"
+                        transition
+                        className="z-[100] mt-1 bg-card border border-border rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
                       >
-                        All Guests
-                      </button>
-                    </MenuItem>
-                    <MenuItem>
-                      <button
-                        onClick={() => setGuestStatusFilter("checked-in")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
-                      >
-                        Checked In
-                      </button>
-                    </MenuItem>
-                    <MenuItem>
-                      <button
-                        onClick={() => setGuestStatusFilter("not-checked-in")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
-                      >
-                        Not Checked In
-                      </button>
-                    </MenuItem>
-                    <MenuItem>
-                      <button
-                        onClick={() => setGuestStatusFilter("booked")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
-                      >
-                        Booked
-                      </button>
-                    </MenuItem>
-                    <MenuItem>
-                      <button
-                        onClick={() => setGuestStatusFilter("cancelled")}
-                        className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
-                      >
-                        Cancelled
-                      </button>
-                    </MenuItem>
-                  </MenuItems>
-                </Portal>
-              </Menu>
+                        <MenuItem>
+                          <button
+                            onClick={() => setGuestStatusFilter("all")}
+                            className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
+                          >
+                            All Guests
+                          </button>
+                        </MenuItem>
+                        <MenuItem>
+                          <button
+                            onClick={() => setGuestStatusFilter("checked-in")}
+                            className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
+                          >
+                            Checked In
+                          </button>
+                        </MenuItem>
+                        <MenuItem>
+                          <button
+                            onClick={() => setGuestStatusFilter("not-checked-in")}
+                            className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
+                          >
+                            Not Checked In
+                          </button>
+                        </MenuItem>
+                        <MenuItem>
+                          <button
+                            onClick={() => setGuestStatusFilter("booked")}
+                            className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
+                          >
+                            Booked
+                          </button>
+                        </MenuItem>
+                        <MenuItem>
+                          <button
+                            onClick={() => setGuestStatusFilter("cancelled")}
+                            className="flex w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground data-[focus]:bg-muted hover:bg-muted transition-colors focus:outline-none"
+                          >
+                            Cancelled
+                          </button>
+                        </MenuItem>
+                      </MenuItems>
+                    </Portal>
+                  </Menu>
+                </div>
               </div>
             </div>
-          </div>
 
             {/* Guest Table */}
             <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 hide-scrollbar">
@@ -2200,6 +2199,22 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [eventToDelete, setEventToDelete] = useState<EventItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [chapters, setChapters] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchChapters = async () => {
+      try {
+        const res = await fetch("/api/chapters");
+        const json = await res.json();
+        if (json.success && json.data) {
+          setChapters(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch chapters", err);
+      }
+    };
+    fetchChapters();
+  }, []);
 
   // Load events from database on mount
   const loadEvents = useCallback(async () => {
@@ -2562,7 +2577,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Navbar */}
-          <header className="sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
+        <header className="sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 py-3 bg-card border-b border-border">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -2623,10 +2638,10 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                   <div className="flex items-center gap-2">
                     <div className="bg-background border-[0.6px] border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                       <svg className="text-muted-foreground" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <div className="flex flex-col">
@@ -2648,10 +2663,10 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                   <div className="flex items-center gap-2">
                     <div className="bg-background border-[0.6px] border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                       <svg className="text-muted-foreground" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.6667 14V12.6667C10.6667 11.9594 10.3857 11.2811 9.88562 10.781C9.38552 10.281 8.70724 10 8 10H4C3.29276 10 2.61448 10.281 2.11438 10.781C1.61429 11.2811 1.33333 11.9594 1.33333 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12.6667 5.33333L11.3333 6.66667L10.6667 6" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M14.6667 6.66667C14.6667 8.87581 12.876 10.6667 10.6667 10.6667" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M10.6667 14V12.6667C10.6667 11.9594 10.3857 11.2811 9.88562 10.781C9.38552 10.281 8.70724 10 8 10H4C3.29276 10 2.61448 10.281 2.11438 10.781C1.61429 11.2811 1.33333 11.9594 1.33333 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M12.6667 5.33333L11.3333 6.66667L10.6667 6" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M14.6667 6.66667C14.6667 8.87581 12.876 10.6667 10.6667 10.6667" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <div className="flex flex-col">
@@ -2673,10 +2688,10 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                   <div className="flex items-center gap-2">
                     <div className="bg-background border-[0.6px] border-border rounded-[5.4px] p-[7.2px] flex items-center justify-center">
                       <svg className="text-muted-foreground" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M11.3333 14V12.6667C11.3333 11.9594 11.0524 11.2811 10.5523 10.781C10.0522 10.281 9.37391 10 8.66667 10H3.33333C2.62609 10 1.94781 10.281 1.44772 10.781C0.947621 11.2811 0.666667 11.9594 0.666667 12.6667V14" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6 7.33333C7.47276 7.33333 8.66667 6.13943 8.66667 4.66667C8.66667 3.19391 7.47276 2 6 2C4.52724 2 3.33333 3.19391 3.33333 4.66667C3.33333 6.13943 4.52724 7.33333 6 7.33333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M15.3333 14V12.6667C15.3328 12.0758 15.1362 11.5019 14.7742 11.0349C14.4122 10.5679 13.9054 10.2344 13.3333 10.0867" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M10.6667 2.08667C11.2403 2.23354 11.7487 2.56714 12.1118 3.03488C12.4748 3.50262 12.6719 4.07789 12.6719 4.67C12.6719 5.26211 12.4748 5.83738 12.1118 6.30512C11.7487 6.77286 11.2403 7.10646 10.6667 7.25333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <div className="flex flex-col">
@@ -2779,8 +2794,8 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                         onSelectionChange={(k) => setFilterChapter(k as string)}
                       >
                         <AriaSelectItem id="all" textValue="All Chapters">All Chapters</AriaSelectItem>
-                        {DEFAULT_CHAPTERS.map(c => (
-                          <AriaSelectItem key={c.code} id={c.name} textValue={c.name}>{c.name}</AriaSelectItem>
+                        {chapters.map(c => (
+                          <AriaSelectItem key={c.id} id={c.name} textValue={c.name}>{c.name}</AriaSelectItem>
                         ))}
                       </AriaSelect>
                     </div>
