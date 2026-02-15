@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -55,6 +55,16 @@ export interface EventFormData {
   ticketGoLive: string;
   capacity: string;
   type: "Onsite" | "Online" | "Hybrid";
+  // Match-specific fields
+  league?: string;
+  homeTeam?: string;
+  awayTeam?: string;
+  enableLineUpAnnouncement?: boolean;
+  lineUpAnnouncementTime?: string;
+  homeTeamLineup?: string;
+  awayTeamLineup?: string;
+  livestreamUrl?: string;
+  stadiumVenueName?: string;
 }
 
 export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateEventScreenProps) {
@@ -101,6 +111,20 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
     if (language === "French") return french ?? english;
     return english;
   };
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const previousLang = html.lang || "en";
+    const previousDir = html.dir || "ltr";
+
+    html.lang = isArabic ? "ar" : "en";
+    html.dir = isArabic ? "rtl" : "ltr";
+
+    return () => {
+      html.lang = previousLang;
+      html.dir = previousDir;
+    };
+  }, [isArabic]);
   const lineupOptions = [
     "15 min before match",
     "30 min before match",
@@ -220,30 +244,52 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   };
 
   const handleSubmit = () => {
+    // For match events, construct title from homeTeam and awayTeam
+    const finalTitle = isMatchEvent
+      ? `${homeTeam} Vs ${awayTeam}`
+      : eventTitle;
+
     onSave({
-      title: eventTitle,
+      title: finalTitle,
       coverImage,
       eventCategory,
       startDate,
       startTime,
       endDate,
       endTime,
-      locationType,
-      location: locationInput,
+      locationType: isMatchEvent ? matchLocationType : locationType,
+      location: isMatchEvent 
+        ? (matchLocationType === "onsite" ? stadiumVenueName : livestreamUrl)
+        : locationInput,
       geoFenceRadius,
-      locationMasking,
+      locationMasking: isMatchEvent ? matchLocationMasking : locationMasking,
       locationMaskName,
-      description: eventDescription,
+      description: isMatchEvent ? matchDescription : eventDescription,
       chapter,
       ticketGoLive,
       capacity,
-      type: locationType === "virtual" ? "Online" : "Onsite",
+      type: (isMatchEvent 
+        ? (matchLocationType === "virtual" ? "Online" : "Onsite")
+        : (locationType === "virtual" ? "Online" : "Onsite")) as "Onsite" | "Online" | "Hybrid",
+      // Match-specific fields
+      league,
+      homeTeam,
+      awayTeam,
+      enableLineUpAnnouncement,
+      lineUpAnnouncementTime,
+      homeTeamLineup,
+      awayTeamLineup,
+      livestreamUrl,
+      stadiumVenueName,
     });
   };
   const isMatchEvent = eventCategory === "match";
 
   return (
-    <div className={`bg-muted border border-border rounded-lg p-4 pb-2 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}>
+    <div
+      className={`bg-muted border border-border rounded-lg p-4 pb-2 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       <div className="flex lg:flex-row flex-col gap-4 items-start">
         {/* Left: Event Preview Card */}
         <div className="hidden lg:flex w-full lg:w-[493px] shrink-0 bg-card border border-border rounded-lg p-3 flex-col gap-4 h-fit">
@@ -279,6 +325,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             </div>
           </div>
           <input
+            id="event-cover-upload"
             type="file"
             ref={fileInputRef}
             className="hidden"
@@ -1028,6 +1075,109 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </div>
               </div>
 
+              {/* Mobile: Match Preview Card with Image Upload */}
+              <div className="lg:hidden w-full bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
+                {/* Cover Image Upload - Uses the shared fileInputRef from the desktop preview */}
+                <div
+                  className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
+                  onClick={() => {
+                    // Trigger the file input from the desktop preview card
+                    const fileInput = document.getElementById('event-cover-upload');
+                    fileInput?.click();
+                  }}
+                >
+                  {coverImage ? (
+                    <img
+                      src={coverImage}
+                      alt="Match cover"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted" />
+                  )}
+                  {/* Centered Camera Icon */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
+                    <Camera className="w-6 h-6 text-white" />
+                  </div>
+                  {/* Hover overlay for changing image */}
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Camera className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+
+                {/* Match Info Preview */}
+                <div className="flex flex-col gap-4">
+                  {/* Title + Badges */}
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-lg font-semibold text-foreground leading-[18px]">
+                      {homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : t("Team A Vs Team B", "الفريق أ ضد الفريق ب", "Équipe A vs Équipe B")}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
+                        {matchLocationType === "virtual"
+                          ? t("Virtual", "افتراضي", "Virtuel")
+                          : t("Onsite", "حضوري", "Sur site")}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Date & Venue Row */}
+                  <div className="flex items-start gap-8 flex-wrap">
+                    {/* Date Section */}
+                    <div className="flex items-center gap-2">
+                      {/* Date Box */}
+                      <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
+                        <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
+                          <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
+                            {startDate ? (() => {
+                              const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
+                              return months[startDate.month - 1];
+                            })() : "OCT."}
+                          </span>
+                        </div>
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-base font-medium text-muted-foreground leading-none">{startDate?.day || "25"}</span>
+                        </div>
+                      </div>
+                      {/* Date Text */}
+                      <div className="flex flex-col gap-px">
+                        <span className="text-base font-medium text-foreground leading-[24px]">
+                          {startDate ? (() => {
+                            const weekdays = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+                            const d = new Date(startDate.year, startDate.month - 1, startDate.day);
+                            const monthsFull = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+                            return `${weekdays[d.getDay()]} ${startDate.day} ${monthsFull[startDate.month - 1]}`;
+                          })() : "samedi 25 octobre"}
+                        </span>
+                        <span className="text-sm font-normal text-muted-foreground leading-[21px]">
+                          {startTime} - {endTime} UTC+4
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Venue Info */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+                      <span className="text-sm font-normal text-foreground leading-[18px]">
+                        {matchLocationType === "onsite" && stadiumVenueName
+                          ? stadiumVenueName
+                          : matchLocationType === "virtual" && livestreamUrl
+                            ? livestreamUrl
+                            : "Dubai World Trade Center, DWC"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <ClipboardPenLine className="w-4 h-4 text-muted-foreground shrink-0" />
+                      <span className="text-sm font-normal text-foreground leading-[18px]">
+                        {capacity === "Unlimited" ? "0/∞" : `0/${capacity}`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Create Match Event Button */}
               <button
                 onClick={handleSubmit}
@@ -1479,7 +1629,11 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             {/* Cover Image */}
             <div
               className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {
+                // Trigger the file input from the desktop preview card
+                const fileInput = document.getElementById('event-cover-upload');
+                fileInput?.click();
+              }}
             >
               {coverImage ? (
                 <img
@@ -1507,13 +1661,6 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </svg>
               </div>
             </div>
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
 
             {/* Event Info */}
             <div className="flex flex-col gap-4">

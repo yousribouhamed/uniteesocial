@@ -17,6 +17,7 @@ export interface EventData {
   signups: number;
   max_signups: number;
   description?: string;
+  match_details?: any | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -59,6 +60,7 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
         signups: eventData.signups || 0,
         max_signups: eventData.max_signups || 0,
         description: eventData.description || null,
+        match_details: eventData.match_details || null,
       })
       .select()
       .single();
@@ -103,6 +105,7 @@ export async function updateEvent(id: string, eventData: Partial<EventData>) {
         signups: eventData.signups,
         max_signups: eventData.max_signups,
         description: eventData.description,
+        match_details: eventData.match_details,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)

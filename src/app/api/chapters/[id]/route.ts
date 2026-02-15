@@ -65,16 +65,24 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { name, description, member_count } = body;
+    const { name, description, member_count, city, country, code, visible, status, cover_image, is_main, event_count } = body;
+
+    const updateData: Record<string, any> = { updated_at: new Date().toISOString() };
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (member_count !== undefined) updateData.member_count = member_count;
+    if (city !== undefined) updateData.city = city;
+    if (country !== undefined) updateData.country = country;
+    if (code !== undefined) updateData.code = code;
+    if (visible !== undefined) updateData.visible = visible;
+    if (status !== undefined) updateData.status = status;
+    if (cover_image !== undefined) updateData.cover_image = cover_image;
+    if (is_main !== undefined) updateData.is_main = is_main;
+    if (event_count !== undefined) updateData.event_count = event_count;
 
     const { data: updated, error } = await supabase
       .from("chapters")
-      .update({
-        name,
-        description,
-        member_count,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq("id", id)
       .select()
       .single();

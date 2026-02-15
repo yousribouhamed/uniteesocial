@@ -76,6 +76,12 @@
   font-family: 'KO Sans', system-ui, -apple-system, sans-serif !important;
 }
 
+html[lang="ar"],
+html[lang="ar"] body,
+html[lang="ar"] body * {
+  font-family: 'KO Sans', system-ui, -apple-system, sans-serif !important;
+}
+
 @keyframes spotlight {
   0% {
     opacity: 0;

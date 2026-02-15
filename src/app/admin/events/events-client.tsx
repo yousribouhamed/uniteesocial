@@ -369,6 +369,8 @@ function EventPreviewCard({
 // --- Create Event View ---
 function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void; isSaving?: boolean }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
+  const [language, setLanguage] = useState<"English" | "French" | "Arabic">("English");
+  const isArabic = language === "Arabic";
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSlidoModal, setShowSlidoModal] = useState(false);
   const [showCloneModal, setShowCloneModal] = useState(false);
@@ -420,6 +422,20 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   );
 
   const totalGuestPages = Math.max(1, Math.ceil(filteredGuests.length / guestsPerPage));
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const previousLang = html.lang || "en";
+    const previousDir = html.dir || "ltr";
+
+    html.lang = isArabic ? "ar" : "en";
+    html.dir = isArabic ? "rtl" : "ltr";
+
+    return () => {
+      html.lang = previousLang;
+      html.dir = previousDir;
+    };
+  }, [isArabic]);
 
   useEffect(() => {
     function onDocMouseDown(e: MouseEvent) {
@@ -522,7 +538,10 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const { day: displayDay, month: displayMonth } = getDayAndMonth(startDate);
 
   return (
-    <div className="bg-muted border border-border rounded-lg p-3 pb-4 flex flex-col gap-4">
+    <div
+      className={`bg-muted border border-border rounded-lg p-3 pb-4 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       {/* Header: Title + Badges + Check-In Guests */}
       <div className="flex items-center justify-between">
         <div className="hidden md:flex flex-col gap-2">
@@ -690,7 +709,11 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
           <div className="flex-1 w-full flex flex-col gap-4">
             <div className="flex justify-end">
               <div className="w-[120px]">
-                <AriaSelect aria-label="Language" defaultSelectedKey="English">
+                <AriaSelect
+                  aria-label="Language"
+                  selectedKey={language}
+                  onSelectionChange={(key) => setLanguage(key as "English" | "French" | "Arabic")}
+                >
                   <AriaSelectItem id="English" textValue="English">English</AriaSelectItem>
                   <AriaSelectItem id="French" textValue="French">French</AriaSelectItem>
                   <AriaSelectItem id="Arabic" textValue="Arabic">Arabic</AriaSelectItem>
@@ -2440,6 +2463,18 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         signups: 0,
         max_signups: maxSignups,
         description: formData.description,
+        // Match-specific fields stored as JSON in description or separate fields
+        match_details: formData.eventCategory === "match" ? {
+          league: formData.league,
+          homeTeam: formData.homeTeam,
+          awayTeam: formData.awayTeam,
+          enableLineUpAnnouncement: formData.enableLineUpAnnouncement,
+          lineUpAnnouncementTime: formData.lineUpAnnouncementTime,
+          homeTeamLineup: formData.homeTeamLineup,
+          awayTeamLineup: formData.awayTeamLineup,
+          livestreamUrl: formData.livestreamUrl,
+          stadiumVenueName: formData.stadiumVenueName,
+        } : null,
       };
 
       // Create new event in database
