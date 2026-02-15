@@ -3687,12 +3687,12 @@ function ChaptersContent() {
 
   // Sync visibleStates when chaptersData changes
   useEffect(() => {
-    setVisibleStates(Object.fromEntries(chaptersData.map((c) => [c.code, c.visible])));
+    setVisibleStates(Object.fromEntries(chaptersData.map((c) => [c.id, c.visible])));
   }, [chaptersData]);
 
   const toggleVisible = async (chapter: ChapterRow) => {
-    const newVisible = !visibleStates[chapter.code];
-    setVisibleStates((prev) => ({ ...prev, [chapter.code]: newVisible }));
+    const newVisible = !visibleStates[chapter.id];
+    setVisibleStates((prev) => ({ ...prev, [chapter.id]: newVisible }));
     try {
       await fetch(`/api/chapters/${chapter.id}`, {
         method: "PUT",
@@ -3702,7 +3702,7 @@ function ChaptersContent() {
     } catch (err) {
       console.error("Failed to toggle visibility:", err);
       // Revert on error
-      setVisibleStates((prev) => ({ ...prev, [chapter.code]: !newVisible }));
+      setVisibleStates((prev) => ({ ...prev, [chapter.id]: !newVisible }));
     }
   };
 
@@ -3940,7 +3940,7 @@ function ChaptersContent() {
                   })
                   .map((chapter) => (
                     <tr
-                      key={chapter.code}
+                      key={chapter.id}
                       className="border-b border-border last:border-b-0"
                     >
                       {/* Chapter */}
@@ -3976,7 +3976,7 @@ function ChaptersContent() {
                       {/* Visible Toggle */}
                       <td className="px-3 py-3">
                         <AriaSwitch
-                          isSelected={visibleStates[chapter.code]}
+                          isSelected={visibleStates[chapter.id]}
                           onChange={() => toggleVisible(chapter)}
                         />
                       </td>
