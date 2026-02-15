@@ -3414,7 +3414,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Hero Image */}
-        <div className="mx-4 h-[257px] rounded-[12px] bg-gradient-to-b from-[#4a6fa5] to-[#2d3e50] relative overflow-hidden flex flex-col justify-end p-4">
+        <div className="mx-4 w-[530px] h-[257px] rounded-[12px] bg-gradient-to-b from-[#4a6fa5] to-[#2d3e50] relative overflow-hidden flex flex-col justify-end p-4">
           {chapter.coverImage && !chapter.coverImage.startsWith("blob:") ? (
             <img
               src={chapter.coverImage}
@@ -3464,9 +3464,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full px-4">
-          <div className="h-px bg-[#e3e8ed]" />
-        </div>
+        <div className="w-full h-2 bg-[#ECEFF2]" />
 
         {/* Venue Information */}
         <div className="flex flex-col gap-6 px-4">
@@ -3492,9 +3490,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full px-4">
-          <div className="h-px bg-[#e3e8ed]" />
-        </div>
+        <div className="w-full h-2 bg-[#ECEFF2]" />
 
         {/* Chapter Story */}
         <div className="flex flex-col gap-6 px-4">
@@ -3507,9 +3503,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full px-4">
-          <div className="h-px bg-[#e3e8ed]" />
-        </div>
+        <div className="w-full h-2 bg-[#ECEFF2]" />
 
         {/* Team Members */}
         <div className="flex flex-col gap-6 px-4">
@@ -3533,9 +3527,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full px-4">
-          <div className="h-px bg-[#e3e8ed]" />
-        </div>
+        <div className="w-full h-2 bg-[#ECEFF2]" />
 
         {/* Notifications Default */}
         <div className="flex flex-col gap-6 px-4">
@@ -3575,9 +3567,7 @@ function ViewChapterPanel({
         </div>
 
         {/* Divider */}
-        <div className="w-full px-4">
-          <div className="h-px bg-[#e3e8ed]" />
-        </div>
+        <div className="w-full h-2 bg-[#ECEFF2]" />
 
         {/* Linked Events */}
         <div className="flex flex-col gap-6 px-4 pb-4">
