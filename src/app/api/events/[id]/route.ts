@@ -1,6 +1,63 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+function parseJsonSafe<T = any>(value: unknown): T | null {
+  if (typeof value !== "string") return null;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
+}
+
+function extractMatchDetails(event: any) {
+  const directMatchDetails =
+    typeof event?.match_details === "string"
+      ? parseJsonSafe(event.match_details)
+      : event?.match_details;
+
+  if (directMatchDetails && typeof directMatchDetails === "object") {
+    return directMatchDetails;
+  }
+
+  const parsedDescription = parseJsonSafe<{ match_details?: any }>(event?.description);
+  if (parsedDescription?.match_details && typeof parsedDescription.match_details === "object") {
+    return parsedDescription.match_details;
+  }
+
+  return null;
+}
+
+function extractDescriptionText(description: unknown) {
+  if (typeof description !== "string") return description ?? null;
+  const parsedDescription = parseJsonSafe<{ text?: unknown }>(description);
+  if (parsedDescription && typeof parsedDescription.text === "string") {
+    return parsedDescription.text;
+  }
+  return description;
+}
+
+function normalizeEventForMobile(event: any) {
+  const matchDetails = extractMatchDetails(event);
+  const league =
+    typeof matchDetails?.league === "string" ? matchDetails.league.trim() : "";
+
+  const isMatchEvent =
+    event?.event_category === "match" ||
+    Boolean(league || matchDetails?.homeTeam || matchDetails?.awayTeam);
+
+  return {
+    ...event,
+    description: extractDescriptionText(event?.description),
+    match_details: matchDetails,
+    league: league || null,
+    home_team: typeof matchDetails?.homeTeam === "string" ? matchDetails.homeTeam : null,
+    away_team: typeof matchDetails?.awayTeam === "string" ? matchDetails.awayTeam : null,
+    chapter: isMatchEvent && league ? league : event?.chapter,
+    badge_label: isMatchEvent ? league || event?.chapter || "League" : event?.chapter,
+  };
+}
+
 // GET /api/events/:id — Get a single event with RSVP status
 export async function GET(
   request: Request,
@@ -27,6 +84,8 @@ export async function GET(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
+    const normalizedEvent = normalizeEventForMobile(event);
+
     // Get RSVP status if user is authenticated
     if (currentUser) {
       const { data: rsvp } = await supabase
@@ -36,7 +95,7 @@ export async function GET(
         .eq("user_id", currentUser.id)
         .single();
 
-      event.isAttending = !!rsvp?.attending;
+      normalizedEvent.isAttending = !!rsvp?.attending;
     }
 
     // Count attendees
@@ -46,9 +105,9 @@ export async function GET(
       .eq("event_id", id)
       .eq("attending", true);
 
-    event.attendees = attendees?.length || 0;
+    normalizedEvent.attendees = attendees?.length || 0;
 
-    return NextResponse.json({ success: true, data: event });
+    return NextResponse.json({ success: true, data: normalizedEvent });
   } catch (error) {
     console.error("Fetch event error:", error);
     return NextResponse.json(
