@@ -76,6 +76,11 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
     const supabase = await createClient();
     const canWriteMatchDetails = await hasEventsColumnMatchDetails(supabase);
 
+    const descriptionText = eventData.description ?? "";
+    const embeddedDescription = eventData.match_details
+      ? JSON.stringify({ text: descriptionText, match_details: eventData.match_details })
+      : descriptionText;
+
     const basePayload = {
       title: eventData.title,
       cover_image: eventData.cover_image,
@@ -86,12 +91,17 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
       location: eventData.location,
       signups: eventData.signups || 0,
       max_signups: eventData.max_signups || 0,
-      description: eventData.description || null,
+      description: (canWriteMatchDetails ? descriptionText : embeddedDescription) || null,
     };
 
     const payload = canWriteMatchDetails
       ? { ...basePayload, match_details: eventData.match_details || null }
       : basePayload;
+
+    const fallbackPayload = {
+      ...basePayload,
+      description: embeddedDescription || null,
+    };
 
     let data;
     let error;
@@ -108,7 +118,7 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
       hasMatchDetailsColumnCache = false;
       ({ data, error } = await supabase
         .from("events")
-        .insert(basePayload)
+        .insert(fallbackPayload)
         .select()
         .single());
     }
@@ -141,6 +151,11 @@ export async function updateEvent(id: string, eventData: Partial<EventData>) {
     const supabase = await createClient();
     const canWriteMatchDetails = await hasEventsColumnMatchDetails(supabase);
 
+    const descriptionText = eventData.description ?? "";
+    const embeddedDescription = eventData.match_details
+      ? JSON.stringify({ text: descriptionText, match_details: eventData.match_details })
+      : descriptionText;
+
     const basePayload = {
       title: eventData.title,
       cover_image: eventData.cover_image,
@@ -151,13 +166,18 @@ export async function updateEvent(id: string, eventData: Partial<EventData>) {
       location: eventData.location,
       signups: eventData.signups,
       max_signups: eventData.max_signups,
-      description: eventData.description,
+      description: (canWriteMatchDetails ? descriptionText : embeddedDescription) || null,
       updated_at: new Date().toISOString(),
     };
 
     const payload = canWriteMatchDetails
       ? { ...basePayload, match_details: eventData.match_details }
       : basePayload;
+
+    const fallbackPayload = {
+      ...basePayload,
+      description: embeddedDescription || null,
+    };
 
     let data;
     let error;
@@ -174,7 +194,7 @@ export async function updateEvent(id: string, eventData: Partial<EventData>) {
       hasMatchDetailsColumnCache = false;
       ({ data, error } = await supabase
         .from("events")
-        .update(basePayload)
+        .update(fallbackPayload)
         .eq("id", id)
         .select()
         .single());

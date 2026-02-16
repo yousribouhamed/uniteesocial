@@ -3356,7 +3356,7 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
 
 // Helper to convert database event to EventItem
 function dbEventToEventItem(dbEvent: any): EventItem {
-  const matchDetails =
+  const parsedMatchDetails =
     typeof dbEvent.match_details === "string"
       ? (() => {
           try {
@@ -3366,6 +3366,20 @@ function dbEventToEventItem(dbEvent: any): EventItem {
           }
         })()
       : dbEvent.match_details;
+
+  const parsedDescription =
+    typeof dbEvent.description === "string"
+      ? (() => {
+          try {
+            const parsed = JSON.parse(dbEvent.description);
+            return parsed && typeof parsed === "object" ? parsed : null;
+          } catch {
+            return null;
+          }
+        })()
+      : null;
+
+  const matchDetails = parsedMatchDetails || parsedDescription?.match_details || null;
 
   const eventDate = dbEvent.event_date ? new Date(dbEvent.event_date) : null;
   const dateGroup = eventDate
