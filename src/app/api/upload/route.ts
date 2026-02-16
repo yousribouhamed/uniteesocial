@@ -17,6 +17,16 @@ const ALLOWED_TYPES = [
 
 // Allowed extensions (as fallback when MIME type is missing/wrong)
 const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "svg", "heic", "heif"];
+const EXTENSION_TO_MIME: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  gif: "image/gif",
+  webp: "image/webp",
+  svg: "image/svg+xml",
+  heic: "image/heic",
+  heif: "image/heif",
+};
 
 // Max file size: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -59,19 +69,14 @@ function isAllowedFileType(file: File): boolean {
  */
 function getProperMimeType(file: File): string {
   const ext = getFileExtension(file.name);
-  
-  const mimeTypes: Record<string, string> = {
-    jpg: "image/jpeg",
-    jpeg: "image/jpeg",
-    png: "image/png",
-    gif: "image/gif",
-    webp: "image/webp",
-    svg: "image/svg+xml",
-    heic: "image/heic",
-    heif: "image/heif",
-  };
-  
-  return mimeTypes[ext] || file.type || "application/octet-stream";
+
+  return EXTENSION_TO_MIME[ext] || file.type || "application/octet-stream";
+}
+
+function getExtensionFromMimeType(mimeType: string): string {
+  const normalized = mimeType.toLowerCase().split(";")[0].trim();
+  const match = Object.entries(EXTENSION_TO_MIME).find(([, value]) => value === normalized);
+  return match?.[0] || "";
 }
 
 /**
@@ -111,52 +116,210 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse the form data
-    let formData: FormData;
-    try {
-      formData = await request.formData();
-    } catch (e) {
-      console.error("Form data parse error:", e);
+    let folder = "general";
+    let originalFileName = "upload.jpg";
+    let contentType = "application/octet-stream";
+    let fileSize = 0;
+    let buffer: Buffer | null = null;
+
+    const incomingContentType = request.headers.get("content-type") || "";
+    const isJsonPayload = incomingContentType.includes("application/json");
+    const isMultipartPayload = incomingContentType.includes("multipart/form-data");
+    const isBinaryPayload = !isJsonPayload && !isMultipartPayload;
+
+    if (isJsonPayload) {
+      let payload: unknown;
+      try {
+        const rawBody = await request.text();
+        payload = JSON.parse(rawBody);
+      } catch (e) {
+        console.error("JSON parse error:", e);
+        return NextResponse.json(
+          { error: "Invalid JSON payload" },
+          { status: 400 }
+        );
+      }
+
+      const body = payload as {
+        base64Data?: string;
+        folder?: string;
+        fileName?: string;
+      };
+      if (!body.base64Data || typeof body.base64Data !== "string") {
+        return NextResponse.json(
+          { error: "base64Data is required" },
+          { status: 400 }
+        );
+      }
+
+      const matches = body.base64Data.match(/^data:([^;]+);base64,(.+)$/);
+      if (!matches) {
+        return NextResponse.json(
+          { error: "Invalid image data format" },
+          { status: 400 }
+        );
+      }
+
+      const mimeType = matches[1];
+      const base64Content = matches[2];
+      const mimeExtRaw = mimeType.split("/")[1]?.toLowerCase() || "jpg";
+      const mimeExt = mimeExtRaw.replace("+xml", "");
+
+      folder = typeof body.folder === "string" && body.folder.trim() ? body.folder : "general";
+      originalFileName = typeof body.fileName === "string" && body.fileName.trim()
+        ? body.fileName
+        : `upload-${Date.now()}.${mimeExt}`;
+
+      const hasAllowedMime = ALLOWED_TYPES.includes(mimeType);
+      const extFromName = getFileExtension(originalFileName);
+      const effectiveExt = extFromName || mimeExt;
+      if (!hasAllowedMime && !ALLOWED_EXTENSIONS.includes(effectiveExt)) {
+        return NextResponse.json(
+          { error: `Invalid file type: ${mimeType}. Allowed types: JPG, PNG, GIF, WebP, SVG, HEIC` },
+          { status: 400 }
+        );
+      }
+
+      if (!extFromName) {
+        originalFileName = `${originalFileName}.${effectiveExt}`;
+      }
+
+      try {
+        buffer = Buffer.from(base64Content, "base64");
+      } catch (e) {
+        console.error("Base64 decode error:", e);
+        return NextResponse.json(
+          { error: "Failed to decode image data" },
+          { status: 400 }
+        );
+      }
+
+      fileSize = buffer.length;
+      contentType = hasAllowedMime
+        ? mimeType
+        : (EXTENSION_TO_MIME[effectiveExt] || "application/octet-stream");
+
+      console.log("Upload request (json):", {
+        name: originalFileName,
+        type: contentType,
+        size: fileSize,
+        extension: getFileExtension(originalFileName),
+      });
+    } else if (isMultipartPayload) {
+      // Parse multipart/form-data
+      let formData: FormData;
+      try {
+        formData = await request.formData();
+      } catch (e) {
+        console.error("Form data parse error:", e);
+        return NextResponse.json(
+          { error: "Invalid form data" },
+          { status: 400 }
+        );
+      }
+
+      const file = formData.get("file") as File | null;
+      folder = (formData.get("folder") as string) || "general";
+
+      if (!file) {
+        return NextResponse.json(
+          { error: "No file provided" },
+          { status: 400 }
+        );
+      }
+
+      // Log file info for debugging
+      console.log("Upload request:", {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        extension: getFileExtension(file.name),
+      });
+
+      // Validate file type (by MIME type or extension)
+      if (!isAllowedFileType(file)) {
+        console.error("Invalid file type:", file.type, "name:", file.name);
+        return NextResponse.json(
+          {
+            error: `Invalid file type: ${file.type || "unknown"}. Allowed types: JPG, PNG, GIF, WebP, SVG, HEIC`,
+          },
+          { status: 400 }
+        );
+      }
+
+      originalFileName = file.name;
+      fileSize = file.size;
+      contentType = getProperMimeType(file);
+
+      // Convert file to buffer
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        buffer = Buffer.from(arrayBuffer);
+      } catch (e) {
+        console.error("File buffer error:", e);
+        return NextResponse.json(
+          { error: "Failed to read file data" },
+          { status: 400 }
+        );
+      }
+    } else if (isBinaryPayload) {
+      folder = request.nextUrl.searchParams.get("folder") || request.headers.get("x-upload-folder") || "general";
+
+      const headerFileName = request.headers.get("x-file-name");
+      const queryFileName = request.nextUrl.searchParams.get("fileName");
+      const extFromMime = getExtensionFromMimeType(incomingContentType) || "jpg";
+      originalFileName = (queryFileName || headerFileName || `upload-${Date.now()}.${extFromMime}`).trim();
+
+      if (!getFileExtension(originalFileName)) {
+        originalFileName = `${originalFileName}.${extFromMime}`;
+      }
+
+      const extFromName = getFileExtension(originalFileName);
+      const normalizedMime = incomingContentType.toLowerCase().split(";")[0].trim() || "application/octet-stream";
+      if (!ALLOWED_EXTENSIONS.includes(extFromName) && !ALLOWED_TYPES.includes(normalizedMime)) {
+        return NextResponse.json(
+          { error: `Invalid file type: ${normalizedMime}. Allowed types: JPG, PNG, GIF, WebP, SVG, HEIC` },
+          { status: 400 }
+        );
+      }
+
+      contentType = ALLOWED_TYPES.includes(normalizedMime)
+        ? normalizedMime
+        : (EXTENSION_TO_MIME[extFromName] || "application/octet-stream");
+
+      try {
+        const arrayBuffer = await request.arrayBuffer();
+        buffer = Buffer.from(arrayBuffer);
+      } catch (e) {
+        console.error("Binary buffer error:", e);
+        return NextResponse.json(
+          { error: "Invalid binary payload" },
+          { status: 400 }
+        );
+      }
+
+      fileSize = buffer.length;
+
+      console.log("Upload request (binary):", {
+        name: originalFileName,
+        type: contentType,
+        size: fileSize,
+        extension: getFileExtension(originalFileName),
+      });
+    }
+
+    if (!buffer || buffer.length === 0) {
       return NextResponse.json(
-        { error: "Invalid form data" },
+        { error: "No file data to upload" },
         { status: 400 }
       );
     }
-
-    const file = formData.get("file") as File | null;
-    const folder = (formData.get("folder") as string) || "general";
-
-    if (!file) {
-      return NextResponse.json(
-        { error: "No file provided" },
-        { status: 400 }
-      );
-    }
-
-    // Log file info for debugging
-    console.log("Upload request:", {
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      extension: getFileExtension(file.name),
-    });
 
     // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      console.error("File too large:", file.size);
+    if (fileSize > MAX_FILE_SIZE) {
+      console.error("File too large:", fileSize);
       return NextResponse.json(
         { error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB` },
-        { status: 400 }
-      );
-    }
-
-    // Validate file type (by MIME type or extension)
-    if (!isAllowedFileType(file)) {
-      console.error("Invalid file type:", file.type, "name:", file.name);
-      return NextResponse.json(
-        {
-          error: `Invalid file type: ${file.type || "unknown"}. Allowed types: JPG, PNG, GIF, WebP, SVG, HEIC`,
-        },
         { status: 400 }
       );
     }
@@ -164,23 +327,10 @@ export async function POST(request: NextRequest) {
     // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 8);
-    const originalExt = getFileExtension(file.name) || "jpg";
+    const originalExt = getFileExtension(originalFileName) || "jpg";
     const safeExt = ALLOWED_EXTENSIONS.includes(originalExt) ? originalExt : "jpg";
     const filename = `${timestamp}-${randomString}.${safeExt}`;
     const storagePath = `${folder}/${filename}`;
-
-    // Convert file to buffer
-    let buffer: Buffer;
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      buffer = Buffer.from(arrayBuffer);
-    } catch (e) {
-      console.error("File buffer error:", e);
-      return NextResponse.json(
-        { error: "Failed to read file data" },
-        { status: 400 }
-      );
-    }
 
     // Use admin client to bypass RLS for storage operations
     let adminClient;
@@ -193,9 +343,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-
-    // Get proper MIME type (fix for HEIC and files with wrong MIME type)
-    const contentType = getProperMimeType(file);
 
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await adminClient.storage
@@ -236,7 +383,7 @@ export async function POST(request: NextRequest) {
 
     console.log("Upload successful:", {
       path: uploadData.path,
-      size: file.size,
+      size: fileSize,
     });
 
     return NextResponse.json({

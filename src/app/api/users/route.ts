@@ -236,6 +236,8 @@ export async function PATCH(request: Request) {
     const {
       id,
       full_name,
+      email,
+      password,
       role,
       status,
       profile_status,
@@ -270,9 +272,23 @@ export async function PATCH(request: Request) {
     if (directory_fields !== undefined) metadataUpdate.directory_fields = directory_fields;
 
     // Update auth user metadata
-    const { data, error } = await adminClient.auth.admin.updateUserById(id, {
-      user_metadata: metadataUpdate,
-    });
+    const updatePayload: {
+      user_metadata?: Record<string, unknown>;
+      email?: string;
+      password?: string;
+    } = {};
+
+    if (Object.keys(metadataUpdate).length > 0) {
+      updatePayload.user_metadata = metadataUpdate;
+    }
+    if (email !== undefined && String(email).trim()) {
+      updatePayload.email = String(email).trim();
+    }
+    if (password !== undefined && String(password).trim()) {
+      updatePayload.password = String(password).trim();
+    }
+
+    const { data, error } = await adminClient.auth.admin.updateUserById(id, updatePayload);
 
     if (error) {
       return NextResponse.json(

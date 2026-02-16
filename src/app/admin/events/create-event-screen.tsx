@@ -12,7 +12,6 @@ import {
   Ticket,
   Users,
   ChevronDown,
-  Pencil,
   Loader2,
   Link,
   CheckCircle,
@@ -32,6 +31,8 @@ import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
 import { TIMEZONES } from "@/data/timezones";
+
+const DEFAULT_TEAMS = ["Al-Hilal", "Etihad Jeddah", "Al-Nassr"];
 
 interface CreateEventScreenProps {
   onClose: () => void;
@@ -263,7 +264,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   };
 
   // Team State
-  const [teams, setTeams] = useState<string[]>(["Al-Hilal", "Etihad Jeddah", "Al-Nassr"]);
+  const [teams, setTeams] = useState<string[]>(DEFAULT_TEAMS);
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false);
 
   // Create Team Modal State
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
@@ -277,6 +279,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [newTeamManager, setNewTeamManager] = useState("");
   const [newTeamManagerAr, setNewTeamManagerAr] = useState("");
   const [newTeamVisible, setNewTeamVisible] = useState(true);
+  const [teamCreateError, setTeamCreateError] = useState<string | null>(null);
   const teamLogoInputRef = useRef<HTMLInputElement>(null);
 
   const handleTeamLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -290,21 +293,123 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
     }
   };
 
-  const handleCreateTeam = () => {
-    if (newTeamName.trim()) {
-      setTeams([...teams, newTeamName.trim()]);
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const res = await fetch("/api/teams");
+        const json = await res.json();
+
+        if (json.success && Array.isArray(json.data)) {
+          const fetchedTeamNames = json.data
+            .filter((team: { visible?: boolean }) => team.visible !== false)
+            .map((team: { name_en?: string }) => team.name_en?.trim())
+            .filter((name: string | undefined): name is string => Boolean(name));
+
+          setTeams(Array.from(new Set([...DEFAULT_TEAMS, ...fetchedTeamNames])));
+        } else if (json?.code === "TEAMS_TABLE_MISSING") {
+          console.warn("Teams table is missing. Showing default teams only.");
+        }
+      } catch (err) {
+        console.error("Failed to fetch teams", err);
+      }
+    };
+
+    fetchTeams();
+  }, []);
+
+  const resetTeamForm = () => {
+    setTeamCreateError(null);
+    setNewTeamName("");
+    setNewTeamNameAr("");
+    setNewTeamLeague("");
+    setNewTeamLogo("");
+    setNewTeamWebsite("");
+    setNewTeamStadium("");
+    setNewTeamStadiumAr("");
+    setNewTeamManager("");
+    setNewTeamManagerAr("");
+    setNewTeamVisible(true);
+  };
+
+  const uploadTeamLogo = async (base64Data: string): Promise<string | null> => {
+    if (!base64Data.startsWith("data:")) return base64Data;
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          base64Data,
+          folder: "teams",
+          fileName: `team-logo-${Date.now()}.png`,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Team logo upload failed:", errorData.error || res.statusText);
+        return null;
+      }
+
+      const data = await res.json();
+      return data.url || null;
+    } catch (err) {
+      console.error("Failed to upload team logo", err);
+      return null;
+    }
+  };
+
+  const handleCreateTeam = async () => {
+    const trimmedName = newTeamName.trim();
+    if (!trimmedName || !newTeamLeague) return;
+
+    setIsCreatingTeam(true);
+    setTeamCreateError(null);
+    try {
+      const uploadedLogoUrl = newTeamLogo ? await uploadTeamLogo(newTeamLogo) : null;
+
+      const res = await fetch("/api/teams", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          league: newTeamLeague,
+          name_en: trimmedName,
+          name_ar: newTeamNameAr.trim(),
+          logo_url: uploadedLogoUrl || "",
+          website_url: newTeamWebsite.trim(),
+          stadium_name: newTeamStadium.trim(),
+          stadium_name_ar: newTeamStadiumAr.trim(),
+          manager_name: newTeamManager.trim(),
+          manager_name_ar: newTeamManagerAr.trim(),
+          visible: newTeamVisible,
+        }),
+      });
+
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.success) {
+        if (result?.code === "TEAMS_TABLE_MISSING") {
+          setTeamCreateError("Teams backend is not initialized. Please run the teams migration first.");
+          return;
+        }
+        setTeamCreateError(result?.error || "Failed to create team");
+        return;
+      }
+
+      const createdTeamName = result.data?.name_en || trimmedName;
+      if (result.data?.visible !== false) {
+        setTeams((prev) => Array.from(new Set([...prev, createdTeamName])));
+      }
       setShowCreateTeamModal(false);
-      // Reset form
-      setNewTeamName("");
-      setNewTeamNameAr("");
-      setNewTeamLeague("");
-      setNewTeamLogo("");
-      setNewTeamWebsite("");
-      setNewTeamStadium("");
-      setNewTeamStadiumAr("");
-      setNewTeamManager("");
-      setNewTeamManagerAr("");
-      setNewTeamVisible(true);
+      resetTeamForm();
+    } catch (err) {
+      console.error("Failed to create team", err);
+      setTeamCreateError("Failed to create team. Please try again.");
+    } finally {
+      setIsCreatingTeam(false);
     }
   };
 
@@ -444,11 +549,19 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               </h3>
               <div className="flex items-center gap-2">
                 {isMatchEvent ? (
-                  <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
-                    {matchLocationType === "virtual"
-                      ? t("Virtual", "افتراضي", "Virtuel")
-                      : t("Onsite", "حضوري", "Sur site")}
-                  </span>
+                  <>
+                    <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
+                      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                      </svg>
+                      {league || t("Select League", "اختر الدوري", "Sélectionner une ligue")}
+                    </span>
+                    <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
+                      {matchLocationType === "virtual"
+                        ? t("Virtual", "افتراضي", "Virtuel")
+                        : t("Onsite", "حضوري", "Sur site")}
+                    </span>
+                  </>
                 ) : (
                   <>
                     <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
@@ -465,6 +578,12 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   </>
                 )}
               </div>
+
+              {teamCreateError && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-3 py-2 rounded-lg">
+                  {teamCreateError}
+                </div>
+              )}
             </div>
 
             {/* Date & Venue Row */}
@@ -511,12 +630,18 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 <div className="flex flex-col gap-px">
                   <div className="flex items-center gap-1">
                     <span className="text-base font-medium text-foreground leading-[24px]">
-                      {locationMasking && locationMaskName ? locationMaskName : (locationInput ? locationInput.split(",")[0] : "Lieu")}
+                      {matchLocationType === "onsite" && stadiumVenueName
+                        ? stadiumVenueName
+                        : matchLocationType === "virtual" && livestreamUrl
+                          ? livestreamUrl
+                          : t("Venue", "الموقع", "Lieu")}
                     </span>
                     <ArrowUpRight className="w-4 h-4 text-foreground opacity-50" />
                   </div>
                   <span className="text-sm font-normal text-muted-foreground leading-[21px]">
-                    {locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || "Dubai, Dubai" : "Dubai, Dubai"}
+                    {matchLocationType === "onsite"
+                      ? (locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || "Dubai, Dubai" : "Dubai, Dubai")
+                      : (matchLocationType === "virtual" ? t("Online", "عبر الإنترنت", "En ligne") : "Dubai, Dubai")}
                   </span>
                 </div>
               </div>
@@ -527,7 +652,11 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
                 <span className="text-sm font-normal text-foreground leading-[18px]">
-                  {locationInput || "Dubai World Trade Center, DWC"}
+                  {matchLocationType === "onsite" && stadiumVenueName
+                    ? stadiumVenueName
+                    : matchLocationType === "virtual" && livestreamUrl
+                      ? livestreamUrl
+                      : (locationInput || "Dubai World Trade Center, DWC")}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -1093,16 +1222,39 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </span>
                 <div className="bg-card rounded-lg overflow-hidden">
                   {/* Capacity */}
-                  <div className="px-3 py-2 flex items-center gap-2 border-b border-border">
-                    <Users className="w-4 h-4 text-foreground" />
-                    <span className="text-base font-medium text-foreground flex-1">
-                      {t("Capacity", "السعة", "Capacité")}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm font-medium text-muted-foreground">{capacity}</span>
-                      <Pencil className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  </div>
+                  <Menu as="div" className="relative border-b border-border">
+                    <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-background transition-colors">
+                      <Users className="w-4 h-4 text-foreground" />
+                      <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                        {t("Capacity", "السعة", "Capacité")}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-muted-foreground">{capacity}</span>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    </MenuButton>
+                    <Portal>
+                      <MenuItems
+                        anchor="bottom end"
+                        transition
+                        className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                      >
+                        {["Unlimited", "50", "100", "200", "300", "500", "1000"].map((option) => (
+                          <MenuItem key={option}>
+                            <button
+                              onClick={() => setCapacity(option)}
+                              className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${capacity === option
+                                ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                }`}
+                            >
+                              {option}
+                            </button>
+                          </MenuItem>
+                        ))}
+                      </MenuItems>
+                    </Portal>
+                  </Menu>
 
                   {/* Tickets Go Live */}
                   <Menu as="div" className="relative">
@@ -1214,6 +1366,12 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       {homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : t("Team A Vs Team B", "الفريق أ ضد الفريق ب", "Équipe A vs Équipe B")}
                     </h3>
                     <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 h-[22px] px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-xs font-medium rounded">
+                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
+                        </svg>
+                        {league || t("Select League", "اختر الدوري", "Sélectionner une ligue")}
+                      </span>
                       <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
                         {matchLocationType === "virtual"
                           ? t("Virtual", "افتراضي", "Virtuel")
@@ -2346,10 +2504,12 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               </button>
               <button
                 onClick={handleCreateTeam}
-                disabled={!newTeamName.trim()}
+                disabled={!newTeamName.trim() || !newTeamLeague || isCreatingTeam}
                 className="h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-sm font-medium text-white rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {t("Create Team", "إنشاء فريق", "Créer une équipe")}
+                {isCreatingTeam
+                  ? t("Creating...", "جارٍ الإنشاء...", "Création...")
+                  : t("Create Team", "إنشاء فريق", "Créer une équipe")}
               </button>
             </div>
           </motion.div>

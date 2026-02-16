@@ -321,7 +321,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
       </AnimatePresence>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col justify-between lg:w-[325px] min-h-screen bg-sidebar border-r border-sidebar-border rounded-tr-xl rounded-br-xl p-4 text-sidebar-foreground">
+      <aside className="hidden lg:flex flex-col justify-between lg:w-[325px] h-dvh bg-sidebar border-r border-sidebar-border rounded-tr-xl rounded-br-xl p-4 text-sidebar-foreground">
         {renderSidebarBody(desktopMenuRef)}
       </aside>
     </>

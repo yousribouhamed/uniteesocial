@@ -16,6 +16,10 @@ import {
   Camera,
   Clock,
   Globe,
+  Link,
+  Link2,
+  Ticket,
+  Upload,
   Info,
   ChevronsUpDown,
   MoreHorizontal,
@@ -56,6 +60,16 @@ interface EventItem {
   title: string;
   coverImage: string;
   chapter: string;
+  league?: string;
+  homeTeam?: string;
+  awayTeam?: string;
+  enableLineUpAnnouncement?: boolean;
+  lineUpAnnouncementTime?: string;
+  homeTeamLineup?: string;
+  awayTeamLineup?: string;
+  livestreamUrl?: string;
+  stadiumVenueName?: string;
+  ticketsUrl?: string;
   type: "Onsite" | "Online" | "Hybrid";
   eventCategory: "general" | "match";
   date?: string;
@@ -213,10 +227,12 @@ const guestTableHeaders = [
   { label: "Status", key: "status", sortable: false },
 ];
 
+const DEFAULT_TEAMS = ["Al-Hilal", "Etihad Jeddah", "Al-Nassr"];
+
 function EventPreviewCard({
   coverImage,
   eventTitle,
-  chapter,
+  badgeLabel,
   type,
   displayMonth,
   displayDay,
@@ -229,7 +245,7 @@ function EventPreviewCard({
 }: {
   coverImage: string;
   eventTitle: string;
-  chapter: string;
+  badgeLabel: string;
   type: "Onsite" | "Online" | "Hybrid";
   displayMonth: string;
   displayDay: string;
@@ -287,7 +303,7 @@ function EventPreviewCard({
               <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
               </svg>
-              {chapter}
+              {badgeLabel}
             </span>
             <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
               {type}
@@ -370,6 +386,11 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
   const [language, setLanguage] = useState<"English" | "French" | "Arabic">("English");
   const isArabic = language === "Arabic";
+  const t = (english: string, arabic?: string, french?: string) => {
+    if (language === "Arabic") return arabic ?? english;
+    if (language === "French") return french ?? english;
+    return english;
+  };
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSlidoModal, setShowSlidoModal] = useState(false);
   const [showCloneModal, setShowCloneModal] = useState(false);
@@ -395,6 +416,125 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
     "Lorem ipsum dolor sit amet consectetur. Et at quam phasellus accumsan neque tempus tincidunt tellus nulla. At consectetur sollicitudin at fames. Tristique molestie enim facilisi egestas."
   );
   const [coverImage, setCoverImage] = useState(event?.coverImage || "");
+  const isMatchEvent = event?.eventCategory === "match";
+  const lineupOptions = [
+    "15 min before match",
+    "30 min before match",
+    "45 min before match",
+    "1 hour before match",
+    "2 hours before match",
+  ];
+  const ticketGoLiveOptions = [
+    "Immediately",
+    "One Day Before",
+    "Three Days Before",
+    "One Week Before",
+    "Custom Date",
+  ];
+  const translateLineupTime = (value: string) => {
+    switch (value) {
+      case "15 min before match":
+        return t("15 min before match", "قبل 15 دقيقة من المباراة", "15 min avant le match");
+      case "30 min before match":
+        return t("30 min before match", "قبل 30 دقيقة من المباراة", "30 min avant le match");
+      case "45 min before match":
+        return t("45 min before match", "قبل 45 دقيقة من المباراة", "45 min avant le match");
+      case "1 hour before match":
+        return t("1 hour before match", "قبل ساعة من المباراة", "1 heure avant le match");
+      case "2 hours before match":
+        return t("2 hours before match", "قبل ساعتين من المباراة", "2 heures avant le match");
+      default:
+        return value;
+    }
+  };
+  const translateTicketGoLive = (value: string) => {
+    switch (value) {
+      case "Immediately":
+        return t("Immediately", "فوراً", "Immédiatement");
+      case "One Day Before":
+        return t("One Day Before", "قبل يوم واحد", "Un jour avant");
+      case "Three Days Before":
+        return t("Three Days Before", "قبل ثلاثة أيام", "Trois jours avant");
+      case "One Week Before":
+        return t("One Week Before", "قبل أسبوع", "Une semaine avant");
+      case "Custom Date":
+        return t("Custom Date", "تاريخ مخصص", "Date personnalisée");
+      default:
+        return value;
+    }
+  };
+  const [league, setLeague] = useState(event?.league || "");
+  const [homeTeam, setHomeTeam] = useState(event?.homeTeam || "");
+  const [awayTeam, setAwayTeam] = useState(event?.awayTeam || "");
+  const [enableLineUpAnnouncement, setEnableLineUpAnnouncement] = useState(Boolean(event?.enableLineUpAnnouncement));
+  const [lineUpAnnouncementTime, setLineUpAnnouncementTime] = useState(event?.lineUpAnnouncementTime || "45 min before match");
+  const [homeTeamLineup, setHomeTeamLineup] = useState(event?.homeTeamLineup || "");
+  const [awayTeamLineup, setAwayTeamLineup] = useState(event?.awayTeamLineup || "");
+  const [matchLocationType, setMatchLocationType] = useState<"onsite" | "virtual">(
+    event?.eventCategory === "match" ? (event?.type === "Online" ? "virtual" : "onsite") : "onsite"
+  );
+  const [livestreamUrl, setLivestreamUrl] = useState(event?.livestreamUrl || "");
+  const [stadiumVenueName, setStadiumVenueName] = useState(event?.stadiumVenueName || "");
+  const [matchLocationMasking, setMatchLocationMasking] = useState(false);
+  const [matchDescription, setMatchDescription] = useState("");
+  const [capacity, setCapacity] = useState(event?.maxSignups ? String(event.maxSignups) : "Unlimited");
+  const [ticketGoLive, setTicketGoLive] = useState("Immediately");
+  const [ticketsUrl, setTicketsUrl] = useState(event?.ticketsUrl || "");
+  const [showCreateLeagueModal, setShowCreateLeagueModal] = useState(false);
+  const [newLeagueName, setNewLeagueName] = useState("");
+  const [newLeagueNameAr, setNewLeagueNameAr] = useState("");
+  const [newLeagueWebsite, setNewLeagueWebsite] = useState("");
+  const [newLeagueLogo, setNewLeagueLogo] = useState<string>("");
+  const [newLeagueVisible, setNewLeagueVisible] = useState(true);
+  const leagueLogoInputRef = useRef<HTMLInputElement>(null);
+  const [customLeagues, setCustomLeagues] = useState<string[]>([]);
+  const handleLeagueLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewLeagueLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleCreateLeague = () => {
+    if (newLeagueName.trim()) {
+      setCustomLeagues([...customLeagues, newLeagueName.trim()]);
+      setLeague(newLeagueName.trim());
+      setShowCreateLeagueModal(false);
+      setNewLeagueName("");
+      setNewLeagueNameAr("");
+      setNewLeagueWebsite("");
+      setNewLeagueLogo("");
+      setNewLeagueVisible(true);
+    }
+  };
+  const [teams, setTeams] = useState<string[]>(DEFAULT_TEAMS);
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false);
+  const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
+  const [newTeamName, setNewTeamName] = useState("");
+  const [newTeamNameAr, setNewTeamNameAr] = useState("");
+  const [newTeamLeague, setNewTeamLeague] = useState("");
+  const [newTeamLogo, setNewTeamLogo] = useState("");
+  const [newTeamWebsite, setNewTeamWebsite] = useState("");
+  const [newTeamStadium, setNewTeamStadium] = useState("");
+  const [newTeamStadiumAr, setNewTeamStadiumAr] = useState("");
+  const [newTeamManager, setNewTeamManager] = useState("");
+  const [newTeamManagerAr, setNewTeamManagerAr] = useState("");
+  const [newTeamVisible, setNewTeamVisible] = useState(true);
+  const [teamCreateError, setTeamCreateError] = useState<string | null>(null);
+  const teamLogoInputRef = useRef<HTMLInputElement>(null);
+  const handleTeamLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewTeamLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Guest tab state
   const [guests] = useState<GuestItem[]>(mockGuests);
@@ -437,6 +577,126 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   }, [isArabic]);
 
   useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const res = await fetch("/api/teams");
+        const json = await res.json();
+
+        if (json.success && Array.isArray(json.data)) {
+          const fetchedTeamNames = json.data
+            .filter((team: { visible?: boolean }) => team.visible !== false)
+            .map((team: { name_en?: string }) => team.name_en?.trim())
+            .filter((name: string | undefined): name is string => Boolean(name));
+
+          setTeams(Array.from(new Set([...DEFAULT_TEAMS, ...fetchedTeamNames])));
+        } else if (json?.code === "TEAMS_TABLE_MISSING") {
+          console.warn("Teams table is missing. Showing default teams only.");
+        }
+      } catch (err) {
+        console.error("Failed to fetch teams", err);
+      }
+    };
+
+    fetchTeams();
+  }, []);
+
+  const resetTeamForm = () => {
+    setTeamCreateError(null);
+    setNewTeamName("");
+    setNewTeamNameAr("");
+    setNewTeamLeague("");
+    setNewTeamLogo("");
+    setNewTeamWebsite("");
+    setNewTeamStadium("");
+    setNewTeamStadiumAr("");
+    setNewTeamManager("");
+    setNewTeamManagerAr("");
+    setNewTeamVisible(true);
+  };
+
+  const uploadTeamLogo = async (base64Data: string): Promise<string | null> => {
+    if (!base64Data.startsWith("data:")) return base64Data;
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          base64Data,
+          folder: "teams",
+          fileName: `team-logo-${Date.now()}.png`,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Team logo upload failed:", errorData.error || res.statusText);
+        return null;
+      }
+
+      const data = await res.json();
+      return data.url || null;
+    } catch (err) {
+      console.error("Failed to upload team logo", err);
+      return null;
+    }
+  };
+
+  const handleCreateTeam = async () => {
+    const trimmedName = newTeamName.trim();
+    if (!trimmedName || !newTeamLeague) return;
+
+    setIsCreatingTeam(true);
+    setTeamCreateError(null);
+    try {
+      const uploadedLogoUrl = newTeamLogo ? await uploadTeamLogo(newTeamLogo) : null;
+
+      const res = await fetch("/api/teams", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          league: newTeamLeague,
+          name_en: trimmedName,
+          name_ar: newTeamNameAr.trim(),
+          logo_url: uploadedLogoUrl || "",
+          website_url: newTeamWebsite.trim(),
+          stadium_name: newTeamStadium.trim(),
+          stadium_name_ar: newTeamStadiumAr.trim(),
+          manager_name: newTeamManager.trim(),
+          manager_name_ar: newTeamManagerAr.trim(),
+          visible: newTeamVisible,
+        }),
+      });
+
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.success) {
+        if (result?.code === "TEAMS_TABLE_MISSING") {
+          setTeamCreateError("Teams backend is not initialized. Please run the teams migration first.");
+          return;
+        }
+        setTeamCreateError(result?.error || "Failed to create team");
+        return;
+      }
+
+      const createdTeamName = result.data?.name_en || trimmedName;
+      if (result.data?.visible !== false) {
+        setTeams((prev) => Array.from(new Set([...prev, createdTeamName])));
+      }
+      setShowCreateTeamModal(false);
+      resetTeamForm();
+    } catch (err) {
+      console.error("Failed to create team", err);
+      setTeamCreateError("Failed to create team. Please try again.");
+    } finally {
+      setIsCreatingTeam(false);
+    }
+  };
+
+  useEffect(() => {
     function onDocMouseDown(e: MouseEvent) {
       if (placesBoxRef.current && !placesBoxRef.current.contains(e.target as Node)) {
         setIsPlacesOpen(false);
@@ -453,7 +713,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       return;
     }
 
-    const t = setTimeout(async () => {
+    const timeoutId = setTimeout(async () => {
       try {
         const res = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(q)}`);
         const data = await res.json();
@@ -468,7 +728,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       }
     }, 250);
 
-    return () => clearTimeout(t);
+    return () => clearTimeout(timeoutId);
   }, [locationInput]);
 
   const selectPlace = async (placeId: string, description: string) => {
@@ -535,27 +795,35 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   };
 
   const { day: displayDay, month: displayMonth } = getDayAndMonth(startDate);
+  const badgeLabel = isMatchEvent ? (league || "League") : chapter;
+  const displayTitle = isMatchEvent && homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : eventTitle;
+  const displayType: "Onsite" | "Online" | "Hybrid" = isMatchEvent
+    ? (matchLocationType === "virtual" ? "Online" : "Onsite")
+    : type;
+  const previewLocation = isMatchEvent
+    ? (matchLocationType === "onsite" ? stadiumVenueName : livestreamUrl)
+    : locationInput;
 
   return (
     <div
-      className={`bg-muted border border-border rounded-lg p-3 pb-4 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}
+      className={`bg-[#ECEFF2] border border-border rounded-lg p-3 pb-4 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}
       dir={isArabic ? "rtl" : "ltr"}
     >
       {/* Header: Title + Badges + Check-In Guests */}
       <div className="flex items-center justify-between">
         <div className="hidden md:flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-foreground leading-[18px]">
-            {eventTitle}
+            {displayTitle}
           </h2>
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 h-5 px-2 bg-[#112755] dark:bg-[#1f2a52] text-white text-[10px] font-medium rounded-[4px] leading-none">
               <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
               </svg>
-              {chapter}
+              {badgeLabel}
             </span>
             <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
-              {type}
+              {displayType}
             </span>
           </div>
         </div>
@@ -611,7 +879,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {/* Tabs Row */}
       <div className="flex items-center justify-between">
         {/* Tabs */}
-        <div className="grid grid-cols-4 md:inline-flex items-center gap-1 bg-muted p-1 rounded-lg w-full md:w-fit self-start">
+        <div className="grid grid-cols-4 md:inline-flex items-center gap-1 bg-[#ECEFF2] p-1 rounded-lg w-full md:w-fit self-start">
           {(["overview", "guests", "analytics", "advanced"] as const).map((tab) => (
             <button
               key={tab}
@@ -690,15 +958,15 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
           <div className="hidden lg:block">
             <EventPreviewCard
               coverImage={coverImage}
-              eventTitle={eventTitle}
-              chapter={chapter}
-              type={type}
+              eventTitle={displayTitle}
+              badgeLabel={badgeLabel}
+              type={displayType}
               displayMonth={displayMonth}
               displayDay={displayDay}
               startDate={startDate}
               startTime={startTime}
               endTime={endTime}
-              locationInput={locationInput}
+              locationInput={previewLocation}
               signups={event?.signups || 0}
               maxSignups={event?.maxSignups || 300}
             />
@@ -720,6 +988,571 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               </div>
             </div>
 
+            {isMatchEvent ? (
+              <div className="flex flex-col gap-4">
+                {/* Match Setup Section */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
+                    {t("Match Setup", "إعداد المباراة", "Configuration du match")}
+                  </span>
+
+                  {/* League Dropdown */}
+                  <div className="bg-card rounded-t-lg px-3 py-2 flex items-center justify-between">
+                    <span className="text-base font-medium text-foreground">
+                      {t("League", "الدوري", "Ligue")}<span className="text-destructive">*</span>
+                    </span>
+                    <Menu as="div" className="relative">
+                      <MenuButton className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {league || t("Select League", "اختر الدوري", "Sélectionner une ligue")}
+                        </span>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      </MenuButton>
+                      <Portal>
+                        <MenuItems
+                          anchor="bottom end"
+                          transition
+                          className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                        >
+                          <MenuItem>
+                            <button
+                              onClick={() => setShowCreateLeagueModal(true)}
+                              className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
+                            >
+                              {t("+ Create League", "+ إنشاء دوري", "+ Créer une ligue")}
+                            </button>
+                          </MenuItem>
+                          {[...customLeagues, "Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].map((l) => (
+                            <MenuItem key={l}>
+                              <button
+                                onClick={() => setLeague(l)}
+                                className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${league === l
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                  }`}
+                              >
+                                {l}
+                              </button>
+                            </MenuItem>
+                          ))}
+                        </MenuItems>
+                      </Portal>
+                    </Menu>
+                  </div>
+
+                  {/* Home Team & Away Team */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="flex-1 min-w-0 bg-card rounded-lg px-3 py-2 flex items-center justify-between">
+                      <span className="text-base font-medium text-foreground">
+                        {t("Home Team", "الفريق المضيف", "Équipe à domicile")}<span className="text-destructive">*</span>
+                      </span>
+                      <Menu as="div" className="relative">
+                        <MenuButton className="flex items-center gap-1 max-w-[150px] sm:max-w-none">
+                          <span className="text-sm font-medium text-muted-foreground truncate">
+                            {homeTeam || t("Select Team", "اختر الفريق", "Sélectionner une équipe")}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        </MenuButton>
+                        <Portal>
+                          <MenuItems
+                            anchor="bottom end"
+                            transition
+                            className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                          >
+                            <MenuItem>
+                              <button
+                                onClick={() => setShowCreateTeamModal(true)}
+                                className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
+                              >
+                                {t("+ Create Team", "+ إنشاء فريق", "+ Créer une équipe")}
+                              </button>
+                            </MenuItem>
+                            {teams.map((team) => (
+                              <MenuItem key={team}>
+                                <button
+                                  onClick={() => setHomeTeam(team)}
+                                  className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${homeTeam === team
+                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                    }`}
+                                >
+                                  {team}
+                                </button>
+                              </MenuItem>
+                            ))}
+                          </MenuItems>
+                        </Portal>
+                      </Menu>
+                    </div>
+
+                    <div className="flex-1 min-w-0 bg-card rounded-lg px-3 py-2 flex items-center justify-between">
+                      <span className="text-base font-medium text-foreground">
+                        {t("Away Team", "الفريق الضيف", "Équipe à l'extérieur")}<span className="text-destructive">*</span>
+                      </span>
+                      <Menu as="div" className="relative">
+                        <MenuButton className="flex items-center gap-1 max-w-[150px] sm:max-w-none">
+                          <span className="text-sm font-medium text-muted-foreground truncate">
+                            {awayTeam || t("Select Team", "اختر الفريق", "Sélectionner une équipe")}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        </MenuButton>
+                        <Portal>
+                          <MenuItems
+                            anchor="bottom end"
+                            transition
+                            className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                          >
+                            <MenuItem>
+                              <button
+                                onClick={() => setShowCreateTeamModal(true)}
+                                className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
+                              >
+                                {t("+ Create Team", "+ إنشاء فريق", "+ Créer une équipe")}
+                              </button>
+                            </MenuItem>
+                            {teams.map((team) => (
+                              <MenuItem key={team}>
+                                <button
+                                  onClick={() => setAwayTeam(team)}
+                                  className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${awayTeam === team
+                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                    }`}
+                                >
+                                  {team}
+                                </button>
+                              </MenuItem>
+                            ))}
+                          </MenuItems>
+                        </Portal>
+                      </Menu>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Date/Time Section */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex-1 bg-card rounded-lg p-1 flex flex-col">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-1 gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 flex flex-col items-center justify-center px-1">
+                          <div className="w-[10px] h-[10px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full" />
+                        </div>
+                        <span className="text-sm font-normal text-foreground">
+                          {t("Start", "البداية", "Début")}
+                        </span>
+                      </div>
+                      <div className="flex gap-[2px] items-center w-full sm:w-auto">
+                        <div className="w-full sm:w-[136px]">
+                          <AriaDatePicker
+                            value={startDate}
+                            onChange={setStartDate}
+                            groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
+                            inputClassName="text-base font-normal text-foreground justify-center"
+                            showButton={false}
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={startTime}
+                          onChange={(e) => setStartTime(e.target.value)}
+                          className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-full sm:w-[70px] text-center outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="ml-[13px] h-4 border-l-[1.5px] border-dashed border-[#3f52ff]" />
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-1 gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 flex flex-col items-center justify-center px-1">
+                          <div className="w-[10px] h-[10px] border border-[#3f52ff] rounded-full" />
+                        </div>
+                        <span className="text-sm font-normal text-foreground">
+                          {t("End", "النهاية", "Fin")}
+                        </span>
+                      </div>
+                      <div className="flex gap-[2px] items-center w-full sm:w-auto">
+                        <div className="w-full sm:w-[136px]">
+                          <AriaDatePicker
+                            value={endDate}
+                            onChange={setEndDate}
+                            groupClassName="bg-blue-100 dark:bg-blue-950/40 border-transparent h-9 px-3"
+                            inputClassName="text-base font-normal text-foreground justify-center"
+                            showButton={false}
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={endTime}
+                          onChange={(e) => setEndTime(e.target.value)}
+                          className="bg-blue-100 dark:bg-blue-950/40 h-9 px-3 py-2 rounded-lg text-base font-normal text-foreground w-full sm:w-[70px] text-center outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                    <Globe className="w-4 h-4 text-foreground" />
+                    <span className="text-sm font-medium text-foreground">GMT+01:00</span>
+                    <span className="text-xs font-normal text-muted-foreground">Algiers</span>
+                  </div>
+                </div>
+
+                {/* Line-Up Announcement Settings */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
+                    {t("Line-Up Announcement Settings", "إعدادات إعلان التشكيلة", "Paramètres d'annonce de composition")}
+                  </span>
+                  <div className="bg-card rounded-lg px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <button
+                      onClick={() => setEnableLineUpAnnouncement(!enableLineUpAnnouncement)}
+                      className={`w-4 h-4 border rounded shrink-0 flex items-center justify-center ${enableLineUpAnnouncement
+                        ? "bg-[#3f52ff] dark:bg-[#3f52ff] border-[#3f52ff]"
+                        : "bg-card border-border"
+                        }`}
+                    >
+                      {enableLineUpAnnouncement && (
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </button>
+                    <span className="text-base font-medium text-foreground flex-1">
+                      {t("Enable Line-Up Announcement", "تفعيل إعلان التشكيلة", "Activer l'annonce de composition")}
+                    </span>
+
+                    {enableLineUpAnnouncement && (
+                      <Menu as="div" className="relative self-end sm:self-auto">
+                        <MenuButton className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {translateLineupTime(lineUpAnnouncementTime)}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        </MenuButton>
+                        <Portal>
+                          <MenuItems
+                            anchor="bottom end"
+                            transition
+                            className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[200px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                          >
+                            {lineupOptions.map((time) => (
+                              <MenuItem key={time}>
+                                <button
+                                  onClick={() => setLineUpAnnouncementTime(time)}
+                                  className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${lineUpAnnouncementTime === time
+                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                    }`}
+                                >
+                                  {translateLineupTime(time)}
+                                </button>
+                              </MenuItem>
+                            ))}
+                          </MenuItems>
+                        </Portal>
+                      </Menu>
+                    )}
+                  </div>
+
+                  {enableLineUpAnnouncement && (
+                    <>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-foreground">
+                            {t("Home Team Lineup", "تشكيلة الفريق المضيف", "Composition de l'équipe à domicile")}
+                          </span>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {t("Optional", "اختياري", "Optionnel")}
+                          </span>
+                        </div>
+                        <textarea
+                          placeholder={t(
+                            "Enter lineup for home team (eg. player names, numbers, positions)",
+                            "أدخل تشكيلة الفريق (مثل الأسماء والأرقام والمراكز)",
+                            "Entrez la composition (ex. noms, numéros, postes)"
+                          )}
+                          value={homeTeamLineup}
+                          onChange={(e) => setHomeTeamLineup(e.target.value)}
+                          className="w-full h-[74px] px-3 py-3 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none"
+                        />
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-foreground">
+                            {t("Away Team Lineup", "تشكيلة الفريق الضيف", "Composition de l'équipe extérieure")}
+                          </span>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {t("Optional", "اختياري", "Optionnel")}
+                          </span>
+                        </div>
+                        <textarea
+                          placeholder={t(
+                            "Enter lineup for home team (eg. player names, numbers, positions)",
+                            "أدخل تشكيلة الفريق (مثل الأسماء والأرقام والمراكز)",
+                            "Entrez la composition (ex. noms, numéros, postes)"
+                          )}
+                          value={awayTeamLineup}
+                          onChange={(e) => setAwayTeamLineup(e.target.value)}
+                          className="w-full h-[74px] px-3 py-3 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] resize-none"
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Match Location */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
+                    {t("Match Location", "موقع المباراة", "Lieu du match")}
+                  </span>
+
+                  <div className="flex items-center bg-[#D5DDE2] rounded-lg p-[6px] w-full">
+                    <button
+                      onClick={() => setMatchLocationType("onsite")}
+                      className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "onsite"
+                        ? "text-[#3f52ff] dark:text-white"
+                        : "text-muted-foreground hover:text-foreground"
+                        }`}
+                    >
+                      {matchLocationType === "onsite" && (
+                        <motion.div
+                          layoutId="matchLocationTypeIndicator"
+                          className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                          initial={false}
+                          transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                        />
+                      )}
+                      <span className="relative z-10 w-full text-center">
+                        {t("On site", "حضوري", "Sur site")}
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => setMatchLocationType("virtual")}
+                      className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "virtual"
+                        ? "text-[#3f52ff] dark:text-white"
+                        : "text-muted-foreground hover:text-foreground"
+                        }`}
+                    >
+                      {matchLocationType === "virtual" && (
+                        <motion.div
+                          layoutId="matchLocationTypeIndicator"
+                          className="absolute inset-0 bg-card rounded-lg shadow-[0px_1px_3px_rgba(0,0,0,0.12)]"
+                          initial={false}
+                          transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                        />
+                      )}
+                      <span className="relative z-10 w-full text-center">
+                        {t("Virtual", "افتراضي", "Virtuel")}
+                      </span>
+                    </button>
+                  </div>
+
+                  {matchLocationType === "onsite" ? (
+                    <div className="bg-card rounded-lg p-3 flex flex-col gap-3">
+                      <span className="text-base font-medium text-foreground">
+                        {t("Stadium/Venue Name", "اسم الملعب/المكان", "Nom du stade/lieu")}
+                      </span>
+                      <div className="flex flex-col gap-3">
+                        <div className="relative">
+                          <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                            <MapPin className="w-4 h-4 text-muted-foreground" />
+                          </div>
+                          <input
+                            type="text"
+                            placeholder={t("Enter stadium/venue name", "أدخل اسم الملعب/المكان", "Entrez le nom du stade/lieu")}
+                            value={stadiumVenueName}
+                            onChange={(e) => setStadiumVenueName(e.target.value)}
+                            className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-sm font-semibold text-foreground">
+                              {t("Location Masking", "إخفاء الموقع", "Masquage du lieu")}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {t("Hide real location and show custom name", "إخفاء الموقع الحقيقي وإظهار اسم مخصص", "Masquer le lieu réel et afficher un nom personnalisé")}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setMatchLocationMasking(!matchLocationMasking)}
+                            className={`relative w-[42px] h-[24px] rounded-full transition-colors ${matchLocationMasking ? "bg-[#3f52ff] dark:bg-[#3f52ff]" : "bg-muted"
+                              }`}
+                          >
+                            <div
+                              className={`absolute top-1 w-[16px] h-[16px] bg-card rounded-full shadow transition-all ${matchLocationMasking ? "left-[22px]" : "left-1"
+                                }`}
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-card rounded-lg p-3 flex flex-col gap-3">
+                      <span className="text-base font-medium text-foreground">
+                        {t("Livestream URL", "رابط البث المباشر", "URL de diffusion")}
+                      </span>
+                      <div className="relative">
+                        <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                          <Link className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                        <input
+                          type="url"
+                          placeholder={t("Enter the location URL", "أدخل رابط الموقع", "Entrez l'URL du lieu")}
+                          value={livestreamUrl}
+                          onChange={(e) => setLivestreamUrl(e.target.value)}
+                          className={`w-full h-9 ${isArabic ? "pr-10 pl-10 text-right" : "pl-10 pr-10"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Match Description */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
+                      {t("Match Description", "وصف المباراة", "Description du match")}
+                    </span>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {t("Optional", "اختياري", "Optionnel")}
+                    </span>
+                  </div>
+                  <div className="bg-card border border-border rounded-lg p-3 flex flex-col gap-2">
+                    <textarea
+                      placeholder={t("Placeholder", "اكتب وصفاً", "Saisir une description")}
+                      value={matchDescription}
+                      onChange={(e) => setMatchDescription(e.target.value)}
+                      maxLength={280}
+                      className="w-full h-[100px] text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none"
+                    />
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white bg-[#3f52ff] dark:bg-[#3f52ff] px-2 py-0.5 rounded">
+                        {matchDescription.length}/280 {t("characters", "حرفًا", "caractères")}
+                      </span>
+                      <button className="text-muted-foreground hover:text-muted-foreground">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path d="M13.333 8.667V12.667C13.333 13.0203 13.1927 13.3594 12.9426 13.6095C12.6925 13.8595 12.3536 14 12 14H3.333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.667V4C2 3.64638 2.14048 3.30724 2.39052 3.05719C2.64057 2.80714 2.97971 2.667 3.333 2.667H7.333" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M11.333 1.333L14.666 4.666L8 11.333H4.667V8L11.333 1.333Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Options */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm font-medium text-[#3f52ff] dark:text-white leading-[21px]">
+                    {t("Additional Options", "خيارات إضافية", "Options supplémentaires")}
+                  </span>
+                  <div className="bg-card rounded-lg overflow-hidden">
+                    <Menu as="div" className="relative border-b border-border">
+                      <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-background transition-colors">
+                        <Users className="w-4 h-4 text-foreground" />
+                        <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                          {t("Capacity", "السعة", "Capacité")}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-muted-foreground">{capacity}</span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                      </MenuButton>
+                      <Portal>
+                        <MenuItems
+                          anchor="bottom end"
+                          transition
+                          className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[160px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                        >
+                          {["Unlimited", "50", "100", "200", "300", "500", "1000"].map((option) => (
+                            <MenuItem key={option}>
+                              <button
+                                onClick={() => setCapacity(option)}
+                                className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${capacity === option
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                  }`}
+                              >
+                                {option}
+                              </button>
+                            </MenuItem>
+                          ))}
+                        </MenuItems>
+                      </Portal>
+                    </Menu>
+
+                    <Menu as="div" className="relative">
+                      <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-background transition-colors">
+                        <Ticket className="w-4 h-4 text-foreground" />
+                        <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                          {t("When tickets should go live?", "متى يجب تفعيل بيع التذاكر؟", "Quand les billets doivent-ils être en vente ?")}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {translateTicketGoLive(ticketGoLive === "Custom Date" ? "Immediately" : ticketGoLive)}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                      </MenuButton>
+                      <Portal>
+                        <MenuItems
+                          anchor="bottom end"
+                          transition
+                          className="z-[100] mt-1 bg-background border border-border rounded-xl p-1 shadow-lg w-[180px] transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+                        >
+                          {ticketGoLiveOptions.map((option) => (
+                            <MenuItem key={option}>
+                              <button
+                                onClick={() => setTicketGoLive(option)}
+                                className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${ticketGoLive === option
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                  }`}
+                              >
+                                {translateTicketGoLive(option)}
+                              </button>
+                            </MenuItem>
+                          ))}
+                        </MenuItems>
+                      </Portal>
+                    </Menu>
+                  </div>
+                </div>
+
+                {/* Tickets URL */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-foreground">
+                      {t("Tickets URL", "رابط التذاكر", "URL des billets")}
+                    </span>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {t("Optional", "اختياري", "Optionnel")}
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                      <Ticket className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <input
+                      type="url"
+                      placeholder={t("https://ticketing-url.com", "https://ticketing-url.com", "https://ticketing-url.com")}
+                      value={ticketsUrl}
+                      onChange={(e) => setTicketsUrl(e.target.value)}
+                      className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Info className="w-4 h-4" />
+                    <span className="text-sm font-normal">
+                      {t("External ticketing link for fans to purchase tickets", "رابط خارجي لشراء التذاكر", "Lien externe pour acheter des billets")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
             <input
               type="text"
               value={eventTitle}
@@ -903,6 +1736,8 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 </div>
               </div>
             </div>
+              </>
+            )}
 
             <div className="flex flex-col gap-2">
               <span className="text-sm font-medium text-[#3f52ff] dark:text-white">Description</span>
@@ -925,15 +1760,15 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             <div className="lg:hidden mt-4">
               <EventPreviewCard
                 coverImage={coverImage}
-                eventTitle={eventTitle}
-                chapter={chapter}
-                type={type}
+                eventTitle={displayTitle}
+                badgeLabel={badgeLabel}
+                type={displayType}
                 displayMonth={displayMonth}
                 displayDay={displayDay}
                 startDate={startDate}
                 startTime={startTime}
                 endTime={endTime}
-                locationInput={locationInput}
+                locationInput={previewLocation}
                 signups={event?.signups || 0}
                 maxSignups={event?.maxSignups || 300}
               />
@@ -943,16 +1778,36 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               disabled={isSaving}
               onClick={() => {
                 const dateIsoString = startDate?.toString() || null;
+                const resolvedTitle = isMatchEvent && homeTeam && awayTeam ? `${homeTeam} Vs ${awayTeam}` : eventTitle;
+                const resolvedLocation = isMatchEvent
+                  ? (matchLocationType === "onsite" ? stadiumVenueName : livestreamUrl)
+                  : locationInput;
+                const resolvedType: "Onsite" | "Online" | "Hybrid" = isMatchEvent
+                  ? (matchLocationType === "virtual" ? "Online" : "Onsite")
+                  : type;
+                const resolvedMaxSignups = isMatchEvent
+                  ? (capacity === "Unlimited" ? 9999 : parseInt(capacity) || (event?.maxSignups || 300))
+                  : (event?.maxSignups || 300);
                 const savedEvent: EventItem = {
                   id: event?.id || crypto.randomUUID(),
-                  title: eventTitle,
+                  title: resolvedTitle,
                   coverImage,
                   chapter,
-                  type: type,
+                  league: isMatchEvent ? league : "",
+                  homeTeam: isMatchEvent ? homeTeam : "",
+                  awayTeam: isMatchEvent ? awayTeam : "",
+                  enableLineUpAnnouncement: isMatchEvent ? enableLineUpAnnouncement : false,
+                  lineUpAnnouncementTime: isMatchEvent ? lineUpAnnouncementTime : undefined,
+                  homeTeamLineup: isMatchEvent ? homeTeamLineup : "",
+                  awayTeamLineup: isMatchEvent ? awayTeamLineup : "",
+                  livestreamUrl: isMatchEvent ? livestreamUrl : "",
+                  stadiumVenueName: isMatchEvent ? stadiumVenueName : "",
+                  ticketsUrl: isMatchEvent ? ticketsUrl : "",
+                  type: resolvedType,
                   eventCategory: event?.eventCategory || "general",
-                  location: locationInput,
+                  location: resolvedLocation,
                   signups: event?.signups || 0,
-                  maxSignups: event?.maxSignups || 300,
+                  maxSignups: resolvedMaxSignups,
                   dateGroup: startDate
                     ? new Date(startDate.year, startDate.month - 1, startDate.day).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
                     : "No Date",
@@ -1230,7 +2085,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   <col className="w-[14%]" />
                 </colgroup>
                 <thead className="bg-[#ECEFF2]">
-                  <tr className="[&>th]:bg-muted [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
+                  <tr className="[&>th]:bg-[#ECEFF2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
                     <th className="h-9 px-3 py-2 text-left">
                       <AriaCheckbox
                         isSelected={selectedGuests.size === filteredGuests.length && filteredGuests.length > 0}
@@ -1336,42 +2191,41 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                           </button>
                         </td>
                         <td className="px-3 py-3">
-                          {guest.status === "checked-in" && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
-                              <svg className="text-emerald-600 dark:text-emerald-300" width="12" height="12" viewBox="0 0 14 14" fill="none">
-                                <circle cx="7" cy="7" r="6" fill="currentColor" />
-                                <path d="M4.5 7L6.25 8.75L9.5 5.25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                              Checked-In
-                            </span>
-                          )}
-                          {guest.status === "not-checked-in" && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
-                              <svg className="text-amber-600 dark:text-amber-300" width="12" height="12" viewBox="0 0 14 14" fill="none">
-                                <path d="M7 1.5L12.5 11.5H1.5L7 1.5Z" fill="currentColor" />
-                                <path d="M7 5.5V7.5M7 9.25V9.26" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
-                              </svg>
-                              Not Checked-In
-                            </span>
-                          )}
-                          {guest.status === "booked" && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
-                              <svg className="text-emerald-600 dark:text-emerald-300" width="12" height="12" viewBox="0 0 14 14" fill="none">
-                                <circle cx="7" cy="7" r="6" fill="currentColor" />
-                                <path d="M4.5 7L6.25 8.75L9.5 5.25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                              Booked
-                            </span>
-                          )}
-                          {guest.status === "cancelled" && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-300 bg-destructive/10 px-2 py-0.5 rounded-full">
-                              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                                <circle cx="7" cy="7" r="6" fill="#dc2626" />
-                                <path d="M5 5L9 9M9 5L5 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                              Cancelled
-                            </span>
-                          )}
+                          {(() => {
+                            const isPositive = guest.status === "checked-in" || guest.status === "booked";
+                            const isWarning = guest.status === "not-checked-in";
+                            const label =
+                              guest.status === "checked-in"
+                                ? "Checked-In"
+                                : guest.status === "not-checked-in"
+                                  ? "Not Checked-In"
+                                  : guest.status === "booked"
+                                    ? "Booked"
+                                    : "Cancelled";
+                            return (
+                              <span className="inline-flex items-center gap-2 bg-card border border-[#D5DDE2] rounded-[8px] px-3 py-1 text-sm font-medium text-foreground">
+                                {isPositive ? (
+                                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                                    <path d="M1.39553 4.96011C1.28658 4.46715 1.30372 3.95468 1.44538 3.4701C1.58703 2.98553 1.84862 2.54451 2.20594 2.18786C2.56326 1.83121 3.00476 1.57044 3.4896 1.42969C3.97443 1.28893 4.48694 1.27274 4.97969 1.38261C5.25105 0.958695 5.62471 0.609869 6.06625 0.368254C6.50779 0.126639 7.00303 0 7.50636 0C8.00969 0 8.50492 0.126639 8.94647 0.368254C9.38801 0.609869 9.76167 0.958695 10.033 1.38261C10.5266 1.27149 11.0403 1.28708 11.5262 1.42792C12.0121 1.56875 12.4545 1.83026 12.8122 2.18809C13.1698 2.54591 13.4311 2.98842 13.5717 3.47442C13.7124 3.96041 13.7277 4.47409 13.6164 4.96761C14.0408 5.23885 14.3901 5.6126 14.6321 6.0544C14.8741 6.49619 15.0009 6.9918 15.0009 7.49552C15.0009 7.99925 14.8741 8.49486 14.6321 8.93665C14.3901 9.37844 14.0408 9.7522 13.6164 10.0234C13.7267 10.5161 13.7109 11.0286 13.5705 11.5135C13.4301 11.9984 13.1696 12.44 12.8132 12.7975C12.4567 13.155 12.0158 13.4167 11.5313 13.5585C11.0467 13.7002 10.5343 13.7174 10.0414 13.6084C9.77039 14.0342 9.39641 14.3846 8.95403 14.6275C8.51165 14.8703 8.01516 14.9976 7.51053 14.9976C7.00589 14.9976 6.5094 14.8703 6.06702 14.6275C5.62464 14.3846 5.25066 14.0342 4.97969 13.6084C4.48687 13.7191 3.97409 13.7034 3.48893 13.5629C3.00378 13.4224 2.56198 13.1616 2.20454 12.8048C1.84709 12.4479 1.5856 12.0066 1.44431 11.5216C1.30302 11.0367 1.28653 10.5239 1.39636 10.0309C0.968646 9.76041 0.616321 9.38608 0.372176 8.94278C0.12803 8.49947 0 8.00161 0 7.49552C0 6.98944 0.12803 6.49158 0.372176 6.04827C0.616321 5.60497 0.968646 5.23064 1.39636 4.96011H1.39553Z" fill="#10A949" />
+                                    <path d="M10.4327 5.24399C10.589 5.40026 10.6767 5.61219 10.6767 5.83316C10.6767 6.05413 10.589 6.26605 10.4327 6.42232L7.09941 9.75565C6.94313 9.91188 6.73121 9.99964 6.51024 9.99964C6.28927 9.99964 6.07735 9.91188 5.92107 9.75565L4.25441 8.08899C4.17482 8.01212 4.11133 7.92016 4.06766 7.81849C4.02398 7.71682 4.00099 7.60747 4.00003 7.49682C3.99907 7.38617 4.02015 7.27644 4.06206 7.17403C4.10396 7.07161 4.16583 6.97857 4.24408 6.90033C4.32232 6.82208 4.41536 6.7602 4.51778 6.7183C4.62019 6.6764 4.72992 6.65532 4.84057 6.65628C4.95122 6.65724 5.06057 6.68023 5.16224 6.7239C5.26391 6.76758 5.35587 6.83106 5.43274 6.91066L6.51024 7.98816L9.25441 5.24399C9.41068 5.08776 9.6226 5 9.84357 5C10.0645 5 10.2765 5.08776 10.4327 5.24399Z" fill="white" />
+                                  </svg>
+                                ) : isWarning ? (
+                                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                                    <path d="M14.4866 12L9.15329 2.66665C9.037 2.46146 8.86836 2.29078 8.66457 2.17203C8.46078 2.05329 8.22915 1.99072 7.99329 1.99072C7.75743 1.99072 7.52579 2.05329 7.322 2.17203C7.11822 2.29078 6.94958 2.46146 6.83329 2.66665L1.49995 12C1.38241 12.2036 1.32077 12.4346 1.32129 12.6697C1.32181 12.9047 1.38447 13.1355 1.50292 13.3385C1.62136 13.5416 1.79138 13.7097 1.99575 13.8259C2.20011 13.942 2.43156 14.0021 2.66662 14H13.3333C13.5672 13.9997 13.797 13.938 13.9995 13.8208C14.202 13.7037 14.3701 13.5354 14.487 13.3327C14.6038 13.1301 14.6653 12.9002 14.6653 12.6663C14.6652 12.4324 14.6036 12.2026 14.4866 12Z" fill="#FE9A00" />
+                                    <path d="M8 6V8.66667" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M8 11.3333H8.00667" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                ) : (
+                                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                                    <path d="M2.56667 5.74669C2.46937 5.30837 2.48431 4.85259 2.61011 4.42158C2.73591 3.99058 2.9685 3.59832 3.28632 3.28117C3.60413 2.96402 3.99688 2.73225 4.42814 2.60735C4.85941 2.48245 5.31523 2.46847 5.75334 2.56669C5.99448 2.18956 6.32668 1.8792 6.71931 1.66421C7.11194 1.44923 7.55237 1.33655 8.00001 1.33655C8.44764 1.33655 8.88807 1.44923 9.28071 1.66421C9.67334 1.8792 10.0055 2.18956 10.2467 2.56669C10.6855 2.46804 11.1421 2.48196 11.574 2.60717C12.006 2.73237 12.3992 2.96478 12.7172 3.28279C13.0352 3.6008 13.2677 3.99407 13.3929 4.42603C13.5181 4.85798 13.532 5.31458 13.4333 5.75336C13.8105 5.9945 14.1208 6.32669 14.3358 6.71933C14.5508 7.11196 14.6635 7.55239 14.6635 8.00002C14.6635 8.44766 14.5508 8.88809 14.3358 9.28072C14.1208 9.67336 13.8105 10.0056 13.4333 10.2467C13.5316 10.6848 13.5176 11.1406 13.3927 11.5719C13.2678 12.0032 13.036 12.3959 12.7189 12.7137C12.4017 13.0315 12.0094 13.2641 11.5784 13.3899C11.1474 13.5157 10.6917 13.5307 10.2533 13.4334C10.0125 13.8119 9.68006 14.1236 9.28676 14.3396C8.89346 14.5555 8.45202 14.6687 8.00334 14.6687C7.55466 14.6687 7.11322 14.5555 6.71992 14.3396C6.32662 14.1236 5.99417 13.8119 5.75334 13.4334C5.31523 13.5316 4.85941 13.5176 4.42814 13.3927C3.99688 13.2678 3.60413 13.036 3.28632 12.7189C2.9685 12.4017 2.73591 12.0095 2.61011 11.5785C2.48431 11.1475 2.46937 10.6917 2.56667 10.2534C2.18664 10.0129 1.87362 9.68014 1.65671 9.28617C1.4398 8.8922 1.32605 8.44976 1.32605 8.00002C1.32605 7.55029 1.4398 7.10785 1.65671 6.71388C1.87362 6.31991 2.18664 5.9872 2.56667 5.74669Z" fill="#E22023" />
+                                    <path d="M8 10.6667V8" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M8 5.33331H8.00667" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                )}
+                                {label}
+                              </span>
+                            );
+                          })()}
                         </td>
                       </tr>
                     );
@@ -1408,6 +2262,346 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       {detailTab === "analytics" && (
         <AnalyticsView />
       )}
+
+      {/* Create League Modal */}
+      {showCreateLeagueModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-[220]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-0 z-0 bg-black/20"
+            onClick={() => setShowCreateLeagueModal(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className={`relative z-10 bg-card border border-border rounded-xl w-[493px] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
+            dir={isArabic ? "rtl" : "ltr"}
+          >
+            <div className="bg-card border-b border-border rounded-t-xl px-4 pt-4 pb-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-1 flex-1">
+                  <h3 className="text-base font-semibold text-foreground leading-[25.2px]">
+                    {t("Create League", "إنشاء دوري", "Créer une ligue")}
+                  </h3>
+                  <p className="text-sm font-medium text-muted-foreground leading-[18px]">
+                    {t(
+                      "Enter the league details below to create a new league.",
+                      "أدخل تفاصيل الدوري أدناه لإنشاء دوري جديد.",
+                      "Entrez les détails de la ligue ci-dessous pour en créer une."
+                    )}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCreateLeagueModal(false)}
+                  className="w-[26px] h-[26px] bg-muted rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+                >
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
+
+            <div className="px-4 py-4 flex flex-col gap-4">
+              <div className="flex gap-4">
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label htmlFor="league-name-en-edit" className="text-sm font-semibold text-foreground">
+                    League Name (English)
+                  </label>
+                  <input
+                    id="league-name-en-edit"
+                    type="text"
+                    placeholder={t("Enter league name", "أدخل اسم الدوري", "Entrez le nom de la ligue")}
+                    value={newLeagueName}
+                    onChange={(e) => setNewLeagueName(e.target.value)}
+                    className={`w-full h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right font-ko-sans-ar" : ""}`}
+                  />
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label htmlFor="league-name-ar-edit" className="text-sm font-semibold text-foreground text-right font-ko-sans-ar">
+                    اسم الدوري (العربية)
+                  </label>
+                  <input
+                    id="league-name-ar-edit"
+                    type="text"
+                    placeholder="أدخل اسم الدوري"
+                    dir="rtl"
+                    value={newLeagueNameAr}
+                    onChange={(e) => setNewLeagueNameAr(e.target.value)}
+                    className="w-full h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] font-ko-sans-ar"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-foreground">
+                  {t("League Logo", "شعار الدوري", "Logo de la ligue")}
+                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => leagueLogoInputRef.current?.click()}
+                    className="w-20 h-20 border border-black/10 rounded-lg flex items-center justify-center bg-card hover:bg-background transition-colors overflow-hidden"
+                  >
+                    {newLeagueLogo ? (
+                      <img src={newLeagueLogo} alt="League logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <Upload className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
+                  <input
+                    type="file"
+                    ref={leagueLogoInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleLeagueLogoUpload}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-base font-semibold text-muted-foreground">
+                      {t("Upload league logo", "تحميل شعار الدوري", "Télécharger le logo")}
+                    </span>
+                    <span className="text-sm font-normal text-muted-foreground">
+                      {t("Recommended: 400x400px", "مقاس موصى به: 400×400", "Recommandé : 400x400")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                    <Link2 className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="https://league-website.com"
+                    value={newLeagueWebsite}
+                    onChange={(e) => setNewLeagueWebsite(e.target.value)}
+                    className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setNewLeagueVisible(!newLeagueVisible)}
+                  className={`w-4 h-4 rounded shrink-0 flex items-center justify-center shadow-sm ${newLeagueVisible
+                    ? "bg-[#3f52ff] dark:bg-[#3f52ff]"
+                    : "bg-card border border-border"
+                    }`}
+                >
+                  {newLeagueVisible && (
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                      <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </button>
+                <span className="text-sm font-medium text-foreground">
+                  {t("Visible in league selection", "مرئي في اختيار الدوري", "Visible dans la sélection de ligue")}
+                </span>
+              </div>
+            </div>
+
+            <div className="px-4 py-4 border-t border-border flex items-center justify-end gap-2">
+              <button
+                onClick={() => setShowCreateLeagueModal(false)}
+                className="h-9 px-4 bg-muted text-sm font-medium text-foreground rounded-lg hover:bg-muted transition-colors"
+              >
+                {t("Dismiss", "إغلاق", "Fermer")}
+              </button>
+              <button
+                onClick={handleCreateLeague}
+                disabled={!newLeagueName.trim()}
+                className="h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-sm font-medium text-white rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {t("Create League", "إنشاء دوري", "Créer une ligue")}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Create Team Modal */}
+      {showCreateTeamModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-[220]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-0 z-0 bg-black/20"
+            onClick={() => setShowCreateTeamModal(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className={`relative z-10 bg-card border border-border rounded-xl w-[493px] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
+            dir={isArabic ? "rtl" : "ltr"}
+          >
+            <div className="bg-card border-b border-border rounded-t-xl px-4 pt-4 pb-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-1 flex-1">
+                  <h3 className="text-base font-semibold text-foreground leading-[25.2px]">
+                    {t("Create Team", "إنشاء فريق", "Créer une équipe")}
+                  </h3>
+                  <p className="text-sm font-medium text-muted-foreground leading-[18px]">
+                    {t(
+                      "Add a new team to the league.",
+                      "أضف فريقاً جديداً للدوري.",
+                      "Ajouter une nouvelle équipe à la ligue."
+                    )}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCreateTeamModal(false)}
+                  className="w-[26px] h-[26px] bg-muted rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+                >
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
+
+            <div className="px-4 py-4 flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-foreground">
+                  {t("League", "الدوري", "Ligue")}<span className="text-destructive">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={newTeamLeague}
+                    onChange={(e) => setNewTeamLeague(e.target.value)}
+                    className={`w-full h-9 px-3 ${isArabic ? "pl-8 text-right" : "pr-8"} border border-border rounded-lg text-sm text-foreground bg-background outline-none focus:border-[#3f52ff] appearance-none`}
+                  >
+                    <option value="" disabled>{t("Select a league", "اختر دوري", "Sélectionner une ligue")}</option>
+                    {[...customLeagues, "Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].map((l) => (
+                      <option key={l} value={l}>{l}</option>
+                    ))}
+                  </select>
+                  <div className={`absolute ${isArabic ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 pointer-events-none`}>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-foreground">
+                    Team Name (English)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t("Enter team name", "أدخل اسم الفريق", "Entrez le nom de l'équipe")}
+                    value={newTeamName}
+                    onChange={(e) => setNewTeamName(e.target.value)}
+                    className={`w-full h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right font-ko-sans-ar" : ""}`}
+                  />
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-foreground text-right font-ko-sans-ar">
+                    اسم الفريق (العربية)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="أدخل اسم الفريق"
+                    dir="rtl"
+                    value={newTeamNameAr}
+                    onChange={(e) => setNewTeamNameAr(e.target.value)}
+                    className="w-full h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] font-ko-sans-ar"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-foreground">
+                  {t("Team Logo", "شعار الفريق", "Logo de l'équipe")}
+                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => teamLogoInputRef.current?.click()}
+                    className="w-20 h-20 border border-black/10 rounded-lg flex items-center justify-center bg-card hover:bg-background transition-colors overflow-hidden"
+                  >
+                    {newTeamLogo ? (
+                      <img src={newTeamLogo} alt="Team logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <Upload className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
+                  <input
+                    type="file"
+                    ref={teamLogoInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleTeamLogoUpload}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-base font-semibold text-muted-foreground">
+                      {t("Upload team logo", "تحميل شعار الفريق", "Télécharger le logo")}
+                    </span>
+                    <span className="text-sm font-normal text-muted-foreground">
+                      {t("Recommended: 400x400px", "مقاس موصى به: 400×400", "Recommandé : 400x400")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                    <Link2 className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="https://team-website.com"
+                    value={newTeamWebsite}
+                    onChange={(e) => setNewTeamWebsite(e.target.value)}
+                    className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setNewTeamVisible(!newTeamVisible)}
+                  className={`w-4 h-4 rounded shrink-0 flex items-center justify-center shadow-sm ${newTeamVisible
+                    ? "bg-[#3f52ff] dark:bg-[#3f52ff]"
+                    : "bg-card border border-border"
+                    }`}
+                >
+                  {newTeamVisible && (
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                      <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </button>
+                <span className="text-sm font-medium text-foreground">
+                  {t("Visible in team selection", "مرئي في اختيار الفريق", "Visible dans la sélection d'équipe")}
+                </span>
+              </div>
+
+              {teamCreateError && (
+                <div className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">
+                  {teamCreateError}
+                </div>
+              )}
+            </div>
+
+            <div className="px-4 py-4 border-t border-border flex items-center justify-end gap-2">
+              <button
+                onClick={() => setShowCreateTeamModal(false)}
+                className="h-9 px-4 bg-muted text-sm font-medium text-foreground rounded-lg hover:bg-muted transition-colors"
+              >
+                {t("Dismiss", "إغلاق", "Fermer")}
+              </button>
+              <button
+                onClick={handleCreateTeam}
+                disabled={!newTeamName.trim() || !newTeamLeague || isCreatingTeam}
+                className="h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-sm font-medium text-white rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isCreatingTeam
+                  ? t("Creating...", "جارٍ الإنشاء...", "Création...")
+                  : t("Create Team", "إنشاء فريق", "Créer une équipe")}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {showCancelModal && (
         <CancelEventModal
           onClose={() => setShowCancelModal(false)}
@@ -2126,7 +3320,7 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
                 <svg width="10" height="10" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12.8333 7.00002L7.58332 1.75002C7.35832 1.52502 7.04165 1.40002 6.70832 1.40002H2.62499C1.95415 1.40002 1.39999 1.95419 1.39999 2.62502V6.70835C1.39999 7.04168 1.52499 7.35835 1.74999 7.58335L6.99999 12.8334C7.48415 13.3175 8.26582 13.3175 8.74999 12.8334L12.8333 8.75002C13.3175 8.26585 13.3175 7.48419 12.8333 7.00002ZM4.02499 4.95835C3.51165 4.95835 3.09165 4.53835 3.09165 4.02502C3.09165 3.51168 3.51165 3.09168 4.02499 3.09168C4.53832 3.09168 4.95832 3.51168 4.95832 4.02502C4.95832 4.53835 4.53832 4.95835 4.02499 4.95835Z" fill="white" />
                 </svg>
-                {event.chapter}
+                {event.eventCategory === "match" ? (event.league || "League") : event.chapter}
               </span>
               <span className="inline-flex items-center h-5 px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-[10px] font-medium rounded-[4px] leading-none">
                 {event.type}
@@ -2162,6 +3356,17 @@ function EventCard({ event, onClick, onDelete }: { event: EventItem; onClick: ()
 
 // Helper to convert database event to EventItem
 function dbEventToEventItem(dbEvent: any): EventItem {
+  const matchDetails =
+    typeof dbEvent.match_details === "string"
+      ? (() => {
+          try {
+            return JSON.parse(dbEvent.match_details);
+          } catch {
+            return null;
+          }
+        })()
+      : dbEvent.match_details;
+
   const eventDate = dbEvent.event_date ? new Date(dbEvent.event_date) : null;
   const dateGroup = eventDate
     ? eventDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
@@ -2172,6 +3377,16 @@ function dbEventToEventItem(dbEvent: any): EventItem {
     title: dbEvent.title,
     coverImage: dbEvent.cover_image || "/img/event-cover-1.jpg",
     chapter: dbEvent.chapter || "Dubai Chapter",
+    league: matchDetails?.league || "",
+    homeTeam: matchDetails?.homeTeam || "",
+    awayTeam: matchDetails?.awayTeam || "",
+    enableLineUpAnnouncement: Boolean(matchDetails?.enableLineUpAnnouncement),
+    lineUpAnnouncementTime: matchDetails?.lineUpAnnouncementTime || "45 min before match",
+    homeTeamLineup: matchDetails?.homeTeamLineup || "",
+    awayTeamLineup: matchDetails?.awayTeamLineup || "",
+    livestreamUrl: matchDetails?.livestreamUrl || "",
+    stadiumVenueName: matchDetails?.stadiumVenueName || "",
+    ticketsUrl: matchDetails?.ticketsUrl || "",
     type: dbEvent.type || "Onsite",
     eventCategory: dbEvent.event_category || "general",
     date: dbEvent.event_date,
@@ -2341,15 +3556,46 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
       formData.append("file", file);
       formData.append("folder", "events");
 
-      const response = await fetch("/api/upload", {
+      let response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Upload failed:", errorData.error);
-        return null;
+        let errorData: { error?: string } = {};
+        try {
+          errorData = await response.json();
+        } catch {
+          errorData = {};
+        }
+
+        // Some environments fail multipart parsing. Retry with raw binary payload.
+        if (errorData.error?.toLowerCase().includes("invalid form data")) {
+          const query = new URLSearchParams({
+            folder: "events",
+            fileName: file.name,
+          }).toString();
+
+          response = await fetch(`/api/upload?${query}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": file.type || "application/octet-stream",
+              "x-file-name": file.name,
+            },
+            body: file,
+          });
+        }
+
+        if (!response.ok) {
+          let retryErrorData: { error?: string } = {};
+          try {
+            retryErrorData = await response.json();
+          } catch {
+            retryErrorData = {};
+          }
+          console.error("Upload failed:", retryErrorData.error);
+          return null;
+        }
       }
 
       const data = await response.json();
@@ -2392,6 +3638,18 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         location: savedEvent.location,
         signups: savedEvent.signups,
         max_signups: savedEvent.maxSignups,
+        match_details: savedEvent.eventCategory === "match" ? {
+          league: savedEvent.league || "",
+          homeTeam: savedEvent.homeTeam || "",
+          awayTeam: savedEvent.awayTeam || "",
+          enableLineUpAnnouncement: Boolean(savedEvent.enableLineUpAnnouncement),
+          lineUpAnnouncementTime: savedEvent.lineUpAnnouncementTime || "",
+          homeTeamLineup: savedEvent.homeTeamLineup || "",
+          awayTeamLineup: savedEvent.awayTeamLineup || "",
+          livestreamUrl: savedEvent.livestreamUrl || "",
+          stadiumVenueName: savedEvent.stadiumVenueName || "",
+          ticketsUrl: savedEvent.ticketsUrl || "",
+        } : null,
       };
 
       if (selectedEvent) {
@@ -2470,7 +3728,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
       const eventData = {
         title: formData.title,
         cover_image: coverImageUrl,
-        chapter: formData.chapter + " Chapter",
+        chapter: formData.chapter,
         type: formData.type,
         event_category: formData.eventCategory,
         event_date: eventDateIso,

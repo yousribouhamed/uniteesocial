@@ -4,6 +4,34 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 const EVENT_IMAGES_BUCKET = "event-images";
+let hasMatchDetailsColumnCache: boolean | null = null;
+
+function isMissingColumnError(error: unknown, columnName: string) {
+  if (!error) return false;
+  const parsedError = error as {
+    message?: string;
+    details?: string;
+    hint?: string;
+    code?: string;
+  };
+  const haystack = [parsedError.message, parsedError.details, parsedError.hint, parsedError.code]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes(columnName.toLowerCase()) || parsedError.code === "PGRST204";
+}
+
+async function hasEventsColumnMatchDetails(supabase: Awaited<ReturnType<typeof createClient>>) {
+  if (hasMatchDetailsColumnCache !== null) return hasMatchDetailsColumnCache;
+
+  const { error } = await supabase
+    .from("events")
+    .select("match_details")
+    .limit(1);
+
+  hasMatchDetailsColumnCache = !isMissingColumnError(error, "match_details");
+  return hasMatchDetailsColumnCache;
+}
 
 export interface EventData {
   id?: string;
@@ -46,24 +74,44 @@ export async function getEvents() {
 export async function createEvent(eventData: Omit<EventData, "id" | "created_at" | "updated_at">) {
   try {
     const supabase = await createClient();
+    const canWriteMatchDetails = await hasEventsColumnMatchDetails(supabase);
 
-    const { data, error } = await supabase
+    const basePayload = {
+      title: eventData.title,
+      cover_image: eventData.cover_image,
+      chapter: eventData.chapter,
+      type: eventData.type,
+      event_category: eventData.event_category,
+      event_date: eventData.event_date,
+      location: eventData.location,
+      signups: eventData.signups || 0,
+      max_signups: eventData.max_signups || 0,
+      description: eventData.description || null,
+    };
+
+    const payload = canWriteMatchDetails
+      ? { ...basePayload, match_details: eventData.match_details || null }
+      : basePayload;
+
+    let data;
+    let error;
+
+    ({ data, error } = await supabase
       .from("events")
-      .insert({
-        title: eventData.title,
-        cover_image: eventData.cover_image,
-        chapter: eventData.chapter,
-        type: eventData.type,
-        event_category: eventData.event_category,
-        event_date: eventData.event_date,
-        location: eventData.location,
-        signups: eventData.signups || 0,
-        max_signups: eventData.max_signups || 0,
-        description: eventData.description || null,
-        match_details: eventData.match_details || null,
-      })
+      .insert(payload)
       .select()
-      .single();
+      .single());
+
+    // Fallback if the database doesn't have match_details yet
+    if (canWriteMatchDetails && isMissingColumnError(error, "match_details")) {
+      console.warn("match_details column missing; retrying without it.");
+      hasMatchDetailsColumnCache = false;
+      ({ data, error } = await supabase
+        .from("events")
+        .insert(basePayload)
+        .select()
+        .single());
+    }
 
     if (error) {
       console.error("Error creating event:", error);
@@ -91,26 +139,46 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
 export async function updateEvent(id: string, eventData: Partial<EventData>) {
   try {
     const supabase = await createClient();
+    const canWriteMatchDetails = await hasEventsColumnMatchDetails(supabase);
 
-    const { data, error } = await supabase
+    const basePayload = {
+      title: eventData.title,
+      cover_image: eventData.cover_image,
+      chapter: eventData.chapter,
+      type: eventData.type,
+      event_category: eventData.event_category,
+      event_date: eventData.event_date,
+      location: eventData.location,
+      signups: eventData.signups,
+      max_signups: eventData.max_signups,
+      description: eventData.description,
+      updated_at: new Date().toISOString(),
+    };
+
+    const payload = canWriteMatchDetails
+      ? { ...basePayload, match_details: eventData.match_details }
+      : basePayload;
+
+    let data;
+    let error;
+
+    ({ data, error } = await supabase
       .from("events")
-      .update({
-        title: eventData.title,
-        cover_image: eventData.cover_image,
-        chapter: eventData.chapter,
-        type: eventData.type,
-        event_category: eventData.event_category,
-        event_date: eventData.event_date,
-        location: eventData.location,
-        signups: eventData.signups,
-        max_signups: eventData.max_signups,
-        description: eventData.description,
-        match_details: eventData.match_details,
-        updated_at: new Date().toISOString(),
-      })
+      .update(payload)
       .eq("id", id)
       .select()
-      .single();
+      .single());
+
+    if (canWriteMatchDetails && isMissingColumnError(error, "match_details")) {
+      console.warn("match_details column missing; retrying without it.");
+      hasMatchDetailsColumnCache = false;
+      ({ data, error } = await supabase
+        .from("events")
+        .update(basePayload)
+        .eq("id", id)
+        .select()
+        .single());
+    }
 
     if (error) {
       console.error("Error updating event:", error);

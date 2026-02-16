@@ -26,11 +26,9 @@ import {
   Check,
   Loader2,
   AlertCircle,
-  RotateCcw,
   FileText,
   Download,
   CheckCircle2,
-  XCircle,
 } from "lucide-react";
 import { AriaCheckbox } from "@/components/ui/aria-checkbox";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
@@ -568,11 +566,18 @@ interface UsersPageClientProps {
 function StatusBadge({ status }: { status: UserStatus | null }) {
   const isActive = status === "Active";
   return (
-    <div className="inline-flex items-center gap-2 bg-card border border-border rounded-full px-3 py-1">
+    <div className="inline-flex items-center gap-2 bg-card border border-[#D5DDE2] rounded-[8px] px-3 py-1">
       {isActive ? (
-        <CheckCircle2 className="w-[18px] h-[18px] text-emerald-600 fill-emerald-600 stroke-white dark:text-emerald-300 dark:fill-emerald-300" />
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+          <path d="M1.39553 4.96011C1.28658 4.46715 1.30372 3.95468 1.44538 3.4701C1.58703 2.98553 1.84862 2.54451 2.20594 2.18786C2.56326 1.83121 3.00476 1.57044 3.4896 1.42969C3.97443 1.28893 4.48694 1.27274 4.97969 1.38261C5.25105 0.958695 5.62471 0.609869 6.06625 0.368254C6.50779 0.126639 7.00303 0 7.50636 0C8.00969 0 8.50492 0.126639 8.94647 0.368254C9.38801 0.609869 9.76167 0.958695 10.033 1.38261C10.5266 1.27149 11.0403 1.28708 11.5262 1.42792C12.0121 1.56875 12.4545 1.83026 12.8122 2.18809C13.1698 2.54591 13.4311 2.98842 13.5717 3.47442C13.7124 3.96041 13.7277 4.47409 13.6164 4.96761C14.0408 5.23885 14.3901 5.6126 14.6321 6.0544C14.8741 6.49619 15.0009 6.9918 15.0009 7.49552C15.0009 7.99925 14.8741 8.49486 14.6321 8.93665C14.3901 9.37844 14.0408 9.7522 13.6164 10.0234C13.7267 10.5161 13.7109 11.0286 13.5705 11.5135C13.4301 11.9984 13.1696 12.44 12.8132 12.7975C12.4567 13.155 12.0158 13.4167 11.5313 13.5585C11.0467 13.7002 10.5343 13.7174 10.0414 13.6084C9.77039 14.0342 9.39641 14.3846 8.95403 14.6275C8.51165 14.8703 8.01516 14.9976 7.51053 14.9976C7.00589 14.9976 6.5094 14.8703 6.06702 14.6275C5.62464 14.3846 5.25066 14.0342 4.97969 13.6084C4.48687 13.7191 3.97409 13.7034 3.48893 13.5629C3.00378 13.4224 2.56198 13.1616 2.20454 12.8048C1.84709 12.4479 1.5856 12.0066 1.44431 11.5216C1.30302 11.0367 1.28653 10.5239 1.39636 10.0309C0.968646 9.76041 0.616321 9.38608 0.372176 8.94278C0.12803 8.49947 0 8.00161 0 7.49552C0 6.98944 0.12803 6.49158 0.372176 6.04827C0.616321 5.60497 0.968646 5.23064 1.39636 4.96011H1.39553Z" fill="#10A949" />
+          <path d="M10.4327 5.24399C10.589 5.40026 10.6767 5.61219 10.6767 5.83316C10.6767 6.05413 10.589 6.26605 10.4327 6.42232L7.09941 9.75565C6.94313 9.91188 6.73121 9.99964 6.51024 9.99964C6.28927 9.99964 6.07735 9.91188 5.92107 9.75565L4.25441 8.08899C4.17482 8.01212 4.11133 7.92016 4.06766 7.81849C4.02398 7.71682 4.00099 7.60747 4.00003 7.49682C3.99907 7.38617 4.02015 7.27644 4.06206 7.17403C4.10396 7.07161 4.16583 6.97857 4.24408 6.90033C4.32232 6.82208 4.41536 6.7602 4.51778 6.7183C4.62019 6.6764 4.72992 6.65532 4.84057 6.65628C4.95122 6.65724 5.06057 6.68023 5.16224 6.7239C5.26391 6.76758 5.35587 6.83106 5.43274 6.91066L6.51024 7.98816L9.25441 5.24399C9.41068 5.08776 9.6226 5 9.84357 5C10.0645 5 10.2765 5.08776 10.4327 5.24399Z" fill="white" />
+        </svg>
       ) : (
-        <XCircle className="w-[18px] h-[18px] text-red-500 fill-red-500 stroke-white dark:text-red-300 dark:fill-red-300" />
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+          <path d="M2.56667 5.74669C2.46937 5.30837 2.48431 4.85259 2.61011 4.42158C2.73591 3.99058 2.9685 3.59832 3.28632 3.28117C3.60413 2.96402 3.99688 2.73225 4.42814 2.60735C4.85941 2.48245 5.31523 2.46847 5.75334 2.56669C5.99448 2.18956 6.32668 1.8792 6.71931 1.66421C7.11194 1.44923 7.55237 1.33655 8.00001 1.33655C8.44764 1.33655 8.88807 1.44923 9.28071 1.66421C9.67334 1.8792 10.0055 2.18956 10.2467 2.56669C10.6855 2.46804 11.1421 2.48196 11.574 2.60717C12.006 2.73237 12.3992 2.96478 12.7172 3.28279C13.0352 3.6008 13.2677 3.99407 13.3929 4.42603C13.5181 4.85798 13.532 5.31458 13.4333 5.75336C13.8105 5.9945 14.1208 6.32669 14.3358 6.71933C14.5508 7.11196 14.6635 7.55239 14.6635 8.00002C14.6635 8.44766 14.5508 8.88809 14.3358 9.28072C14.1208 9.67336 13.8105 10.0056 13.4333 10.2467C13.5316 10.6848 13.5176 11.1406 13.3927 11.5719C13.2678 12.0032 13.036 12.3959 12.7189 12.7137C12.4017 13.0315 12.0094 13.2641 11.5784 13.3899C11.1474 13.5157 10.6917 13.5307 10.2533 13.4334C10.0125 13.8119 9.68006 14.1236 9.28676 14.3396C8.89346 14.5555 8.45202 14.6687 8.00334 14.6687C7.55466 14.6687 7.11322 14.5555 6.71992 14.3396C6.32662 14.1236 5.99417 13.8119 5.75334 13.4334C5.31523 13.5316 4.85941 13.5176 4.42814 13.3927C3.99688 13.2678 3.60413 13.036 3.28632 12.7189C2.9685 12.4017 2.73591 12.0095 2.61011 11.5785C2.48431 11.1475 2.46937 10.6917 2.56667 10.2534C2.18664 10.0129 1.87362 9.68014 1.65671 9.28617C1.4398 8.8922 1.32605 8.44976 1.32605 8.00002C1.32605 7.55029 1.4398 7.10785 1.65671 6.71388C1.87362 6.31991 2.18664 5.9872 2.56667 5.74669Z" fill="#E22023" />
+          <path d="M8 10.6667V8" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M8 5.33331H8.00667" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       )}
       <span className="text-sm font-medium text-foreground leading-[18px]">{status || "Unknown"}</span>
     </div>
@@ -589,7 +594,14 @@ function ProfileStatusBadge({ status }: { status: ProfileStatus | null }) {
   const c = config[status || "Not Verified"];
   return (
     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-sm font-medium border ${c.bg} ${c.text} ${c.border}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
+      {status === "Verified" ? (
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+          <path d="M1.39553 4.96011C1.28658 4.46715 1.30372 3.95468 1.44538 3.4701C1.58703 2.98553 1.84862 2.54451 2.20594 2.18786C2.56326 1.83121 3.00476 1.57044 3.4896 1.42969C3.97443 1.28893 4.48694 1.27274 4.97969 1.38261C5.25105 0.958695 5.62471 0.609869 6.06625 0.368254C6.50779 0.126639 7.00303 0 7.50636 0C8.00969 0 8.50492 0.126639 8.94647 0.368254C9.38801 0.609869 9.76167 0.958695 10.033 1.38261C10.5266 1.27149 11.0403 1.28708 11.5262 1.42792C12.0121 1.56875 12.4545 1.83026 12.8122 2.18809C13.1698 2.54591 13.4311 2.98842 13.5717 3.47442C13.7124 3.96041 13.7277 4.47409 13.6164 4.96761C14.0408 5.23885 14.3901 5.6126 14.6321 6.0544C14.8741 6.49619 15.0009 6.9918 15.0009 7.49552C15.0009 7.99925 14.8741 8.49486 14.6321 8.93665C14.3901 9.37844 14.0408 9.7522 13.6164 10.0234C13.7267 10.5161 13.7109 11.0286 13.5705 11.5135C13.4301 11.9984 13.1696 12.44 12.8132 12.7975C12.4567 13.155 12.0158 13.4167 11.5313 13.5585C11.0467 13.7002 10.5343 13.7174 10.0414 13.6084C9.77039 14.0342 9.39641 14.3846 8.95403 14.6275C8.51165 14.8703 8.01516 14.9976 7.51053 14.9976C7.00589 14.9976 6.5094 14.8703 6.06702 14.6275C5.62464 14.3846 5.25066 14.0342 4.97969 13.6084C4.48687 13.7191 3.97409 13.7034 3.48893 13.5629C3.00378 13.4224 2.56198 13.1616 2.20454 12.8048C1.84709 12.4479 1.5856 12.0066 1.44431 11.5216C1.30302 11.0367 1.28653 10.5239 1.39636 10.0309C0.968646 9.76041 0.616321 9.38608 0.372176 8.94278C0.12803 8.49947 0 8.00161 0 7.49552C0 6.98944 0.12803 6.49158 0.372176 6.04827C0.616321 5.60497 0.968646 5.23064 1.39636 4.96011H1.39553Z" fill="#10A949" />
+          <path d="M10.4327 5.24399C10.589 5.40026 10.6767 5.61219 10.6767 5.83316C10.6767 6.05413 10.589 6.26605 10.4327 6.42232L7.09941 9.75565C6.94313 9.91188 6.73121 9.99964 6.51024 9.99964C6.28927 9.99964 6.07735 9.91188 5.92107 9.75565L4.25441 8.08899C4.17482 8.01212 4.11133 7.92016 4.06766 7.81849C4.02398 7.71682 4.00099 7.60747 4.00003 7.49682C3.99907 7.38617 4.02015 7.27644 4.06206 7.17403C4.10396 7.07161 4.16583 6.97857 4.24408 6.90033C4.32232 6.82208 4.41536 6.7602 4.51778 6.7183C4.62019 6.6764 4.72992 6.65532 4.84057 6.65628C4.95122 6.65724 5.06057 6.68023 5.16224 6.7239C5.26391 6.76758 5.35587 6.83106 5.43274 6.91066L6.51024 7.98816L9.25441 5.24399C9.41068 5.08776 9.6226 5 9.84357 5C10.0645 5 10.2765 5.08776 10.4327 5.24399Z" fill="white" />
+        </svg>
+      ) : (
+        <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
+      )}
       {status || "Not Verified"}
     </span>
   );
@@ -765,7 +777,7 @@ function EditUserView({
 }: {
   user: UserProfile;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (updatedUser: UserProfile) => void;
 }) {
   const nameParts = (user.full_name || "").split(" ");
   const [firstName, setFirstName] = useState(nameParts[0] || "");
@@ -852,6 +864,8 @@ function EditUserView({
         body: JSON.stringify({
           id: user.id,
           full_name: `${firstName} ${lastName}`.trim(),
+          email: email.trim() || undefined,
+          password: password.trim() || undefined,
           role,
           status: userActivation ? "Active" : "Inactive",
           phone: fullPhone,
@@ -868,7 +882,7 @@ function EditUserView({
         setLoading(false);
         return;
       }
-      onSuccess();
+      onSuccess(data.user);
       toastQueue.add({
         title: "User Updated",
         description: `${firstName} ${lastName}'s profile has been updated successfully.`,
@@ -894,7 +908,28 @@ function EditUserView({
             onClick={onClose}
             className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors"
           >
-            <RotateCcw className="w-4 h-4 text-[#3f52ff] dark:text-white" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clipPath="url(#clip0_3022_12930_edit)">
+                <path
+                  d="M7.99992 5.33334L5.33325 8M5.33325 8L7.99992 10.6667M5.33325 8H10.6666M14.6666 8C14.6666 11.6819 11.6818 14.6667 7.99992 14.6667C4.31802 14.6667 1.33325 11.6819 1.33325 8C1.33325 4.3181 4.31802 1.33334 7.99992 1.33334C11.6818 1.33334 14.6666 4.3181 14.6666 8Z"
+                  stroke="#3F52FF"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_3022_12930_edit">
+                  <rect width="16" height="16" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
           </button>
           <span className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
             Edit
@@ -1236,7 +1271,28 @@ function ViewActivityView({
           onClick={onClose}
           className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors"
         >
-          <RotateCcw className="w-4 h-4 text-[#3f52ff] dark:text-white" />
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clipPath="url(#clip0_3022_12930_view)">
+              <path
+                d="M7.99992 5.33334L5.33325 8M5.33325 8L7.99992 10.6667M5.33325 8H10.6666M14.6666 8C14.6666 11.6819 11.6818 14.6667 7.99992 14.6667C4.31802 14.6667 1.33325 11.6819 1.33325 8C1.33325 4.3181 4.31802 1.33334 7.99992 1.33334C11.6818 1.33334 14.6666 4.3181 14.6666 8Z"
+                stroke="#3F52FF"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_3022_12930_view">
+                <rect width="16" height="16" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
         </button>
         <span className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
           View Activity
@@ -1686,6 +1742,7 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
 // --- Main Client Component ---
 export default function UsersPageClient({ users, currentUser }: UsersPageClientProps) {
   const router = useRouter();
+  const [tableUsers, setTableUsers] = useState<UserProfile[]>(users);
   const [activeTab, setActiveTab] = useState<"all" | "active" | "inactive">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddUser, setShowAddUser] = useState(false);
@@ -1695,6 +1752,10 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
 
+  useEffect(() => {
+    setTableUsers(users);
+  }, [users]);
+
   const handleMutationSuccess = () => {
     setShowAddUser(false);
     setDeleteUser(null);
@@ -1702,6 +1763,18 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
     setViewActivityUser(null);
     setSelectedUserIds(new Set());
     router.refresh(); // Re-fetches server component data
+  };
+
+  const handleUserUpdated = (updatedUser: UserProfile) => {
+    setShowAddUser(false);
+    setDeleteUser(null);
+    setEditUser(null);
+    setViewActivityUser(null);
+    setSelectedUserIds(new Set());
+    setTableUsers((prev) =>
+      prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+    );
+    router.refresh();
   };
 
   const toggleUserSelection = (userId: string) => {
@@ -1741,7 +1814,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
   };
 
   const handleExportCSV = () => {
-    const selected = users.filter((u) => selectedUserIds.has(u.id));
+    const selected = tableUsers.filter((u) => selectedUserIds.has(u.id));
     const headers = ["Full Name", "Email", "Role", "Status", "Profile Status", "Registration Date"];
     const rows = selected.map((u) => [
       u.full_name || "",
@@ -1761,7 +1834,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
     URL.revokeObjectURL(url);
   };
 
-  const filteredUsers = users.filter((u) => {
+  const filteredUsers = tableUsers.filter((u) => {
     if (activeTab === "active" && u.status !== "Active") return false;
     if (activeTab === "inactive" && u.status !== "Inactive") return false;
     if (searchQuery) {
@@ -1775,9 +1848,9 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
     return true;
   });
 
-  const totalUsers = users.length;
-  const activeUsers = users.filter((u) => u.status === "Active").length;
-  const inactiveUsers = users.filter((u) => u.status === "Inactive").length;
+  const totalUsers = tableUsers.length;
+  const activeUsers = tableUsers.filter((u) => u.status === "Active").length;
+  const inactiveUsers = tableUsers.filter((u) => u.status === "Inactive").length;
 
   function formatDate(dateStr: string | null): string {
     if (!dateStr) return "N/A";
@@ -1843,7 +1916,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
               <EditUserView
                 user={editUser}
                 onClose={() => setEditUser(null)}
-                onSuccess={handleMutationSuccess}
+                onSuccess={handleUserUpdated}
               />
             ) : viewActivityUser ? (
               <ViewActivityView
@@ -1851,7 +1924,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                 onClose={() => setViewActivityUser(null)}
               />
             ) : (
-              <div className="px-4 md:px-10 py-6">
+              <div className="px-8 py-6 bg-[#ECEFF2]">
                 {/* Page header */}
                 <div className="flex items-start justify-between mb-6">
                   <div>
@@ -1961,7 +2034,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
 
                   {/* Tabs - Design System Tablist with Framer Motion */}
                   <div className="px-4 py-3">
-                    <div className="inline-flex items-center bg-muted rounded-lg p-1 relative">
+                    <div className="inline-flex items-center bg-[#ECEFF2] rounded-lg p-1 relative">
                       {(["all", "active", "inactive"] as const).map((tab) => (
                         <button
                           key={tab}
@@ -1992,7 +2065,7 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                   </div>
 
                   {/* Table - Design System */}
-                  <div className="w-full px-4 pb-4 md:px-0 md:pb-0 overflow-x-auto hide-scrollbar">
+                  <div className="w-full px-4 pb-4 md:pb-0 overflow-x-auto hide-scrollbar">
                     <table className="w-full min-w-[720px] table-auto">
                       <colgroup>
                         <col className="w-12" />
@@ -2004,8 +2077,8 @@ export default function UsersPageClient({ users, currentUser }: UsersPageClientP
                         <col className="w-20" />
                       </colgroup>
                       {/* Table Header */}
-                      <thead>
-                        <tr className="[&>th]:bg-muted">
+                      <thead className="bg-[#ECEFF2]">
+                        <tr className="[&>th]:bg-[#ECEFF2]">
                           <th className="h-9 px-3 py-2 text-left rounded-l-lg">
                             <AriaCheckbox
                               isSelected={filteredUsers.length > 0 && selectedUserIds.size === filteredUsers.length}
