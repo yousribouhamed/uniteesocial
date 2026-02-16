@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -22,6 +22,8 @@ import {
   X,
   Upload,
   Link2,
+  Search,
+  User,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
@@ -29,6 +31,7 @@ import { AriaSlider } from "@/components/ui/aria-slider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
+import { TIMEZONES } from "@/data/timezones";
 
 interface CreateEventScreenProps {
   onClose: () => void;
@@ -119,6 +122,9 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [ticketsUrl, setTicketsUrl] = useState("");
   const [stadiumVenueName, setStadiumVenueName] = useState("");
   const [matchLocationMasking, setMatchLocationMasking] = useState(false);
+  const [timezone, setTimezone] = useState(TIMEZONES[13] || "UTC+01:00 — Paris / Berlin / Rome / Madrid");
+  const [timezoneQuery, setTimezoneQuery] = useState("");
+  const [showTimezoneModal, setShowTimezoneModal] = useState(false);
 
   const [language, setLanguage] = useState<"English" | "French" | "Arabic">("English");
   const isArabic = language === "Arabic";
@@ -188,6 +194,37 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
     }
   };
 
+  const timezoneGroups = useMemo(() => {
+    const groups: Record<string, string[]> = {
+      "Americas": [],
+      "Europe & Africa": [],
+      "Middle East & Central Asia": [],
+      "Asia Pacific": [],
+      "Global": [],
+    };
+    const query = timezoneQuery.trim().toLowerCase();
+    TIMEZONES.forEach((tz) => {
+      if (query && !tz.toLowerCase().includes(query)) return;
+      let continent = "Global";
+      if (/(Pago Pago|Honolulu|Anchorage|Los Angeles|Vancouver|Denver|Calgary|Chicago|Mexico City|New York|Toronto|Caracas|Halifax|Newfoundland|Sao Paulo|Buenos Aires)/i.test(tz)) {
+        continent = "Americas";
+      } else if (/(London|Lisbon|Casablanca|Paris|Berlin|Rome|Madrid|Cairo|Jerusalem|Johannesburg|Azores)/i.test(tz)) {
+        continent = "Europe & Africa";
+      } else if (/(Istanbul|Moscow|Nairobi|Riyadh|Tehran|Dubai|Baku|Tbilisi|Kabul|Karachi|Tashkent|Yekaterinburg)/i.test(tz)) {
+        continent = "Middle East & Central Asia";
+      } else if (/(New Delhi|Mumbai|Colombo|Kathmandu|Dhaka|Almaty|Omsk|Yangon|Bangkok|Jakarta|Hanoi|Singapore|Perth|Beijing|Hong Kong|Eucla|Tokyo|Seoul|Yakutsk|Adelaide|Darwin|Sydney|Brisbane|Vladivostok|Lord Howe Island|Noumea|Magadan|Solomon Is.|Auckland|Suva|Anadyr|Chatham Islands|Nukualofa|Kiritimati)/i.test(tz)) {
+        continent = "Asia Pacific";
+      }
+      groups[continent].push(tz);
+    });
+    return Object.entries(groups).filter(([, items]) => items.length > 0);
+  }, [timezoneQuery]);
+
+  const [timezoneOffset, timezoneCity] = useMemo(() => {
+    const [offset, city] = timezone.split(" — ");
+    return [offset || timezone, city || ""];
+  }, [timezone]);
+
   // Modal state
   const [showCreateLeagueModal, setShowCreateLeagueModal] = useState(false);
   const [newLeagueName, setNewLeagueName] = useState("");
@@ -222,6 +259,52 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       setNewLeagueWebsite("");
       setNewLeagueLogo("");
       setNewLeagueVisible(true);
+    }
+  };
+
+  // Team State
+  const [teams, setTeams] = useState<string[]>(["Al-Hilal", "Etihad Jeddah", "Al-Nassr"]);
+
+  // Create Team Modal State
+  const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
+  const [newTeamName, setNewTeamName] = useState("");
+  const [newTeamNameAr, setNewTeamNameAr] = useState("");
+  const [newTeamLeague, setNewTeamLeague] = useState("");
+  const [newTeamLogo, setNewTeamLogo] = useState("");
+  const [newTeamWebsite, setNewTeamWebsite] = useState("");
+  const [newTeamStadium, setNewTeamStadium] = useState("");
+  const [newTeamStadiumAr, setNewTeamStadiumAr] = useState("");
+  const [newTeamManager, setNewTeamManager] = useState("");
+  const [newTeamManagerAr, setNewTeamManagerAr] = useState("");
+  const [newTeamVisible, setNewTeamVisible] = useState(true);
+  const teamLogoInputRef = useRef<HTMLInputElement>(null);
+
+  const handleTeamLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewTeamLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCreateTeam = () => {
+    if (newTeamName.trim()) {
+      setTeams([...teams, newTeamName.trim()]);
+      setShowCreateTeamModal(false);
+      // Reset form
+      setNewTeamName("");
+      setNewTeamNameAr("");
+      setNewTeamLeague("");
+      setNewTeamLogo("");
+      setNewTeamWebsite("");
+      setNewTeamStadium("");
+      setNewTeamStadiumAr("");
+      setNewTeamManager("");
+      setNewTeamManagerAr("");
+      setNewTeamVisible(true);
     }
   };
 
@@ -303,7 +386,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
   return (
     <div
-      className={`bg-muted border border-border rounded-lg p-4 pb-2 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}
+      className={`bg-[#ECEFF2] border border-border rounded-lg p-4 pb-2 flex flex-col gap-4 ${isArabic ? "font-ko-sans-ar" : ""}`}
       dir={isArabic ? "rtl" : "ltr"}
     >
       <div className="flex lg:flex-row flex-col gap-4 items-start">
@@ -311,7 +394,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
         <div className="hidden lg:flex w-full lg:w-[493px] shrink-0 bg-card border border-border rounded-lg p-3 flex-col gap-4 h-fit">
           {/* Cover Image */}
           <div
-            className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
+            className="relative w-full h-[264px] rounded-lg overflow-hidden bg-[#D5DDE2] cursor-pointer group"
             onClick={() => fileInputRef.current?.click()}
           >
             {coverImage ? (
@@ -321,15 +404,16 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-muted" />
+              <div className="w-full h-full bg-[#D5DDE2]" />
             )}
             {/* Centered Upload Icon */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="1" y="1" width="34" height="34" rx="17" fill="#3F52FF" />
                 <rect x="1" y="1" width="34" height="34" rx="17" stroke="white" strokeWidth="2" />
                 <path fillRule="evenodd" clipRule="evenodd" d="M18 10.25H17.958C16.589 10.25 15.504 10.25 14.638 10.338C13.75 10.428 13.009 10.618 12.361 11.051C11.8434 11.3985 11.3985 11.8434 11.051 12.361C10.617 13.009 10.428 13.751 10.338 14.638C10.25 15.504 10.25 16.589 10.25 17.958V18.042C10.25 19.411 10.25 20.496 10.338 21.362C10.428 22.25 10.618 22.991 11.051 23.639C11.397 24.158 11.842 24.603 12.361 24.949C13.009 25.383 13.751 25.572 14.638 25.662C15.504 25.75 16.589 25.75 17.958 25.75H18.042C19.411 25.75 20.496 25.75 21.362 25.662C22.25 25.572 22.991 25.382 23.639 24.95C24.1567 24.6023 24.6016 24.157 24.949 23.639C25.383 22.991 25.572 22.249 25.662 21.362C25.75 20.496 25.75 19.411 25.75 18.042V17.958C25.75 16.589 25.75 15.504 25.662 14.638C25.572 13.75 25.382 13.009 24.95 12.361C24.6023 11.8433 24.157 11.3984 23.639 11.051C22.991 10.617 22.249 10.428 21.362 10.338C20.496 10.25 19.411 10.25 18.042 10.25H18ZM20.32 18.785C20.476 18.575 21.055 17.917 21.806 18.385C22.284 18.68 22.686 19.079 23.116 19.505C23.28 19.669 23.396 19.855 23.475 20.054C23.709 20.654 23.587 21.377 23.337 21.972C23.1956 22.3182 22.9808 22.6297 22.7076 22.885C22.4343 23.1403 22.109 23.3334 21.754 23.451C21.4358 23.5517 21.1038 23.602 20.77 23.6H14.87C14.283 23.6 13.764 23.46 13.338 23.197C13.071 23.032 13.024 22.652 13.222 22.406C13.5513 21.9947 13.88 21.5807 14.208 21.164C14.836 20.367 15.259 20.135 15.73 20.338C15.92 20.422 16.112 20.548 16.309 20.681C16.834 21.038 17.564 21.528 18.525 20.996C19.183 20.627 19.565 19.996 19.897 19.445L19.903 19.435L19.973 19.32C20.0805 19.1365 20.1963 18.958 20.32 18.785ZM13.8 15.55C13.8 14.585 14.584 13.8 15.55 13.8C16.0141 13.8 16.4592 13.9844 16.7874 14.3126C17.1156 14.6408 17.3 15.0859 17.3 15.55C17.3 16.0141 17.1156 16.4592 16.7874 16.7874C16.4592 17.1156 16.0141 17.3 15.55 17.3C14.584 17.3 13.8 16.515 13.8 15.55Z" fill="white" />
               </svg>
+              <span className="text-xs font-medium text-black">Recomended (469 X 264)</span>
             </div>
             {/* Hover overlay for changing image */}
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -389,7 +473,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <div className="flex items-center gap-2">
                 {/* Date Box */}
                 <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
-                  <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
+                  <div className="bg-[#859BAB] px-0.5 py-1 flex items-center justify-center">
                     <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
                       {startDate ? (() => {
                         const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
@@ -412,7 +496,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     })() : "samedi 25 octobre"}
                   </span>
                   <span className="text-sm font-normal text-muted-foreground leading-[21px]">
-                    {startTime} - {endTime} UTC+4
+                    {startTime} - {endTime} {timezoneOffset}
                   </span>
                 </div>
               </div>
@@ -464,7 +548,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
           {/* Header Row: Event Type Tabs + Language Selector */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             {/* Event Type Tabs */}
-            <div className="flex items-center gap-1 bg-muted p-1 rounded-lg w-full sm:w-auto overflow-x-auto hide-scrollbar">
+            <div className="flex items-center gap-1 bg-[#D5DDE2] p-1 rounded-lg w-full sm:w-auto overflow-x-auto hide-scrollbar">
               <button
                 onClick={() => setEventCategory("general")}
                 className={`relative h-9 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${eventCategory === "general"
@@ -560,8 +644,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                             <button
                               onClick={() => setLeague(l)}
                               className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${league === l
-                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                 }`}
                             >
                               {l}
@@ -596,19 +680,19 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           {/* Create Team Option */}
                           <MenuItem>
                             <button
-                              onClick={() => {/* Handle create team */ }}
+                              onClick={() => setShowCreateTeamModal(true)}
                               className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
                             >
                               {t("+ Create Team", "+ إنشاء فريق", "+ Créer une équipe")}
                             </button>
                           </MenuItem>
-                          {["Al-Hilal", "Etihad Jeddah", "Al-Nassr"].map((t) => (
+                          {teams.map((t) => (
                             <MenuItem key={t}>
                               <button
                                 onClick={() => setHomeTeam(t)}
                                 className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${homeTeam === t
-                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                   }`}
                               >
                                 {t}
@@ -641,19 +725,19 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           {/* Create Team Option */}
                           <MenuItem>
                             <button
-                              onClick={() => {/* Handle create team */ }}
+                              onClick={() => setShowCreateTeamModal(true)}
                               className="flex w-full h-8 px-2 py-[6px] rounded-t-lg rounded-b items-center bg-blue-100 dark:bg-blue-950/40 text-sm font-medium text-[#3f52ff] dark:text-white transition-colors focus:outline-none hover:bg-blue-200 dark:hover:bg-blue-900/40"
                             >
                               {t("+ Create Team", "+ إنشاء فريق", "+ Créer une équipe")}
                             </button>
                           </MenuItem>
-                          {["Al-Hilal", "Etihad Jeddah", "Al-Nassr"].map((t) => (
+                          {teams.map((t) => (
                             <MenuItem key={t}>
                               <button
                                 onClick={() => setAwayTeam(t)}
                                 className={`flex w-full h-8 px-2 py-[6px] rounded items-center text-sm font-medium transition-colors focus:outline-none ${awayTeam === t
-                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                   }`}
                               >
                                 {t}
@@ -734,11 +818,17 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </div>
 
                 {/* Timezone */}
-                <div className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowTimezoneModal(true)}
+                  className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0 text-left"
+                >
                   <Globe className="w-4 h-4 text-foreground" />
-                  <span className="text-sm font-medium text-foreground">GMT+01:00</span>
-                  <span className="text-xs font-normal text-muted-foreground">Algiers</span>
-                </div>
+                  <span className="text-sm font-medium text-foreground">{timezoneOffset}</span>
+                  {timezoneCity ? (
+                    <span className="text-xs font-normal text-muted-foreground">{timezoneCity}</span>
+                  ) : null}
+                </button>
               </div>
 
               {/* Line-Up Announcement Settings */}
@@ -750,8 +840,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   <button
                     onClick={() => setEnableLineUpAnnouncement(!enableLineUpAnnouncement)}
                     className={`w-4 h-4 border rounded shrink-0 flex items-center justify-center ${enableLineUpAnnouncement
-                        ? "bg-[#3f52ff] dark:bg-[#3f52ff] border-[#3f52ff]"
-                        : "bg-card border-border"
+                      ? "bg-[#3f52ff] dark:bg-[#3f52ff] border-[#3f52ff]"
+                      : "bg-card border-border"
                       }`}
                   >
                     {enableLineUpAnnouncement && (
@@ -784,8 +874,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                               <button
                                 onClick={() => setLineUpAnnouncementTime(time)}
                                 className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${lineUpAnnouncementTime === time
-                                    ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                    : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                   }`}
                               >
                                 {translateLineupTime(time)}
@@ -855,7 +945,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </span>
 
                 {/* Location Type Tabs */}
-                <div className="flex items-center bg-muted rounded-lg p-[6px] w-full">
+                <div className="flex items-center bg-[#D5DDE2] rounded-lg p-[6px] w-full">
                   <button
                     onClick={() => setMatchLocationType("onsite")}
                     className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${matchLocationType === "onsite"
@@ -1039,8 +1129,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                             <button
                               onClick={() => setTicketGoLive(option)}
                               className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${ticketGoLive === option
-                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                 }`}
                             >
                               {translateTicketGoLive(option)}
@@ -1087,7 +1177,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <div className="lg:hidden w-full bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
                 {/* Cover Image Upload - Uses the shared fileInputRef from the desktop preview */}
                 <div
-                  className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted cursor-pointer group"
+                  className="relative w-full h-[264px] rounded-lg overflow-hidden bg-[#D5DDE2] cursor-pointer group"
                   onClick={() => {
                     // Trigger the file input from the desktop preview card
                     const fileInput = document.getElementById('event-cover-upload');
@@ -1101,11 +1191,14 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-muted" />
+                    <div className="w-full h-full bg-[#D5DDE2]" />
                   )}
                   {/* Centered Camera Icon */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
-                    <Camera className="w-6 h-6 text-white" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
+                    <div className="w-[52px] h-[52px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full border-[2.889px] border-white flex items-center justify-center">
+                      <Camera className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-black">Recomended (469 X 264)</span>
                   </div>
                   {/* Hover overlay for changing image */}
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -1135,7 +1228,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     <div className="flex items-center gap-2">
                       {/* Date Box */}
                       <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
-                        <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
+                        <div className="bg-[#859BAB] px-0.5 py-1 flex items-center justify-center">
                           <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
                             {startDate ? (() => {
                               const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
@@ -1158,7 +1251,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           })() : "samedi 25 octobre"}
                         </span>
                         <span className="text-sm font-normal text-muted-foreground leading-[21px]">
-                          {startTime} - {endTime} UTC+4
+                          {startTime} - {endTime} {timezoneOffset}
                         </span>
                       </div>
                     </div>
@@ -1282,11 +1375,17 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                   </div>
 
                   {/* Timezone */}
-                  <div className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowTimezoneModal(true)}
+                    className="bg-card rounded-lg w-full sm:w-[140px] p-2 flex flex-col gap-1 shrink-0 text-left"
+                  >
                     <Globe className="w-4 h-4 text-foreground" />
-                    <span className="text-sm font-medium text-foreground">GMT+01:00</span>
-                    <span className="text-xs font-normal text-muted-foreground">Algiers</span>
-                  </div>
+                    <span className="text-sm font-medium text-foreground">{timezoneOffset}</span>
+                    {timezoneCity ? (
+                      <span className="text-xs font-normal text-muted-foreground">{timezoneCity}</span>
+                    ) : null}
+                  </button>
                 </div>
 
                 {/* Duration */}
@@ -1306,7 +1405,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 </span>
 
                 {/* Location Type Tabs */}
-                <div className="flex items-center bg-muted rounded-lg p-[6px] w-full">
+                <div className="flex items-center bg-[#D5DDE2] rounded-lg p-[6px] w-full">
                   <button
                     onClick={() => setLocationType("onsite")}
                     className={`relative flex-1 h-[36px] px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${locationType === "onsite"
@@ -1543,8 +1642,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                             <button
                               onClick={() => setChapter(ch.name)}
                               className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${chapter === ch.name
-                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                 }`}
                             >
                               {ch.name}
@@ -1580,8 +1679,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                             <button
                               onClick={() => setTicketGoLive(option)}
                               className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${ticketGoLive === option
-                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                 }`}
                             >
                               {translateTicketGoLive(option)}
@@ -1615,8 +1714,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                             <button
                               onClick={() => setCapacity(option)}
                               className={`flex w-full px-2 py-[6px] rounded text-sm font-medium transition-colors focus:outline-none ${capacity === option
-                                  ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
-                                  : "text-foreground data-[focus]:bg-muted hover:bg-muted"
+                                ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                                : "text-foreground data-[focus]:bg-muted hover:bg-muted"
                                 }`}
                             >
                               {option}
@@ -1695,7 +1794,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     <div className="flex items-center gap-2">
                       {/* Date Box */}
                       <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
-                        <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
+                        <div className="bg-[#859BAB] px-0.5 py-1 flex items-center justify-center">
                           <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">
                             {startDate ? (() => {
                               const months = ["JAN.", "FÉV.", "MAR.", "AVR.", "MAI.", "JUI.", "JUL.", "AOÛ.", "SEP.", "OCT.", "NOV.", "DÉC."];
@@ -1713,7 +1812,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           {formatDateForDisplay(startDate)}
                         </span>
                         <span className="text-sm font-normal text-muted-foreground leading-[21px]">
-                          {startTime} - {endTime} UTC+4
+                          {startTime} - {endTime} {timezoneOffset}
                         </span>
                       </div>
                     </div>
@@ -1757,21 +1856,97 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
         </div>
       </div>
 
-      {/* Create League Modal */}
-      {showCreateLeagueModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]">
+      {/* Timezone Modal */}
+      {showTimezoneModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="absolute inset-0 bg-black/50"
+            onClick={() => setShowTimezoneModal(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className={`relative bg-card border border-border rounded-xl w-[min(560px,calc(100vw-2rem))] max-h-[80vh] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
+            dir={isArabic ? "rtl" : "ltr"}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+              <span className="text-base font-semibold text-foreground">Select Time Zone</span>
+              <button
+                type="button"
+                onClick={() => setShowTimezoneModal(false)}
+                className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="px-4 pt-3 pb-4 flex flex-col gap-3 overflow-hidden">
+              <div className="flex items-center gap-2 h-9 px-3 py-1 bg-muted border border-border rounded-lg">
+                <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+                <input
+                  type="text"
+                  value={timezoneQuery}
+                  onChange={(e) => setTimezoneQuery(e.target.value)}
+                  placeholder="Search time zones..."
+                  className="w-full bg-transparent text-sm text-foreground outline-none border-none p-0"
+                />
+              </div>
+              <div className="flex-1 overflow-auto pr-1">
+                {timezoneGroups.length > 0 ? (
+                  timezoneGroups.map(([continent, items]) => (
+                    <div key={continent} className="py-1">
+                      <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
+                        {continent}
+                      </div>
+                      <div className="flex flex-col">
+                        {items.map((tz) => (
+                          <button
+                            key={tz}
+                            type="button"
+                            onClick={() => {
+                              setTimezone(tz);
+                              setTimezoneQuery("");
+                              setShowTimezoneModal(false);
+                            }}
+                            className={`w-full rounded-lg px-2 py-1.5 text-left text-sm transition-colors focus:outline-none ${timezone === tz
+                              ? "bg-blue-100 dark:bg-blue-950/40 text-[#3f52ff] dark:text-white"
+                              : "text-foreground hover:bg-muted"
+                              }`}
+                          >
+                            {tz}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-2 py-2 text-sm text-muted-foreground">No matching time zones</div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Create League Modal */}
+      {showCreateLeagueModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-[220]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-0 z-0 bg-black/20"
             onClick={() => setShowCreateLeagueModal(false)}
           />
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className={`bg-card border border-border rounded-xl w-[493px] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
+            className={`relative z-10 bg-card border border-border rounded-xl w-[493px] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
             dir={isArabic ? "rtl" : "ltr"}
           >
             {/* Modal Header */}
@@ -1802,21 +1977,33 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
             <div className="px-4 py-4 flex flex-col gap-4">
               {/* League Name Inputs - Side by Side */}
               <div className="flex gap-4">
-                <input
-                  type="text"
-                  placeholder={t("Enter league name", "أدخل اسم الدوري", "Entrez le nom de la ligue")}
-                  value={newLeagueName}
-                  onChange={(e) => setNewLeagueName(e.target.value)}
-                  className={`flex-1 h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right font-ko-sans-ar" : ""}`}
-                />
-                <input
-                  type="text"
-                  placeholder="أدخل اسم الدوري"
-                  dir="rtl"
-                  value={newLeagueNameAr}
-                  onChange={(e) => setNewLeagueNameAr(e.target.value)}
-                  className="flex-1 h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] font-ko-sans-ar"
-                />
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label htmlFor="league-name-en" className="text-sm font-semibold text-foreground">
+                    League Name (English)
+                  </label>
+                  <input
+                    id="league-name-en"
+                    type="text"
+                    placeholder={t("Enter league name", "أدخل اسم الدوري", "Entrez le nom de la ligue")}
+                    value={newLeagueName}
+                    onChange={(e) => setNewLeagueName(e.target.value)}
+                    className={`w-full h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right font-ko-sans-ar" : ""}`}
+                  />
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label htmlFor="league-name-ar" className="text-sm font-semibold text-foreground text-right font-ko-sans-ar">
+                    اسم الدوري (العربية)
+                  </label>
+                  <input
+                    id="league-name-ar"
+                    type="text"
+                    placeholder="أدخل اسم الدوري"
+                    dir="rtl"
+                    value={newLeagueNameAr}
+                    onChange={(e) => setNewLeagueNameAr(e.target.value)}
+                    className="w-full h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] font-ko-sans-ar"
+                  />
+                </div>
               </div>
 
               {/* League Logo */}
@@ -1872,8 +2059,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 <button
                   onClick={() => setNewLeagueVisible(!newLeagueVisible)}
                   className={`w-4 h-4 rounded shrink-0 flex items-center justify-center shadow-sm ${newLeagueVisible
-                      ? "bg-[#3f52ff] dark:bg-[#3f52ff]"
-                      : "bg-card border border-border"
+                    ? "bg-[#3f52ff] dark:bg-[#3f52ff]"
+                    : "bg-card border border-border"
                     }`}
                 >
                   {newLeagueVisible && (
@@ -1902,6 +2089,267 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 className="h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-sm font-medium text-white rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("Create League", "إنشاء دوري", "Créer une ligue")}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Create Team Modal */}
+      {showCreateTeamModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-[220]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-0 z-0 bg-black/20"
+            onClick={() => setShowCreateTeamModal(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className={`relative z-10 bg-card border border-border rounded-xl w-[493px] flex flex-col ${isArabic ? "font-ko-sans-ar" : ""}`}
+            dir={isArabic ? "rtl" : "ltr"}
+          >
+            {/* Modal Header */}
+            <div className="bg-card border-b border-border rounded-t-xl px-4 pt-4 pb-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-1 flex-1">
+                  <h3 className="text-base font-semibold text-foreground leading-[25.2px]">
+                    {t("Create Team", "إنشاء فريق", "Créer une équipe")}
+                  </h3>
+                  <p className="text-sm font-medium text-muted-foreground leading-[18px]">
+                    {t(
+                      "Add a new team to the league.",
+                      "أضف فريقاً جديداً للدوري.",
+                      "Ajouter une nouvelle équipe à la ligue."
+                    )}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCreateTeamModal(false)}
+                  className="w-[26px] h-[26px] bg-muted rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+                >
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="px-4 py-4 flex flex-col gap-4">
+              {/* League Select */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-foreground">
+                  {t("League", "الدوري", "Ligue")}<span className="text-destructive">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={newTeamLeague}
+                    onChange={(e) => setNewTeamLeague(e.target.value)}
+                    className={`w-full h-9 px-3 ${isArabic ? "pl-8 text-right" : "pr-8"} border border-border rounded-lg text-sm text-foreground bg-background outline-none focus:border-[#3f52ff] appearance-none`}
+                  >
+                    <option value="" disabled>{t("Select a league", "اختر دوري", "Sélectionner une ligue")}</option>
+                    {[...customLeagues, "Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].map((l) => (
+                      <option key={l} value={l}>{l}</option>
+                    ))}
+                  </select>
+                  <div className={`absolute ${isArabic ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 pointer-events-none`}>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Team Name Inputs */}
+              <div className="flex gap-4">
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-foreground">
+                    Team Name (English)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t("Enter team name", "أدخل اسم الفريق", "Entrez le nom de l'équipe")}
+                    value={newTeamName}
+                    onChange={(e) => setNewTeamName(e.target.value)}
+                    className={`w-full h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right font-ko-sans-ar" : ""}`}
+                  />
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-foreground text-right font-ko-sans-ar">
+                    اسم الفريق (العربية)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="أدخل اسم الفريق"
+                    dir="rtl"
+                    value={newTeamNameAr}
+                    onChange={(e) => setNewTeamNameAr(e.target.value)}
+                    className="w-full h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] font-ko-sans-ar"
+                  />
+                </div>
+              </div>
+
+              {/* Team Logo */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-foreground">
+                  {t("Team Logo", "شعار الفريق", "Logo de l'équipe")}
+                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => teamLogoInputRef.current?.click()}
+                    className="w-20 h-20 border border-black/10 rounded-lg flex items-center justify-center bg-card hover:bg-background transition-colors overflow-hidden"
+                  >
+                    {newTeamLogo ? (
+                      <img src={newTeamLogo} alt="Team logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <Upload className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
+                  <input
+                    type="file"
+                    ref={teamLogoInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleTeamLogoUpload}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-base font-semibold text-muted-foreground">
+                      {t("Upload team logo", "تحميل شعار الفريق", "Télécharger le logo")}
+                    </span>
+                    <span className="text-sm font-normal text-muted-foreground">
+                      {t("Recommended: 400x400px", "مقاس موصى به: 400×400", "Recommandé : 400x400")}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Website URL */}
+                <div className="relative">
+                  <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                    <Link2 className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="https://team-website.com"
+                    value={newTeamWebsite}
+                    onChange={(e) => setNewTeamWebsite(e.target.value)}
+                    className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                  />
+                </div>
+              </div>
+
+              {/* Stadium Name Inputs */}
+              <div className="flex gap-4">
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-foreground">
+                    Stadium Name
+                  </label>
+                  <div className="relative">
+                    <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder={t("Enter stadium name", "أدخل اسم الملعب", "Entrez le nom du stade")}
+                      value={newTeamStadium}
+                      onChange={(e) => setNewTeamStadium(e.target.value)}
+                      className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right font-ko-sans-ar" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                    />
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-foreground text-right font-ko-sans-ar">
+                    اسم الملعب
+                  </label>
+                  <div className="relative">
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="أدخل اسم الملعب"
+                      dir="rtl"
+                      value={newTeamStadiumAr}
+                      onChange={(e) => setNewTeamStadiumAr(e.target.value)}
+                      className="w-full h-9 pr-10 pl-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] font-ko-sans-ar"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Manager Name Inputs */}
+              <div className="flex gap-4">
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-foreground">
+                    Manager Name
+                  </label>
+                  <div className="relative">
+                    <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
+                      <User className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder={t("Enter manager name", "أدخل اسم المدير", "Entrez le nom du manager")}
+                      value={newTeamManager}
+                      onChange={(e) => setNewTeamManager(e.target.value)}
+                      className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right font-ko-sans-ar" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
+                    />
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-foreground text-right font-ko-sans-ar">
+                    اسم المدير
+                  </label>
+                  <div className="relative">
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <User className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="أدخل اسم المدير"
+                      dir="rtl"
+                      value={newTeamManagerAr}
+                      onChange={(e) => setNewTeamManagerAr(e.target.value)}
+                      className="w-full h-9 pr-10 pl-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] font-ko-sans-ar"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Visible in team selection checkbox */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setNewTeamVisible(!newTeamVisible)}
+                  className={`w-4 h-4 rounded shrink-0 flex items-center justify-center shadow-sm ${newTeamVisible
+                    ? "bg-[#3f52ff] dark:bg-[#3f52ff]"
+                    : "bg-card border border-border"
+                    }`}
+                >
+                  {newTeamVisible && (
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                      <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </button>
+                <span className="text-sm font-medium text-foreground">
+                  {t("Visible in team selection", "مرئي في اختيار الفريق", "Visible dans la sélection de l'équipe")}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-4 py-4 border-t border-border flex items-center justify-end gap-2">
+              <button
+                onClick={() => setShowCreateTeamModal(false)}
+                className="h-9 px-4 bg-muted text-sm font-medium text-foreground rounded-lg hover:bg-muted transition-colors"
+              >
+                {t("Dismiss", "إغلاق", "Fermer")}
+              </button>
+              <button
+                onClick={handleCreateTeam}
+                disabled={!newTeamName.trim()}
+                className="h-9 px-4 bg-[#3f52ff] dark:bg-[#3f52ff] text-sm font-medium text-white rounded-lg hover:bg-[#3545e0] dark:hover:bg-[#3545e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {t("Create Team", "إنشاء فريق", "Créer une équipe")}
               </button>
             </div>
           </motion.div>

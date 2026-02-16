@@ -464,7 +464,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
         <main className="flex-1 px-4 md:px-8 py-6 min-w-0">
           <div className="flex flex-col gap-2">
             {/* Top Tabs - Tenant Setup, Social Links, Legal and T&C, Chapters */}
-            <div className="flex items-center bg-muted rounded-lg p-1 relative self-start overflow-x-auto whitespace-nowrap hide-scrollbar">
+            <div className="flex items-center bg-[#ECEFF2] border-0 dark:bg-muted rounded-lg p-1 relative self-start overflow-x-auto whitespace-nowrap hide-scrollbar">
               {topTabs.map((tab) => (
                 <button
                   key={tab}
@@ -493,7 +493,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
             {/* Tab Content */}
             {activeTopTab === "Tenant Setup" && (
-              <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+              <div className="bg-[#ECEFF2] border border-[#D5DDE2] dark:bg-muted dark:border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
                 {/* Section Header */}
                 <div className="flex flex-col gap-2 px-2">
                   <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
@@ -506,7 +506,7 @@ export default function BusinessProfileClient({ currentUser }: BusinessProfileCl
 
                 {/* Inner Tabs - General Setting, Branding, Modules */}
                 <div className="flex flex-col gap-2">
-                  <div className="inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-max overflow-x-auto whitespace-nowrap">
+                  <div className="inline-flex items-center bg-[#ECEFF2] border-0 dark:bg-muted rounded-lg p-1 relative self-start w-max overflow-x-auto whitespace-nowrap">
                     {innerTabs.map((tab) => (
                       <button
                         key={tab}
@@ -1948,7 +1948,7 @@ function SocialLinksContent({ initialData, refreshProfile }: { initialData?: any
   };
 
   return (
-    <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+    <div className="bg-[#ECEFF2] border border-[#D5DDE2] dark:bg-muted dark:border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2">
         <div className="flex flex-col gap-2">
@@ -2084,7 +2084,7 @@ function LegalAndTCContent({ initialData, refreshProfile }: { initialData?: any;
   const inputReadOnlyClass = `${inputBaseClass} bg-muted border-border`;
 
   return (
-    <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+    <div className="bg-[#ECEFF2] border border-[#D5DDE2] dark:bg-muted dark:border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
       <div className="flex items-center justify-between px-2">
         <div className="flex flex-col gap-2">
@@ -2771,7 +2771,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
   const [coverImage, setCoverImage] = useState<string>(editData?.cover_image || "");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [sortOrder, setSortOrder] = useState(editData?.sort_order ?? 999);
+  const [sortOrder, setSortOrder] = useState<number | "">(editData?.sort_order ?? "");
   const [notifications, setNotifications] = useState<{
     enableNotifications: boolean;
     autoNotifyNewEvents: boolean;
@@ -2911,7 +2911,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
         cover_image: coverImage,
         venue_name: venueName.trim(),
         full_address: fullAddress.trim(),
-        sort_order: sortOrder,
+        sort_order: sortOrder === "" ? undefined : sortOrder,
         notifications,
         team: teamMembers.length,
       };
@@ -2958,7 +2958,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
   };
 
   return (
-    <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+    <div className="bg-[#ECEFF2] border border-[#D5DDE2] dark:bg-muted dark:border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
       {/* Section Header */}
       <div className="flex flex-col gap-2 px-2">
         <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
@@ -2971,7 +2971,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
       </div>
 
       {/* Tabs */}
-      <div className="inline-flex items-center bg-muted rounded-lg p-1 relative overflow-x-auto whitespace-nowrap">
+      <div className="inline-flex items-center bg-[#ECEFF2] rounded-lg p-1 relative overflow-x-auto whitespace-nowrap w-max">
         {createChapterTabs.map((tab) => (
           <button
             key={tab}
@@ -3221,14 +3221,17 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                 <input
                   type="number"
                   value={sortOrder}
-                  onChange={(e) => setSortOrder(Number(e.target.value))}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setSortOrder(next === "" ? "" : Number(next));
+                  }}
                   placeholder="Enter sort order"
                   className="h-9 w-full px-3 pr-8 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-0">
                   <button
                     type="button"
-                    onClick={() => setSortOrder((prev) => prev + 1)}
+                    onClick={() => setSortOrder((prev) => (prev === "" ? 1 : prev + 1))}
                     className="text-muted-foreground hover:text-foreground transition-colors p-0 leading-none"
                   >
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3237,7 +3240,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                   </button>
                   <button
                     type="button"
-                    onClick={() => setSortOrder((prev) => Math.max(0, prev - 1))}
+                    onClick={() => setSortOrder((prev) => (prev === "" ? 0 : Math.max(0, prev - 1)))}
                     className="text-muted-foreground hover:text-foreground transition-colors p-0 leading-none"
                   >
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3845,7 +3848,7 @@ function ChaptersContent() {
 
   return (
     <>
-      <div className="bg-muted border border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
+      <div className="bg-[#ECEFF2] border border-[#D5DDE2] dark:bg-muted dark:border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
         {/* Section Header */}
         <div className="flex flex-col gap-2 px-2">
           <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
@@ -3962,8 +3965,8 @@ function ChaptersContent() {
                 <col className="w-[18%]" />
                 <col className="w-[8%]" />
               </colgroup>
-              <thead>
-                <tr className="[&>th]:bg-muted [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
+              <thead className="bg-[#ECEFF2]">
+                <tr className="[&>th]:bg-[#ECEFF2] [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
                   {tableHeaders.map((header) => (
                     <th
                       key={header}

@@ -301,7 +301,7 @@ function EventPreviewCard({
           <div className="flex items-center gap-2">
             {/* Date Box */}
             <div className="w-10 h-11 border border-border rounded-lg overflow-hidden flex flex-col">
-              <div className="bg-muted-foreground/40 px-0.5 py-1 flex items-center justify-center">
+              <div className="bg-[#859BAB] px-0.5 py-1 flex items-center justify-center">
                 <span className="text-[8px] font-bold text-white/80 uppercase leading-[12px]">{displayMonth}</span>
               </div>
               <div className="flex-1 flex items-center justify-center">
@@ -735,7 +735,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-[40px] h-[42px] border border-border rounded-[8px] flex flex-col items-center overflow-hidden bg-card shrink-0">
-                      <div className="bg-muted-foreground/40 w-full h-[14px] flex items-center justify-center">
+                      <div className="bg-[#859BAB] w-full h-[14px] flex items-center justify-center">
                         <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">{displayMonth}</span>
                       </div>
                       <div className="flex-1 flex items-center justify-center w-full">
@@ -764,7 +764,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-[40px] h-[42px] border border-border rounded-[8px] flex flex-col items-center overflow-hidden bg-card shrink-0 opacity-60">
-                      <div className="bg-muted-foreground/40 w-full h-[14px] flex items-center justify-center">
+                      <div className="bg-[#859BAB] w-full h-[14px] flex items-center justify-center">
                         <span className="text-[8px] text-white/80 font-bold leading-none uppercase tracking-tight">
                           {getDayAndMonth(endDate).month}
                         </span>
@@ -1229,7 +1229,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   <col className="w-[12%]" />
                   <col className="w-[14%]" />
                 </colgroup>
-                <thead>
+                <thead className="bg-[#ECEFF2]">
                   <tr className="[&>th]:bg-muted [&>th:first-child]:rounded-l-lg [&>th:last-child]:rounded-r-lg">
                     <th className="h-9 px-3 py-2 text-left">
                       <AriaCheckbox
@@ -2620,7 +2620,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
               isSaving={isSaving}
             />
           ) : (
-            <div className="bg-muted border border-border rounded-lg p-2 pb-2 flex flex-col gap-4">
+            <div className="bg-[#ECEFF2] border border-border rounded-lg p-2 pb-2 flex flex-col gap-4">
               {/* Page Header */}
               <div className="flex flex-col gap-2 pl-4 pt-2">
                 <h1 className="text-xl font-semibold text-[#3f52ff] dark:text-white leading-[18px]">
@@ -2735,7 +2735,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
                 </div>
 
                 {/* Desktop: Event tabs */}
-                <div className="hidden md:inline-flex items-center bg-muted rounded-lg p-1 relative self-start w-fit">
+                <div className="hidden md:inline-flex items-center bg-[#ECEFF2] rounded-lg p-1 relative self-start w-fit">
                   {(["all", "current", "past"] as const).map((tab) => (
                     <button
                       key={tab}
