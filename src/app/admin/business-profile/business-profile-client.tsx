@@ -2764,6 +2764,9 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
   const [venueName, setVenueName] = useState(editData?.venue_name || "");
   const [fullAddress, setFullAddress] = useState(editData?.full_address || "");
   const [searchPlace, setSearchPlace] = useState("");
+  const [placePredictions, setPlacePredictions] = useState<{ description: string; place_id: string }[]>([]);
+  const [isPlacesOpen, setIsPlacesOpen] = useState(false);
+  const placesBoxRef = useRef<HTMLDivElement | null>(null);
   const [chapterName, setChapterName] = useState(editData?.name || "");
   const [chapterCode, setChapterCode] = useState(editData?.code || "");
   const [city, setCity] = useState(editData?.city || "");
@@ -2793,6 +2796,59 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
   useEffect(() => {
     setTeamMembers(editData?.team_members || []);
   }, [editData?.id, editData?.team_members]);
+
+  useEffect(() => {
+    function onDocMouseDown(e: MouseEvent) {
+      if (placesBoxRef.current && !placesBoxRef.current.contains(e.target as Node)) {
+        setIsPlacesOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onDocMouseDown);
+    return () => document.removeEventListener("mousedown", onDocMouseDown);
+  }, []);
+
+  useEffect(() => {
+    const q = searchPlace.trim();
+    if (q.length < 3) {
+      setPlacePredictions([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        const preds = Array.isArray(data?.predictions) ? data.predictions : [];
+        setPlacePredictions(
+          preds
+            .map((p: any) => ({ description: p?.description, place_id: p?.place_id }))
+            .filter((p: any) => typeof p.description === "string" && typeof p.place_id === "string")
+        );
+      } catch {
+        setPlacePredictions([]);
+      }
+    }, 250);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchPlace]);
+
+  const selectPlace = async (placeId: string, description: string) => {
+    setSearchPlace(description);
+    setIsPlacesOpen(false);
+
+    try {
+      const res = await fetch(`/api/places/details?place_id=${encodeURIComponent(placeId)}`);
+      const data = await res.json();
+      const result = data?.result;
+      const formatted = result?.formatted_address;
+
+      if (typeof formatted === "string" && formatted.trim()) {
+        setFullAddress(formatted);
+      }
+    } catch {
+      // Non-fatal; keep selection
+    }
+  };
 
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [isDraggingCover, setIsDraggingCover] = useState(false);
@@ -3171,22 +3227,42 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                   <label className="text-sm font-semibold text-foreground">
                     Search on map
                   </label>
-                  <input
-                    type="text"
-                    value={searchPlace}
-                    onChange={(e) => setSearchPlace(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && searchPlace) {
-                        toastQueue.add({
-                          title: "Location Found",
-                          description: `Mapped location to ${searchPlace}`,
-                          variant: "success",
-                        }, { timeout: 3000 });
-                      }
-                    }}
-                    placeholder="Search Places (eg. Central Park, NY)"
-                    className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
-                  />
+                  <div className="relative" ref={placesBoxRef}>
+                    <input
+                      type="text"
+                      value={searchPlace}
+                      onChange={(e) => {
+                        setSearchPlace(e.target.value);
+                        setIsPlacesOpen(true);
+                      }}
+                      onFocus={() => setIsPlacesOpen(true)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && searchPlace) {
+                          toastQueue.add({
+                            title: "Location Found",
+                            description: `Mapped location to ${searchPlace}`,
+                            variant: "success",
+                          }, { timeout: 3000 });
+                        }
+                      }}
+                      placeholder="Search Places (eg. Central Park, NY)"
+                      className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                    />
+                    {isPlacesOpen && placePredictions.length > 0 && (
+                      <div className="absolute z-50 mt-1 w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden">
+                        {placePredictions.slice(0, 6).map((p) => (
+                          <button
+                            key={p.place_id}
+                            type="button"
+                            onClick={() => selectPlace(p.place_id, p.description)}
+                            className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted/70 transition-colors"
+                          >
+                            {p.description}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -3358,10 +3434,12 @@ function ViewChapterPanel({
   chapter,
   onClose,
   onNavigate,
+  onEdit,
 }: {
   chapter: ViewChapterData;
   onClose: () => void;
   onNavigate?: (direction: "prev" | "next") => void;
+  onEdit?: () => void;
 }) {
   const [notifications, setNotifications] = useState(
     chapter.notifications || {
@@ -3385,16 +3463,33 @@ function ViewChapterPanel({
     return match ? match[0] : "0";
   })();
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
 
   return (
-    <div className="fixed inset-y-0 right-0 z-[100] flex justify-end pointer-events-none">
+    <div className="fixed inset-0 z-[100] flex justify-end">
+      <button
+        type="button"
+        aria-label="Close chapter drawer"
+        className="absolute inset-0 bg-black/20"
+        onClick={onClose}
+      />
       {/* Drawer */}
       <motion.div
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-l-[24px] w-[562px] h-full overflow-y-auto shadow-xl flex flex-col gap-6 py-4 pointer-events-auto"
+        className="relative z-[101] bg-white dark:bg-[#1a1f2e] rounded-l-[24px] w-[562px] h-full overflow-y-auto shadow-xl flex flex-col gap-6 py-4 pointer-events-auto"
       >
         {/* Top Navigation */}
         <div className="flex items-center justify-between px-4">
@@ -3442,7 +3537,10 @@ function ViewChapterPanel({
                 {chapter.city}{chapter.city && chapter.country ? ", " : ""}{chapter.country}
               </span>
             </div>
-            <button className="px-3 py-1.5 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors shrink-0">
+            <button
+              onClick={onEdit}
+              className="px-3 py-1.5 bg-[#3f52ff] text-white text-xs font-medium rounded-lg hover:bg-[#3545e0] transition-colors shrink-0"
+            >
               Edit
             </button>
           </div>
@@ -3888,6 +3986,28 @@ function ChaptersContent() {
     handleRowClick(nextChapter);
   };
 
+  const openEditChapter = (chapter: ChapterRow | ViewChapterData) => {
+    setEditChapterData({
+      id: chapter.id,
+      name: chapter.name,
+      code: chapter.code,
+      city: chapter.city,
+      country: chapter.country,
+      cover_image: (
+        "cover_image" in chapter
+          ? chapter.cover_image
+          : ("coverImage" in chapter ? chapter.coverImage : undefined)
+      ) ?? undefined,
+      venue_name: chapter.venue_name,
+      full_address: chapter.full_address,
+      sort_order: chapter.sort_order,
+      notifications: chapter.notifications,
+      team_members: getChapterTeamMembers(chapter),
+    });
+    setViewChapter(null);
+    setShowCreateForm(true);
+  };
+
   return (
     <>
       <div className="bg-[#ECEFF2] border border-[#D5DDE2] dark:bg-muted dark:border-border rounded-lg pt-4 pb-2 px-2 flex flex-col gap-4">
@@ -4143,22 +4263,7 @@ function ChaptersContent() {
                       <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
                         <ChapterActionMenu
                           onView={() => handleRowClick(chapter)}
-                          onEdit={() => {
-                            setEditChapterData({
-                              id: chapter.id,
-                              name: chapter.name,
-                              code: chapter.code,
-                              city: chapter.city,
-                              country: chapter.country,
-                              cover_image: chapter.cover_image,
-                              venue_name: chapter.venue_name,
-                              full_address: chapter.full_address,
-                              sort_order: chapter.sort_order,
-                              notifications: chapter.notifications,
-                              team_members: getChapterTeamMembers(chapter),
-                            });
-                            setShowCreateForm(true);
-                          }}
+                          onEdit={() => openEditChapter(chapter)}
                           onDelete={() => {
                             setDeleteChapter({
                               id: chapter.id,
@@ -4183,6 +4288,7 @@ function ChaptersContent() {
             chapter={viewChapter}
             onClose={() => setViewChapter(null)}
             onNavigate={handleNavigate}
+            onEdit={() => openEditChapter(viewChapter)}
           />
         )}
       </AnimatePresence>
