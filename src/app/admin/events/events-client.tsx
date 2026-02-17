@@ -3483,12 +3483,17 @@ function dbEventToEventItem(dbEvent: any): EventItem {
       : null;
 
   const matchDetails = parsedMatchDetails || parsedDescription?.match_details || null;
-  const descriptionText =
+  const descriptionTextFromParsed =
     parsedDescription && typeof parsedDescription.text === "string"
       ? parsedDescription.text
-      : typeof dbEvent.description === "string"
-        ? dbEvent.description
-        : "";
+      : "";
+  const descriptionTextFromMatchDetails =
+    matchDetails && typeof matchDetails.description === "string"
+      ? matchDetails.description
+      : "";
+  const descriptionText = descriptionTextFromParsed
+    || descriptionTextFromMatchDetails
+    || (typeof dbEvent.description === "string" ? dbEvent.description : "");
 
   const eventDate = dbEvent.event_date ? new Date(dbEvent.event_date) : null;
   const dateGroup = eventDate
@@ -3767,6 +3772,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
           league: savedEvent.league || "",
           homeTeam: savedEvent.homeTeam || "",
           awayTeam: savedEvent.awayTeam || "",
+          description: savedEvent.description || "",
           enableLineUpAnnouncement: Boolean(savedEvent.enableLineUpAnnouncement),
           lineUpAnnouncementTime: savedEvent.lineUpAnnouncementTime || "",
           homeTeamLineup: savedEvent.homeTeamLineup || "",
@@ -3850,6 +3856,10 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
       // Determine capacity
       const maxSignups = formData.capacity === "Unlimited" ? 9999 : parseInt(formData.capacity) || 300;
 
+      const resolvedDescription = formData.eventCategory === "match"
+        ? (formData.matchDescription ?? formData.description ?? "")
+        : (formData.description ?? "");
+
       const eventData = {
         title: formData.title,
         cover_image: coverImageUrl,
@@ -3860,12 +3870,13 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         location: formData.location,
         signups: 0,
         max_signups: maxSignups,
-        description: formData.description,
+        description: resolvedDescription,
         // Match-specific fields stored as JSON in description or separate fields
         match_details: formData.eventCategory === "match" ? {
           league: formData.league,
           homeTeam: formData.homeTeam,
           awayTeam: formData.awayTeam,
+          description: resolvedDescription,
           enableLineUpAnnouncement: formData.enableLineUpAnnouncement,
           lineUpAnnouncementTime: formData.lineUpAnnouncementTime,
           homeTeamLineup: formData.homeTeamLineup,

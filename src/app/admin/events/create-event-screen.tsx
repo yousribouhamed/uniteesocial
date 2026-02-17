@@ -70,6 +70,7 @@ export interface EventFormData {
   awayTeamLineup?: string;
   livestreamUrl?: string;
   stadiumVenueName?: string;
+  matchDescription?: string;
 }
 
 export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateEventScreenProps) {
@@ -528,6 +529,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       ? `${homeTeam} Vs ${awayTeam}`
       : eventTitle;
 
+    const resolvedDescription = isMatchEvent ? matchDescription : eventDescription;
+
     onSave({
       title: finalTitle,
       coverImage,
@@ -543,7 +546,8 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       geoFenceRadius,
       locationMasking: isMatchEvent ? matchLocationMasking : locationMasking,
       locationMaskName,
-      description: isMatchEvent ? matchDescription : eventDescription,
+      description: resolvedDescription,
+      matchDescription: isMatchEvent ? matchDescription : undefined,
       chapter,
       ticketGoLive,
       capacity,
