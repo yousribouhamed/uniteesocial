@@ -2756,6 +2756,7 @@ interface EditChapterData {
   full_address?: string;
   sort_order?: number;
   notifications?: any;
+  team_members?: TeamMember[];
 }
 
 function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss: () => void; onChapterSaved?: () => void; editData?: EditChapterData | null }) {
@@ -2786,7 +2787,12 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
   const toggleNotification = (key: keyof typeof notifications) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(
+    editData?.team_members || []
+  );
+  useEffect(() => {
+    setTeamMembers(editData?.team_members || []);
+  }, [editData?.id, editData?.team_members]);
 
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [isDraggingCover, setIsDraggingCover] = useState(false);
@@ -2913,6 +2919,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
         sort_order: sortOrder === "" ? undefined : sortOrder,
         notifications,
         team: teamMembers.length,
+        team_members: teamMembers,
       };
 
       let res: Response;
@@ -3344,6 +3351,7 @@ interface ViewChapterData {
     autoNotifyAnnouncements: boolean;
   };
   created_at?: string;
+  team_members?: TeamMember[];
 }
 
 function ViewChapterPanel({
@@ -3512,7 +3520,29 @@ function ViewChapterPanel({
           <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Team Members
           </span>
-          {chapter.team > 0 ? (
+          {(chapter.team_members || []).length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {(chapter.team_members || []).map((member) => (
+                <div key={member.id} className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-[9px] overflow-hidden bg-[#d8e6ff] border border-[#8faeff] flex items-center justify-center shrink-0">
+                    {member.avatarUrl ? (
+                      <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex flex-col">
+                    <span className="text-[16px] font-semibold text-[#22292f] leading-[18px] truncate" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+                      {member.name}
+                    </span>
+                    <span className="text-[14px] text-[#668091] leading-[18px] truncate" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+                      {member.email}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : chapter.team > 0 ? (
             <div className="flex items-center gap-2">
               <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-[9px] p-3 flex items-center justify-center">
                 <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
@@ -3665,6 +3695,7 @@ interface ChapterRow {
   full_address?: string;
   sort_order?: number;
   notifications?: any;
+  team_members?: TeamMember[];
   updated_by?: string;
   created_at: string;
   updated_at: string;
@@ -3687,6 +3718,13 @@ function ChaptersContent() {
   const [viewChapter, setViewChapter] = useState<ViewChapterData | null>(null);
 
   const [visibleStates, setVisibleStates] = useState<Record<string, boolean>>({});
+  const getChapterTeamMembers = (chapter: any): TeamMember[] => {
+    if (Array.isArray(chapter?.team_members)) return chapter.team_members;
+    if (Array.isArray(chapter?.notifications?.team_members)) {
+      return chapter.notifications.team_members;
+    }
+    return [];
+  };
 
   // Fetch chapters from API
   const fetchChapters = useCallback(async () => {
@@ -3696,17 +3734,21 @@ function ChaptersContent() {
       const result = await res.json();
       if (result.success && result.data) {
         // Normalize DB field names (some chapters may use chapter_name/chapter_code)
-        const normalized = result.data.map((ch: any) => ({
+        const normalized = result.data.map((ch: any) => {
+          const chapterTeamMembers = getChapterTeamMembers(ch);
+          return {
           ...ch,
           name: ch.chapter_name || ch.name || "",
           code: ch.chapter_code || ch.code || ch.id?.substring(0, 8) || "",
           city: ch.city || "",
           country: ch.country || "",
           events: ch.events || "0 Events",
-          team: ch.team_member_count || ch.team || 0,
+          team: ch.team_member_count || ch.team || chapterTeamMembers.length || 0,
           status: ch.status || "Active",
           visible: ch.visible !== false,
-        }));
+          team_members: chapterTeamMembers,
+          };
+        });
         setChaptersData(normalized);
       }
     } catch (err) {
@@ -3830,6 +3872,7 @@ function ChaptersContent() {
         autoNotifyAnnouncements: true,
       },
       created_at: chapter.created_at,
+      team_members: getChapterTeamMembers(chapter),
     });
   };
 
@@ -4112,6 +4155,7 @@ function ChaptersContent() {
                               full_address: chapter.full_address,
                               sort_order: chapter.sort_order,
                               notifications: chapter.notifications,
+                              team_members: getChapterTeamMembers(chapter),
                             });
                             setShowCreateForm(true);
                           }}
