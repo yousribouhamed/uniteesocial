@@ -59,6 +59,7 @@ interface EventItem {
   id: string;
   title: string;
   coverImage: string;
+  description?: string;
   chapter: string;
   league?: string;
   homeTeam?: string;
@@ -419,7 +420,8 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
     "Lorem ipsum dolor sit amet consectetur. Et at quam phasellus accumsan neque tempus tincidunt tellus nulla. At consectetur sollicitudin at fames. Tristique molestie enim facilisi egestas."
   );
   const [eventDescription, setEventDescription] = useState(
-    "Lorem ipsum dolor sit amet consectetur. Et at quam phasellus accumsan neque tempus tincidunt tellus nulla. At consectetur sollicitudin at fames. Tristique molestie enim facilisi egestas."
+    event?.description ||
+      "Lorem ipsum dolor sit amet consectetur. Et at quam phasellus accumsan neque tempus tincidunt tellus nulla. At consectetur sollicitudin at fames. Tristique molestie enim facilisi egestas."
   );
   const [coverImage, setCoverImage] = useState(event?.coverImage || "");
   const isMatchEvent = event?.eventCategory === "match";
@@ -482,7 +484,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const [livestreamUrl, setLivestreamUrl] = useState(event?.livestreamUrl || "");
   const [stadiumVenueName, setStadiumVenueName] = useState(event?.stadiumVenueName || "");
   const [matchLocationMasking, setMatchLocationMasking] = useState(false);
-  const [matchDescription, setMatchDescription] = useState("");
+  const [matchDescription, setMatchDescription] = useState(event?.description || "");
   const [capacity, setCapacity] = useState(event?.maxSignups ? String(event.maxSignups) : "Unlimited");
   const [ticketGoLive, setTicketGoLive] = useState("Immediately");
   const [ticketsUrl, setTicketsUrl] = useState(event?.ticketsUrl || "");
@@ -1892,6 +1894,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                   id: event?.id || crypto.randomUUID(),
                   title: resolvedTitle,
                   coverImage,
+                  description: isMatchEvent ? matchDescription : eventDescription,
                   chapter,
                   league: isMatchEvent ? league : "",
                   homeTeam: isMatchEvent ? homeTeam : "",
@@ -3480,6 +3483,12 @@ function dbEventToEventItem(dbEvent: any): EventItem {
       : null;
 
   const matchDetails = parsedMatchDetails || parsedDescription?.match_details || null;
+  const descriptionText =
+    parsedDescription && typeof parsedDescription.text === "string"
+      ? parsedDescription.text
+      : typeof dbEvent.description === "string"
+        ? dbEvent.description
+        : "";
 
   const eventDate = dbEvent.event_date ? new Date(dbEvent.event_date) : null;
   const dateGroup = eventDate
@@ -3490,6 +3499,7 @@ function dbEventToEventItem(dbEvent: any): EventItem {
     id: dbEvent.id,
     title: dbEvent.title,
     coverImage: dbEvent.cover_image || "/img/event-cover-1.jpg",
+    description: descriptionText,
     chapter: dbEvent.chapter || "Dubai Chapter",
     league: matchDetails?.league || "",
     homeTeam: matchDetails?.homeTeam || "",
@@ -3745,6 +3755,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
       const eventData = {
         title: savedEvent.title,
         cover_image: coverImageUrl,
+        description: savedEvent.description || "",
         chapter: savedEvent.chapter,
         type: savedEvent.type,
         event_category: savedEvent.eventCategory,
