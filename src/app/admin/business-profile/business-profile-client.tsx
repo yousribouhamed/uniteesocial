@@ -2676,7 +2676,7 @@ function TeamMemberCard({
   return (
     <div className="bg-card border border-border rounded-xl p-2 flex items-center justify-between gap-2 max-w-[564px]">
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        <div className={`hidden md:flex border border-blue-300 dark:border-blue-700/60 rounded-[9px] items-center justify-center w-10 h-10 overflow-hidden shrink-0 ${member.avatarUrl ? "p-0 bg-transparent" : "p-3 bg-blue-100 dark:bg-blue-950/40"}`}>
+        <div className={`hidden md:flex rounded-[9px] items-center justify-center w-10 h-10 overflow-hidden shrink-0 ${member.avatarUrl ? "p-0 bg-transparent" : "p-3 bg-blue-100 dark:bg-blue-950/40"}`}>
           {member.avatarUrl ? (
             <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
           ) : (
