@@ -2856,6 +2856,27 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
     }
   };
 
+  const geocodeAddress = async (address: string) => {
+    try {
+      const res = await fetch(`/api/places/geocode?address=${encodeURIComponent(address)}`);
+      const data = await res.json();
+      const first = Array.isArray(data?.results) ? data.results[0] : null;
+      const formatted = first?.formatted_address;
+      const lat = first?.geometry?.location?.lat;
+      const lng = first?.geometry?.location?.lng;
+
+      if (typeof formatted === "string" && formatted.trim()) {
+        setFullAddress(formatted);
+      }
+      if (typeof lat === "number" && typeof lng === "number") {
+        setVenueLatLng({ lat, lng });
+      }
+      return typeof lat === "number" && typeof lng === "number";
+    } catch {
+      return false;
+    }
+  };
+
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [isDraggingCover, setIsDraggingCover] = useState(false);
 
@@ -3207,30 +3228,6 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
               <div className="flex flex-col gap-4 w-full lg:w-[373px] shrink-0">
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-semibold text-foreground">
-                    Venue Name
-                  </label>
-                  <input
-                    type="text"
-                    value={venueName}
-                    onChange={(e) => setVenueName(e.target.value)}
-                    placeholder="eg. Burj Al-Arab"
-                    className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-foreground">
-                    Full Address
-                  </label>
-                  <input
-                    type="text"
-                    value={fullAddress}
-                    onChange={(e) => setFullAddress(e.target.value)}
-                    placeholder="Enter the vanue full address"
-                    className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-foreground">
                     Search on map
                   </label>
                   <div className="relative" ref={placesBoxRef}>
@@ -3244,11 +3241,21 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                       onFocus={() => setIsPlacesOpen(true)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && searchPlace) {
-                          toastQueue.add({
-                            title: "Location Found",
-                            description: `Mapped location to ${searchPlace}`,
-                            variant: "success",
-                          }, { timeout: 3000 });
+                          if (placePredictions.length > 0) {
+                            const first = placePredictions[0];
+                            selectPlace(first.place_id, first.description);
+                            return;
+                          }
+
+                          geocodeAddress(searchPlace).then((ok) => {
+                            toastQueue.add({
+                              title: ok ? "Location Found" : "Location Not Found",
+                              description: ok
+                                ? `Mapped location to ${searchPlace}`
+                                : "Try selecting a suggestion from the list.",
+                              variant: ok ? "success" : "error",
+                            }, { timeout: 3000 });
+                          });
                         }
                       }}
                       placeholder="Search Places (eg. Central Park, NY)"
@@ -3270,10 +3277,34 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                     )}
                   </div>
                 </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-semibold text-foreground">
+                    Full Address
+                  </label>
+                  <input
+                    type="text"
+                    value={fullAddress}
+                    onChange={(e) => setFullAddress(e.target.value)}
+                    placeholder="Enter the vanue full address"
+                    className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-semibold text-foreground">
+                    Venue Name
+                  </label>
+                  <input
+                    type="text"
+                    value={venueName}
+                    onChange={(e) => setVenueName(e.target.value)}
+                    placeholder="eg. Burj Al-Arab"
+                    className="h-9 px-3 text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg outline-none focus:border-[#3f52ff] transition-colors"
+                  />
+                </div>
               </div>
 
               {/* Right: Map Preview */}
-              <div className="flex-1 min-h-[215px] bg-muted rounded-xl overflow-hidden flex items-center justify-center">
+              <div className="flex-1 h-[215px] bg-muted rounded-xl overflow-hidden flex items-center justify-center">
                 {venueLatLng ? (
                   <img
                     src={`/api/places/static-map?lat=${venueLatLng.lat}&lng=${venueLatLng.lng}`}
