@@ -36,6 +36,11 @@ import { TIMEZONES } from "@/data/timezones";
 const DEFAULT_TEAMS = ["Al-Hilal", "Etihad Jeddah", "Al-Nassr"];
 const MAX_UPLOAD_IMAGE_SIZE = 10 * 1024 * 1024;
 
+interface PlacePrediction {
+  description: string;
+  place_id: string;
+}
+
 interface CreateEventScreenProps {
   onClose: () => void;
   onSave: (eventData: EventFormData) => void;
@@ -83,6 +88,11 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [endTime, setEndTime] = useState("02:00");
   const [locationType, setLocationType] = useState<"onsite" | "virtual">("onsite");
   const [locationInput, setLocationInput] = useState("");
+  const [locationPlaceId, setLocationPlaceId] = useState<string | null>(null);
+  const [locationLatLng, setLocationLatLng] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationPredictions, setLocationPredictions] = useState<PlacePrediction[]>([]);
+  const [isLocationPlacesOpen, setIsLocationPlacesOpen] = useState(false);
+  const locationPlacesRef = useRef<HTMLDivElement>(null);
   const [geoFenceRadius, setGeoFenceRadius] = useState(650);
   const [locationMasking, setLocationMasking] = useState(false);
   const [locationMaskName, setLocationMaskName] = useState("");
@@ -125,6 +135,11 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [matchDescription, setMatchDescription] = useState("");
   const [ticketsUrl, setTicketsUrl] = useState("");
   const [stadiumVenueName, setStadiumVenueName] = useState("");
+  const [stadiumPlaceId, setStadiumPlaceId] = useState<string | null>(null);
+  const [stadiumLatLng, setStadiumLatLng] = useState<{ lat: number; lng: number } | null>(null);
+  const [stadiumPredictions, setStadiumPredictions] = useState<PlacePrediction[]>([]);
+  const [isStadiumPlacesOpen, setIsStadiumPlacesOpen] = useState(false);
+  const stadiumPlacesRef = useRef<HTMLDivElement>(null);
   const [matchLocationMasking, setMatchLocationMasking] = useState(false);
   const [timezone, setTimezone] = useState(TIMEZONES[13] || "UTC+01:00 — Paris / Berlin / Rome / Madrid");
   const [timezoneQuery, setTimezoneQuery] = useState("");
@@ -240,6 +255,148 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
   // Custom leagues list
   const [customLeagues, setCustomLeagues] = useState<string[]>([]);
+
+  useEffect(() => {
+    function onDocMouseDown(e: MouseEvent) {
+      const target = e.target as Node;
+      if (locationPlacesRef.current && !locationPlacesRef.current.contains(target)) {
+        setIsLocationPlacesOpen(false);
+      }
+      if (stadiumPlacesRef.current && !stadiumPlacesRef.current.contains(target)) {
+        setIsStadiumPlacesOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onDocMouseDown);
+    return () => document.removeEventListener("mousedown", onDocMouseDown);
+  }, []);
+
+  useEffect(() => {
+    const q = locationInput.trim();
+    if (locationType !== "onsite" || q.length < 3) {
+      setLocationPredictions([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        const preds = Array.isArray(data?.predictions) ? data.predictions : [];
+        setLocationPredictions(
+          preds
+            .map((p: any) => ({ description: p?.description, place_id: p?.place_id }))
+            .filter((p: any) => typeof p.description === "string" && typeof p.place_id === "string")
+        );
+      } catch {
+        setLocationPredictions([]);
+      }
+    }, 250);
+
+    return () => clearTimeout(timeoutId);
+  }, [locationInput, locationType]);
+
+  useEffect(() => {
+    const q = stadiumVenueName.trim();
+    if (matchLocationType !== "onsite" || q.length < 3) {
+      setStadiumPredictions([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        const preds = Array.isArray(data?.predictions) ? data.predictions : [];
+        setStadiumPredictions(
+          preds
+            .map((p: any) => ({ description: p?.description, place_id: p?.place_id }))
+            .filter((p: any) => typeof p.description === "string" && typeof p.place_id === "string")
+        );
+      } catch {
+        setStadiumPredictions([]);
+      }
+    }, 250);
+
+    return () => clearTimeout(timeoutId);
+  }, [stadiumVenueName, matchLocationType]);
+
+  const selectLocationPlace = async (placeId: string, description: string) => {
+    setLocationPlaceId(placeId);
+    setLocationInput(description);
+    setIsLocationPlacesOpen(false);
+
+    try {
+      const res = await fetch(`/api/places/details?place_id=${encodeURIComponent(placeId)}`);
+      const data = await res.json();
+      const result = data?.result;
+      const formatted = result?.formatted_address;
+      const lat = result?.geometry?.location?.lat;
+      const lng = result?.geometry?.location?.lng;
+
+      if (typeof formatted === "string" && formatted.trim()) {
+        setLocationInput(formatted);
+      }
+      if (typeof lat === "number" && typeof lng === "number") {
+        setLocationLatLng({ lat, lng });
+      }
+    } catch {
+      // keep selected description
+    }
+  };
+
+  const selectStadiumPlace = async (placeId: string, description: string) => {
+    setStadiumPlaceId(placeId);
+    setStadiumVenueName(description);
+    setIsStadiumPlacesOpen(false);
+
+    try {
+      const res = await fetch(`/api/places/details?place_id=${encodeURIComponent(placeId)}`);
+      const data = await res.json();
+      const result = data?.result;
+      const formatted = result?.formatted_address;
+      const lat = result?.geometry?.location?.lat;
+      const lng = result?.geometry?.location?.lng;
+
+      if (typeof formatted === "string" && formatted.trim()) {
+        setStadiumVenueName(formatted);
+      }
+      if (typeof lat === "number" && typeof lng === "number") {
+        setStadiumLatLng({ lat, lng });
+      }
+    } catch {
+      // keep selected description
+    }
+  };
+
+  useEffect(() => {
+    if (!locationPlaceId && locationInput.trim().length < 3) {
+      setLocationLatLng(null);
+      return;
+    }
+    if (locationPlaceId || locationInput.trim().length < 3) return;
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/places/geocode?address=${encodeURIComponent(locationInput.trim())}`);
+        const data = await res.json();
+        const first = Array.isArray(data?.results) ? data.results[0] : null;
+        const lat = first?.geometry?.location?.lat;
+        const lng = first?.geometry?.location?.lng;
+        if (typeof lat === "number" && typeof lng === "number") {
+          setLocationLatLng({ lat, lng });
+        }
+      } catch {
+        // non-fatal
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [locationInput, locationPlaceId]);
+
+  const mapLatLng = locationLatLng || (matchLocationType === "onsite" ? stadiumLatLng : null);
+  const mapPreviewSrc = mapLatLng
+    ? `/api/places/static-map?lat=${encodeURIComponent(String(mapLatLng.lat))}&lng=${encodeURIComponent(String(mapLatLng.lng))}`
+    : null;
 
   const handleLeagueLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1202,7 +1359,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     </span>
                     <div className="flex flex-col gap-3">
                       {/* Stadium/Venue Input */}
-                      <div className="relative">
+                      <div className="relative" ref={stadiumPlacesRef}>
                         <div className={`absolute ${isArabic ? "right-3" : "left-3"} top-1/2 -translate-y-1/2`}>
                           <MapPin className="w-4 h-4 text-muted-foreground" />
                         </div>
@@ -1210,9 +1367,30 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                           type="text"
                           placeholder={t("Enter stadium/venue name", "أدخل اسم الملعب/المكان", "Entrez le nom du stade/lieu")}
                           value={stadiumVenueName}
-                          onChange={(e) => setStadiumVenueName(e.target.value)}
+                          onChange={(e) => {
+                            setStadiumPlaceId(null);
+                            setStadiumVenueName(e.target.value);
+                            setIsStadiumPlacesOpen(true);
+                          }}
+                          onFocus={() => {
+                            if (stadiumPredictions.length > 0) setIsStadiumPlacesOpen(true);
+                          }}
                           className={`w-full h-9 ${isArabic ? "pr-10 pl-3 text-right" : "pl-10 pr-3"} border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff]`}
                         />
+                        {isStadiumPlacesOpen && stadiumPredictions.length > 0 && (
+                          <div className="absolute z-30 mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-52 overflow-auto">
+                            {stadiumPredictions.map((p) => (
+                              <button
+                                key={p.place_id}
+                                type="button"
+                                onClick={() => selectStadiumPlace(p.place_id, p.description)}
+                                className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted/70 transition-colors"
+                              >
+                                {p.description}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       {/* Location Masking Toggle */}
@@ -1696,13 +1874,36 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     <>
                       {/* Location Input */}
                       <div className="flex flex-col gap-1">
-                        <input
-                          type="text"
-                          placeholder={t("Enter the location", "أدخل الموقع", "Entrez le lieu")}
-                          value={locationInput}
-                          onChange={(e) => setLocationInput(e.target.value)}
-                          className={`h-9 px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right" : ""}`}
-                        />
+                        <div className="relative" ref={locationPlacesRef}>
+                          <input
+                            type="text"
+                            placeholder={t("Enter the location", "أدخل الموقع", "Entrez le lieu")}
+                            value={locationInput}
+                            onChange={(e) => {
+                              setLocationPlaceId(null);
+                              setLocationInput(e.target.value);
+                              setIsLocationPlacesOpen(true);
+                            }}
+                            onFocus={() => {
+                              if (locationPredictions.length > 0) setIsLocationPlacesOpen(true);
+                            }}
+                            className={`h-9 w-full px-3 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#3f52ff] dark:focus:border-[#8faeff] ${isArabic ? "text-right" : ""}`}
+                          />
+                          {isLocationPlacesOpen && locationPredictions.length > 0 && (
+                            <div className="absolute z-30 mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-52 overflow-auto">
+                              {locationPredictions.map((p) => (
+                                <button
+                                  key={p.place_id}
+                                  type="button"
+                                  onClick={() => selectLocationPlace(p.place_id, p.description)}
+                                  className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted/70 transition-colors"
+                                >
+                                  {p.description}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <div className="w-3 h-3 border border-border rounded-full" />
                           <span>
@@ -1717,26 +1918,19 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
                       {/* Map Placeholder */}
                       <div className="relative w-full h-[120px] rounded-xl overflow-hidden bg-muted">
-                        <Image
-                          src="/img/map-placeholder.jpg"
-                          alt="Map"
-                          fill
-                          className="object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                        {/* Map Pin Icon Overlay */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full">
-                          <div className="relative">
-                            <div className="w-8 h-8 bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full flex items-center justify-center">
-                              <div className="w-3 h-3 bg-card rounded-full" />
-                            </div>
-                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-transparent border-t-[#3f52ff]" />
+                        {mapPreviewSrc ? (
+                          <Image
+                            src={mapPreviewSrc}
+                            alt="Google map preview"
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
+                            {t("Search a location to preview map", "ابحث عن موقع لمعاينة الخريطة", "Recherchez un lieu pour voir la carte")}
                           </div>
-                        </div>
-                        {/* Radius Circle */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-[#3f52ff] rounded-full bg-[#3f52ff] dark:bg-[#3f52ff]/10" />
+                        )}
                       </div>
 
                       {/* Geo-Fence Radius */}

@@ -3230,7 +3230,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                   <label className="text-sm font-semibold text-foreground">
                     Search on map
                   </label>
-                  <div className="relative" ref={placesBoxRef}>
+                  <div className="relative w-full" ref={placesBoxRef}>
                     <input
                       type="text"
                       value={searchPlace}
@@ -3507,6 +3507,14 @@ function ViewChapterPanel({
     const match = chapter.events.match(/\d+/);
     return match ? match[0] : "0";
   })();
+  const mapQuery = (
+    chapter.full_address ||
+    chapter.venue_name ||
+    `${chapter.city || ""} ${chapter.country || ""}`.trim()
+  ).trim();
+  const mapUrl = mapQuery
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`
+    : "https://www.google.com/maps";
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -3625,10 +3633,15 @@ function ViewChapterPanel({
             <span className="text-[20px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               Venue Information
             </span>
-            <button className="flex items-center gap-1.5 px-3 py-1.5 bg-[#22292f] text-white text-xs font-medium rounded-lg hover:bg-[#22292f]/90 transition-colors">
+            <a
+              href={mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#22292f] text-white text-xs font-medium rounded-lg hover:bg-[#22292f]/90 transition-colors"
+            >
               View on maps
               <ExternalLink className="w-3 h-3" />
-            </button>
+            </a>
           </div>
           <div className="flex gap-12">
             <div className="flex flex-col gap-1 shrink-0">
@@ -3667,7 +3680,7 @@ function ViewChapterPanel({
             <div className="flex flex-col gap-2">
               {(chapter.team_members || []).map((member) => (
                 <div key={member.id} className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-[9px] overflow-hidden bg-[#d8e6ff] border border-[#8faeff] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-[9px] overflow-hidden bg-[#d8e6ff] flex items-center justify-center shrink-0">
                     {member.avatarUrl ? (
                       <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
                     ) : (
@@ -3687,7 +3700,7 @@ function ViewChapterPanel({
             </div>
           ) : chapter.team > 0 ? (
             <div className="flex items-center gap-2">
-              <div className="bg-[#d8e6ff] border border-[#8faeff] rounded-[9px] p-3 flex items-center justify-center">
+              <div className="bg-[#d8e6ff] rounded-[9px] p-3 flex items-center justify-center">
                 <CircleUserRound className="w-4 h-4 text-[#3f52ff]" />
               </div>
               <span className="text-[16px] font-semibold text-[#22292f] leading-[18px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
