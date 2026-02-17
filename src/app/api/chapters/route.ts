@@ -194,6 +194,63 @@ async function hydrateChaptersWithTeamMembers(
     });
 }
 
+function normalizeName(value: unknown) {
+    if (typeof value !== "string") return "";
+    let normalized = value.trim().toLowerCase().replace(/\s+/g, " ");
+    while (normalized.endsWith(" chapter")) {
+        normalized = normalized.slice(0, -8).trim();
+    }
+    return normalized;
+}
+
+async function hydrateChaptersWithEventCounts(
+    adminClient: ReturnType<typeof createAdminClient>,
+    chapters: Record<string, unknown>[]
+) {
+    if (chapters.length === 0) return chapters;
+
+    let eventsData: Record<string, unknown>[] = [];
+
+    const eventsWithChapterId = await adminClient
+        .from("events")
+        .select("id, chapter, chapter_id");
+
+    if (eventsWithChapterId.error) {
+        const eventsFallback = await adminClient
+            .from("events")
+            .select("id, chapter");
+        if (!eventsFallback.error) {
+            eventsData = (eventsFallback.data || []) as Record<string, unknown>[];
+        } else {
+            console.error("Fetch events for chapter counts error:", eventsFallback.error);
+            return chapters;
+        }
+    } else {
+        eventsData = (eventsWithChapterId.data || []) as Record<string, unknown>[];
+    }
+
+    return chapters.map((chapter) => {
+        const chapterId = typeof chapter.id === "string" ? chapter.id : String(chapter.id || "");
+        const chapterName = normalizeName(chapter.name);
+
+        const count = eventsData.reduce((sum, event) => {
+            const eventChapterId =
+                typeof event.chapter_id === "string" ? event.chapter_id : String(event.chapter_id || "");
+            const eventChapterName = normalizeName(event.chapter);
+
+            if ((chapterId && eventChapterId === chapterId) || (chapterName && eventChapterName === chapterName)) {
+                return sum + 1;
+            }
+            return sum;
+        }, 0);
+
+        return {
+            ...chapter,
+            events: `${count} Events`,
+        };
+    });
+}
+
 // GET /api/chapters — List all chapters
 export async function GET() {
     try {
@@ -212,11 +269,15 @@ export async function GET() {
             );
         }
 
-        const normalized = await hydrateChaptersWithTeamMembers(
+        const withTeamMembers = await hydrateChaptersWithTeamMembers(
             adminClient,
             (chapters || []) as Record<string, unknown>[]
         );
-        return NextResponse.json({ success: true, data: normalized });
+        const withLiveEventCounts = await hydrateChaptersWithEventCounts(
+            adminClient,
+            withTeamMembers
+        );
+        return NextResponse.json({ success: true, data: withLiveEventCounts });
     } catch (error) {
         console.error("Fetch chapters error:", error);
         return NextResponse.json(

@@ -107,6 +107,51 @@ function toChapterMemberRows(chapterId: string, members: ChapterMemberInput[]) {
     }));
 }
 
+function normalizeName(value: unknown) {
+    if (typeof value !== "string") return "";
+    let normalized = value.trim().toLowerCase().replace(/\s+/g, " ");
+    while (normalized.endsWith(" chapter")) {
+        normalized = normalized.slice(0, -8).trim();
+    }
+    return normalized;
+}
+
+async function resolveChapterEventCount(
+    adminClient: ReturnType<typeof createAdminClient>,
+    chapter: Record<string, unknown>
+) {
+    const chapterId = typeof chapter.id === "string" ? chapter.id : String(chapter.id || "");
+    const chapterName = normalizeName(chapter.name);
+
+    let eventsData: Record<string, unknown>[] = [];
+    const withChapterId = await adminClient
+        .from("events")
+        .select("id, chapter, chapter_id");
+
+    if (withChapterId.error) {
+        const fallback = await adminClient
+            .from("events")
+            .select("id, chapter");
+        if (fallback.error) {
+            console.error("Fetch events for chapter count error:", fallback.error);
+            return null;
+        }
+        eventsData = (fallback.data || []) as Record<string, unknown>[];
+    } else {
+        eventsData = (withChapterId.data || []) as Record<string, unknown>[];
+    }
+
+    return eventsData.reduce((sum, event) => {
+        const eventChapterId =
+            typeof event.chapter_id === "string" ? event.chapter_id : String(event.chapter_id || "");
+        const eventChapterName = normalizeName(event.chapter);
+        if ((chapterId && eventChapterId === chapterId) || (chapterName && eventChapterName === chapterName)) {
+            return sum + 1;
+        }
+        return sum;
+    }, 0);
+}
+
 async function fetchChapterMembersFromTable(
     adminClient: ReturnType<typeof createAdminClient>,
     chapterId: string
@@ -205,10 +250,22 @@ export async function GET(
                 ? undefined
                 : memberResult.members;
 
+        const eventCount = await resolveChapterEventCount(
+            adminClient,
+            chapter as Record<string, unknown>
+        );
+        const chapterWithEventCount =
+            eventCount === null
+                ? chapter
+                : {
+                    ...chapter,
+                    events: `${eventCount} Events`,
+                };
+
         return NextResponse.json({
             success: true,
             data: normalizeChapterTeamMembers(
-                chapter as Record<string, unknown>,
+                chapterWithEventCount as Record<string, unknown>,
                 membersForResponse
             ),
         });
