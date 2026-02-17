@@ -2767,6 +2767,7 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
   const [placePredictions, setPlacePredictions] = useState<{ description: string; place_id: string }[]>([]);
   const [isPlacesOpen, setIsPlacesOpen] = useState(false);
   const placesBoxRef = useRef<HTMLDivElement | null>(null);
+  const [venueLatLng, setVenueLatLng] = useState<{ lat: number; lng: number } | null>(null);
   const [chapterName, setChapterName] = useState(editData?.name || "");
   const [chapterCode, setChapterCode] = useState(editData?.code || "");
   const [city, setCity] = useState(editData?.city || "");
@@ -2841,9 +2842,14 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
       const data = await res.json();
       const result = data?.result;
       const formatted = result?.formatted_address;
+      const lat = result?.geometry?.location?.lat;
+      const lng = result?.geometry?.location?.lng;
 
       if (typeof formatted === "string" && formatted.trim()) {
         setFullAddress(formatted);
+      }
+      if (typeof lat === "number" && typeof lng === "number") {
+        setVenueLatLng({ lat, lng });
       }
     } catch {
       // Non-fatal; keep selection
@@ -3266,12 +3272,20 @@ function CreateChapterForm({ onDismiss, onChapterSaved, editData }: { onDismiss:
                 </div>
               </div>
 
-              {/* Right: Map Placeholder */}
-              <div className="flex-1 min-h-[215px] bg-muted rounded-xl flex items-center justify-center">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                  <MapPin className="w-8 h-8" />
-                  <span className="text-sm">Map preview</span>
-                </div>
+              {/* Right: Map Preview */}
+              <div className="flex-1 min-h-[215px] bg-muted rounded-xl overflow-hidden flex items-center justify-center">
+                {venueLatLng ? (
+                  <img
+                    src={`/api/places/static-map?lat=${venueLatLng.lat}&lng=${venueLatLng.lng}`}
+                    alt="Map preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <MapPin className="w-8 h-8" />
+                    <span className="text-sm">Map preview</span>
+                  </div>
+                )}
               </div>
             </div>
 
