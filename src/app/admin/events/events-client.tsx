@@ -488,6 +488,26 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const [newLeagueVisible, setNewLeagueVisible] = useState(true);
   const leagueLogoInputRef = useRef<HTMLInputElement>(null);
   const [customLeagues, setCustomLeagues] = useState<string[]>([]);
+  const coverImageInputRef = useRef<HTMLInputElement>(null);
+  const handleCoverImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toastQueue.add({
+        title: "Invalid image",
+        description: "Please select a valid image file.",
+        variant: "error",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setCoverImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
   const handleLeagueLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -1738,6 +1758,32 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             </div>
               </>
             )}
+
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
+                Cover Image
+              </span>
+              <div className="bg-card border border-border rounded-lg p-3 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => coverImageInputRef.current?.click()}
+                  className="h-9 px-3 rounded-lg border border-border bg-[#ECEFF2] hover:bg-[#D5DDE2] transition-colors text-sm font-medium text-foreground inline-flex items-center gap-2"
+                >
+                  <Camera className="w-4 h-4" />
+                  {coverImage ? "Replace image" : "Upload image"}
+                </button>
+                <span className="text-sm text-muted-foreground truncate">
+                  {coverImage ? "Cover image ready" : "No image selected"}
+                </span>
+              </div>
+              <input
+                ref={coverImageInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleCoverImageUpload}
+                className="hidden"
+              />
+            </div>
 
             <div className="flex flex-col gap-2">
               <span className="text-sm font-medium text-[#3f52ff] dark:text-white">Description</span>
