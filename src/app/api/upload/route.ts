@@ -10,13 +10,29 @@ const ALLOWED_TYPES = [
   "image/gif",
   "image/webp",
   "image/svg+xml",
+  "image/avif",
+  "image/bmp",
+  "image/tiff",
   "image/heic",
   "image/heif",
   "application/octet-stream", // Some browsers send this for HEIC
 ];
 
 // Allowed extensions (as fallback when MIME type is missing/wrong)
-const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "svg", "heic", "heif"];
+const ALLOWED_EXTENSIONS = [
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "webp",
+  "svg",
+  "avif",
+  "bmp",
+  "tif",
+  "tiff",
+  "heic",
+  "heif",
+];
 const EXTENSION_TO_MIME: Record<string, string> = {
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
@@ -24,6 +40,10 @@ const EXTENSION_TO_MIME: Record<string, string> = {
   gif: "image/gif",
   webp: "image/webp",
   svg: "image/svg+xml",
+  avif: "image/avif",
+  bmp: "image/bmp",
+  tif: "image/tiff",
+  tiff: "image/tiff",
   heic: "image/heic",
   heif: "image/heif",
 };
@@ -175,7 +195,7 @@ export async function POST(request: NextRequest) {
       const effectiveExt = extFromName || mimeExt;
       if (!hasAllowedMime && !ALLOWED_EXTENSIONS.includes(effectiveExt)) {
         return NextResponse.json(
-          { error: `Invalid file type: ${mimeType}. Allowed types: JPG, PNG, GIF, WebP, SVG, HEIC` },
+          { error: `Invalid file type: ${mimeType}. Allowed: JPG, PNG, GIF, WebP, SVG, AVIF, BMP, TIFF, HEIC` },
           { status: 400 }
         );
       }
@@ -241,7 +261,7 @@ export async function POST(request: NextRequest) {
         console.error("Invalid file type:", file.type, "name:", file.name);
         return NextResponse.json(
           {
-            error: `Invalid file type: ${file.type || "unknown"}. Allowed types: JPG, PNG, GIF, WebP, SVG, HEIC`,
+            error: `Invalid file type: ${file.type || "unknown"}. Allowed: JPG, PNG, GIF, WebP, SVG, AVIF, BMP, TIFF, HEIC`,
           },
           { status: 400 }
         );
@@ -278,7 +298,7 @@ export async function POST(request: NextRequest) {
       const normalizedMime = incomingContentType.toLowerCase().split(";")[0].trim() || "application/octet-stream";
       if (!ALLOWED_EXTENSIONS.includes(extFromName) && !ALLOWED_TYPES.includes(normalizedMime)) {
         return NextResponse.json(
-          { error: `Invalid file type: ${normalizedMime}. Allowed types: JPG, PNG, GIF, WebP, SVG, HEIC` },
+          { error: `Invalid file type: ${normalizedMime}. Allowed: JPG, PNG, GIF, WebP, SVG, AVIF, BMP, TIFF, HEIC` },
           { status: 400 }
         );
       }

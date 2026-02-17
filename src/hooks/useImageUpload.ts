@@ -21,12 +21,28 @@ const ALLOWED_TYPES = [
   "image/gif",
   "image/webp",
   "image/svg+xml",
+  "image/avif",
+  "image/bmp",
+  "image/tiff",
   "image/heic",
   "image/heif",
   "application/octet-stream", // Some HEIC files
 ];
 
-const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "svg", "heic", "heif"];
+const ALLOWED_EXTENSIONS = [
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "webp",
+  "svg",
+  "avif",
+  "bmp",
+  "tif",
+  "tiff",
+  "heic",
+  "heif",
+];
 
 function getFileExtension(filename: string): string {
   return filename.split(".").pop()?.toLowerCase() || "";
@@ -84,7 +100,7 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
         if (!isAllowedFileType(file)) {
           const ext = getFileExtension(file.name);
           throw new Error(
-            `Invalid file type: ${file.type || ext}. Allowed: JPG, PNG, GIF, WebP, SVG, HEIC`
+            `Invalid file type: ${file.type || ext}. Allowed: JPG, PNG, GIF, WebP, SVG, AVIF, BMP, TIFF, HEIC`
           );
         }
 

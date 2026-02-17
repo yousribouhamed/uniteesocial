@@ -228,6 +228,7 @@ const guestTableHeaders = [
 ];
 
 const DEFAULT_TEAMS = ["Al-Hilal", "Etihad Jeddah", "Al-Nassr"];
+const MAX_UPLOAD_IMAGE_SIZE = 10 * 1024 * 1024;
 
 function EventPreviewCard({
   coverImage,
@@ -242,6 +243,7 @@ function EventPreviewCard({
   locationInput,
   signups,
   maxSignups,
+  onEditImage,
 }: {
   coverImage: string;
   eventTitle: string;
@@ -255,11 +257,16 @@ function EventPreviewCard({
   locationInput: string;
   signups: number;
   maxSignups: number;
+  onEditImage?: () => void;
 }) {
   return (
     <div className="w-full lg:w-[493px] shrink-0 bg-card border border-border rounded-lg p-3 flex flex-col gap-4 h-fit">
       {/* Cover Image */}
-      <div className="relative w-full h-[264px] rounded-lg overflow-hidden bg-muted">
+      <button
+        type="button"
+        onClick={onEditImage}
+        className={`relative w-full h-[264px] rounded-lg overflow-hidden bg-muted ${onEditImage ? "cursor-pointer group" : "cursor-default"}`}
+      >
         {coverImage ? (
           coverImage.startsWith("data:") ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -280,16 +287,15 @@ function EventPreviewCard({
         ) : (
           <div className="w-full h-full bg-muted" />
         )}
-        {/* Centered User Icon */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[52px] h-[52px] bg-[#3f52ff] dark:bg-[#3f52ff] rounded-full border-[2.889px] border-border flex items-center justify-center">
-          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="14" cy="5" r="3" stroke="white" strokeWidth="1.5" fill="none" />
-            <path d="M9 20V18C9 15.7909 10.7909 14 13 14H15C17.2091 14 19 15.7909 19 18V20" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-            <circle cx="10" cy="8" r="3" stroke="white" strokeWidth="1.5" fill="none" />
-            <path d="M5 20V18C5 15.7909 6.79086 14 9 14H11C13.2091 14 15 15.7909 15 18V20" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          </svg>
-        </div>
-      </div>
+        {onEditImage && (
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center">
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/90 text-foreground text-sm font-medium">
+              <Camera className="w-4 h-4" />
+              Replace image
+            </div>
+          </div>
+        )}
+      </button>
 
       {/* Event Info */}
       <div className="flex flex-col gap-4">
@@ -502,6 +508,15 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
       return;
     }
 
+    if (file.size > MAX_UPLOAD_IMAGE_SIZE) {
+      toastQueue.add({
+        title: "File too large",
+        description: "Image size must be less than 10MB.",
+        variant: "error",
+      });
+      return;
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setCoverImage(reader.result as string);
@@ -547,13 +562,23 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const teamLogoInputRef = useRef<HTMLInputElement>(null);
   const handleTeamLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewTeamLogo(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setTeamCreateError("Please upload a valid image file.");
+      return;
     }
+
+    if (file.size > MAX_UPLOAD_IMAGE_SIZE) {
+      setTeamCreateError("Image size must be less than 10MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewTeamLogo(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   // Guest tab state
@@ -638,22 +663,67 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
     if (!base64Data.startsWith("data:")) return base64Data;
 
     try {
-      const res = await fetch("/api/upload", {
+      const matches = base64Data.match(/^data:([^;]+);base64,(.+)$/);
+      if (!matches) return null;
+
+      const mimeType = matches[1];
+      const base64Content = matches[2];
+      const byteCharacters = atob(base64Content);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const extension = mimeType.split("/")[1] || "png";
+      const file = new File(
+        [new Blob([byteArray], { type: mimeType })],
+        `team-logo-${Date.now()}.${extension}`,
+        { type: mimeType }
+      );
+
+      if (file.size > MAX_UPLOAD_IMAGE_SIZE) {
+        setTeamCreateError("Image size must be less than 10MB.");
+        return null;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "teams");
+
+      let res = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          base64Data,
-          folder: "teams",
-          fileName: `team-logo-${Date.now()}.png`,
-        }),
+        body: formData,
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        console.error("Team logo upload failed:", errorData.error || res.statusText);
-        return null;
+        let errorData: { error?: string } = {};
+        try {
+          errorData = await res.json();
+        } catch {
+          errorData = {};
+        }
+
+        if (errorData.error?.toLowerCase().includes("invalid form data")) {
+          const query = new URLSearchParams({
+            folder: "teams",
+            fileName: file.name,
+          }).toString();
+
+          res = await fetch(`/api/upload?${query}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": file.type || "application/octet-stream",
+              "x-file-name": file.name,
+            },
+            body: file,
+          });
+        }
+
+        if (!res.ok) {
+          const retryErrorData = await res.json().catch(() => ({}));
+          console.error("Team logo upload failed:", retryErrorData.error || res.statusText);
+          return null;
+        }
       }
 
       const data = await res.json();
@@ -989,6 +1059,7 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
               locationInput={previewLocation}
               signups={event?.signups || 0}
               maxSignups={event?.maxSignups || 300}
+              onEditImage={() => coverImageInputRef.current?.click()}
             />
           </div>
 
@@ -1760,32 +1831,6 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
             )}
 
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-[#3f52ff] dark:text-white">
-                Cover Image
-              </span>
-              <div className="bg-card border border-border rounded-lg p-3 flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => coverImageInputRef.current?.click()}
-                  className="h-9 px-3 rounded-lg border border-border bg-[#ECEFF2] hover:bg-[#D5DDE2] transition-colors text-sm font-medium text-foreground inline-flex items-center gap-2"
-                >
-                  <Camera className="w-4 h-4" />
-                  {coverImage ? "Replace image" : "Upload image"}
-                </button>
-                <span className="text-sm text-muted-foreground truncate">
-                  {coverImage ? "Cover image ready" : "No image selected"}
-                </span>
-              </div>
-              <input
-                ref={coverImageInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleCoverImageUpload}
-                className="hidden"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
               <span className="text-sm font-medium text-[#3f52ff] dark:text-white">Description</span>
               <div className="border border-border rounded-lg p-3 flex flex-col gap-2 h-[149px] bg-card">
                 <textarea
@@ -1817,8 +1862,17 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
                 locationInput={previewLocation}
                 signups={event?.signups || 0}
                 maxSignups={event?.maxSignups || 300}
+                onEditImage={() => coverImageInputRef.current?.click()}
               />
             </div>
+
+            <input
+              ref={coverImageInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleCoverImageUpload}
+              className="hidden"
+            />
 
             <button
               disabled={isSaving}

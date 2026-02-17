@@ -29,10 +29,12 @@ import { AriaDatePicker } from "@/components/ui/aria-date-picker";
 import { AriaSlider } from "@/components/ui/aria-slider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
+import { toastQueue } from "@/components/ui/aria-toast";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
 import { TIMEZONES } from "@/data/timezones";
 
 const DEFAULT_TEAMS = ["Al-Hilal", "Etihad Jeddah", "Al-Nassr"];
+const MAX_UPLOAD_IMAGE_SIZE = 10 * 1024 * 1024;
 
 interface CreateEventScreenProps {
   onClose: () => void;
@@ -284,13 +286,23 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
   const handleTeamLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewTeamLogo(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setTeamCreateError("Please upload a valid image file.");
+      return;
     }
+
+    if (file.size > MAX_UPLOAD_IMAGE_SIZE) {
+      setTeamCreateError("Image size must be less than 10MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewTeamLogo(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   useEffect(() => {
@@ -335,22 +347,67 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
     if (!base64Data.startsWith("data:")) return base64Data;
 
     try {
-      const res = await fetch("/api/upload", {
+      const matches = base64Data.match(/^data:([^;]+);base64,(.+)$/);
+      if (!matches) return null;
+
+      const mimeType = matches[1];
+      const base64Content = matches[2];
+      const byteCharacters = atob(base64Content);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const extension = mimeType.split("/")[1] || "png";
+      const file = new File(
+        [new Blob([byteArray], { type: mimeType })],
+        `team-logo-${Date.now()}.${extension}`,
+        { type: mimeType }
+      );
+
+      if (file.size > MAX_UPLOAD_IMAGE_SIZE) {
+        setTeamCreateError("Image size must be less than 10MB.");
+        return null;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "teams");
+
+      let res = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          base64Data,
-          folder: "teams",
-          fileName: `team-logo-${Date.now()}.png`,
-        }),
+        body: formData,
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        console.error("Team logo upload failed:", errorData.error || res.statusText);
-        return null;
+        let errorData: { error?: string } = {};
+        try {
+          errorData = await res.json();
+        } catch {
+          errorData = {};
+        }
+
+        if (errorData.error?.toLowerCase().includes("invalid form data")) {
+          const query = new URLSearchParams({
+            folder: "teams",
+            fileName: file.name,
+          }).toString();
+
+          res = await fetch(`/api/upload?${query}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": file.type || "application/octet-stream",
+              "x-file-name": file.name,
+            },
+            body: file,
+          });
+        }
+
+        if (!res.ok) {
+          const retryErrorData = await res.json().catch(() => ({}));
+          console.error("Team logo upload failed:", retryErrorData.error || res.statusText);
+          return null;
+        }
       }
 
       const data = await res.json();
@@ -430,13 +487,31 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCoverImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toastQueue.add({
+        title: "Invalid image",
+        description: "Please select a valid image file.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
     }
+
+    if (file.size > MAX_UPLOAD_IMAGE_SIZE) {
+      toastQueue.add({
+        title: "File too large",
+        description: "Image size must be less than 10MB.",
+        variant: "error",
+      }, { timeout: 3000 });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setCoverImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const formatDateForDisplay = (date: DateValue | null) => {
