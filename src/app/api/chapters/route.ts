@@ -246,6 +246,7 @@ async function hydrateChaptersWithEventCounts(
 
         return {
             ...chapter,
+            events_count: count,
             events: `${count} Events`,
         };
     });

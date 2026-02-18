@@ -3843,6 +3843,7 @@ interface ChapterRow {
   city: string;
   country: string;
   team: number;
+  events_count?: number;
   events: string;
   visible: boolean;
   status: string;
@@ -3899,6 +3900,10 @@ function ChaptersContent() {
           city: ch.city || "",
           country: ch.country || "",
           events: ch.events || "0 Events",
+          events_count:
+            typeof ch.events_count === "number"
+              ? ch.events_count
+              : parseInt(String(ch.events || "0"), 10) || 0,
           team: ch.team_member_count || ch.team || chapterTeamMembers.length || 0,
           status: ch.status || "Active",
           visible: ch.visible !== false,
@@ -4266,7 +4271,9 @@ function ChaptersContent() {
                       </td>
                       {/* Events */}
                       <td className="px-3 py-3 text-sm text-foreground">
-                        {chapter.events}
+                        {typeof chapter.events_count === "number"
+                          ? chapter.events_count
+                          : parseInt(String(chapter.events || "0"), 10) || 0}
                       </td>
                       {/* Visible Toggle */}
                       <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>

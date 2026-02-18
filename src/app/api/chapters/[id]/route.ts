@@ -259,6 +259,7 @@ export async function GET(
                 ? chapter
                 : {
                     ...chapter,
+                    events_count: eventCount,
                     events: `${eventCount} Events`,
                 };
 
