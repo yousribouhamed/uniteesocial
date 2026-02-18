@@ -116,7 +116,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
     fetchChapters();
   }, []);
   const [eventDescription, setEventDescription] = useState("");
-  const [chapter, setChapter] = useState("Dubai Chapter");
+  const [chapter, setChapter] = useState("Select Chapter");
   const [ticketGoLive, setTicketGoLive] = useState("Custom Date");
   const [capacity, setCapacity] = useState("Unlimited");
   const [coverImage, setCoverImage] = useState<string>("");
@@ -724,6 +724,33 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
     });
   };
   const isMatchEvent = eventCategory === "match";
+  const previewLocationMode = isMatchEvent ? matchLocationType : locationType;
+  const previewLocationLabel = previewLocationMode === "virtual"
+    ? t("Online", "عبر الإنترنت", "En ligne")
+    : t("Onsite", "حضوري", "Sur site");
+  const previewVenuePrimary = isMatchEvent
+    ? (matchLocationType === "onsite" && stadiumVenueName
+      ? stadiumVenueName
+      : matchLocationType === "virtual" && livestreamUrl
+        ? livestreamUrl
+        : t("Venue", "الموقع", "Lieu"))
+    : (locationInput ? locationInput.split(",")[0] : t("Venue", "الموقع", "Lieu"));
+  const previewVenueSecondary = isMatchEvent
+    ? (matchLocationType === "onsite"
+      ? (locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || "Dubai, Dubai" : "Dubai, Dubai")
+      : t("Online", "عبر الإنترنت", "En ligne"))
+    : (locationType === "onsite"
+      ? (locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || "Dubai, Dubai" : "Dubai, Dubai")
+      : t("Online", "عبر الإنترنت", "En ligne"));
+  const previewAddress = isMatchEvent
+    ? (matchLocationType === "onsite" && stadiumVenueName
+      ? stadiumVenueName
+      : matchLocationType === "virtual" && livestreamUrl
+        ? livestreamUrl
+        : (locationInput || "Dubai World Trade Center, DWC"))
+    : (locationType === "onsite"
+      ? (locationInput || "Dubai World Trade Center, DWC")
+      : (virtualMeetingUrl || t("Online", "عبر الإنترنت", "En ligne")));
 
   return (
     <div
@@ -807,9 +834,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       {chapter}
                     </span>
                     <span className="inline-flex items-center h-[22px] px-2 bg-[#3f52ff] dark:bg-[#3f52ff] text-white text-xs font-medium rounded">
-                      {locationType === "virtual"
-                        ? t("Online", "عبر الإنترنت", "En ligne")
-                        : t("Onsite", "حضوري", "Sur site")}
+                      {previewLocationLabel}
                     </span>
                   </>
                 )}
@@ -866,18 +891,12 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                 <div className="flex flex-col gap-px">
                   <div className="flex items-center gap-1">
                     <span className="text-base font-medium text-foreground leading-[24px]">
-                      {matchLocationType === "onsite" && stadiumVenueName
-                        ? stadiumVenueName
-                        : matchLocationType === "virtual" && livestreamUrl
-                          ? livestreamUrl
-                          : t("Venue", "الموقع", "Lieu")}
+                      {previewVenuePrimary}
                     </span>
                     <ArrowUpRight className="w-4 h-4 text-foreground opacity-50" />
                   </div>
                   <span className="text-sm font-normal text-muted-foreground leading-[21px]">
-                    {matchLocationType === "onsite"
-                      ? (locationInput ? locationInput.split(",").slice(1, 3).join(",").trim() || "Dubai, Dubai" : "Dubai, Dubai")
-                      : (matchLocationType === "virtual" ? t("Online", "عبر الإنترنت", "En ligne") : "Dubai, Dubai")}
+                    {previewVenueSecondary}
                   </span>
                 </div>
               </div>
@@ -888,11 +907,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
                 <span className="text-sm font-normal text-foreground leading-[18px]">
-                  {matchLocationType === "onsite" && stadiumVenueName
-                    ? stadiumVenueName
-                    : matchLocationType === "virtual" && livestreamUrl
-                      ? livestreamUrl
-                      : (locationInput || "Dubai World Trade Center, DWC")}
+                  {previewAddress}
                 </span>
               </div>
               <div className="flex items-center gap-2">
