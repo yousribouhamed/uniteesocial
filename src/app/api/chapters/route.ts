@@ -195,12 +195,9 @@ async function hydrateChaptersWithTeamMembers(
 }
 
 function normalizeName(value: unknown) {
-    if (typeof value !== "string") return "";
-    let normalized = value.trim().toLowerCase().replace(/\s+/g, " ");
-    while (normalized.endsWith(" chapter")) {
-        normalized = normalized.slice(0, -8).trim();
-    }
-    return normalized;
+    return typeof value === "string"
+        ? value.trim().toLowerCase().replace(/\s+/g, " ")
+        : "";
 }
 
 async function hydrateChaptersWithEventCounts(
