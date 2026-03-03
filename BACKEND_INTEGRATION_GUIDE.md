@@ -35,8 +35,12 @@ This guide explains how the Unitee Portal backend is set up to work with the Uni
 
 ### Authentication (App-Specific)
 - **POST** `/api/app/auth/login` - Login with email/password
+- **POST** `/api/app/auth/magic-link` - Send email magic link (tenant feature-gated)
 - **POST** `/api/app/auth/register` - Register new app user
 - **POST** `/api/app/auth/refresh` - Refresh auth token
+
+### App Config
+- **GET** `/api/app-config` - Branding + tenant feature flags (`features.magicLinkLoginEnabled`)
 
 ### Announcements
 - **GET** `/api/announcements` - List all announcements (paginated)
@@ -89,12 +93,25 @@ The mobile app uses **app-specific authentication** that is completely separate 
    App stores tokens locally
    ```
 
-2. **Token Storage:**
+2. **Magic Link Flow (Optional Add-on):**
+   ```
+   App calls GET /api/app-config
+         ↓
+   If features.magicLinkLoginEnabled === true
+         ↓
+   Show "Continue with Magic Link" button
+         ↓
+   POST /api/app/auth/magic-link { email, redirectTo?, tenantDomain? }
+         ↓
+   User receives email and signs in from link
+   ```
+
+3. **Token Storage:**
    - Access token: Short-lived (expires in ~1 hour)
    - Refresh token: Long-lived (expires in ~7 days)
    - Stored securely in app's secure storage
 
-3. **Token Refresh:**
+4. **Token Refresh:**
    ```
    When access token expires
          ↓
@@ -103,7 +120,7 @@ The mobile app uses **app-specific authentication** that is completely separate 
    Backend validates and returns new access_token
    ```
 
-4. **Authorization:**
+5. **Authorization:**
    All API requests include:
    ```
    Authorization: Bearer <access_token>

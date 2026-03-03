@@ -31,8 +31,10 @@ Created comprehensive database migration: `20250212_announcements_events.sql`
 #### **App Authentication** (Separate from Portal)
 ```
 POST /api/app/auth/login         - User login
+POST /api/app/auth/magic-link    - Send login magic link (tenant add-on)
 POST /api/app/auth/register      - New user registration
 POST /api/app/auth/refresh       - Refresh auth token
+GET  /api/app-config             - App branding + feature flags
 ```
 
 #### **Announcements**
@@ -142,6 +144,7 @@ src/app/api/
 │   └── [id]/route.ts      (PUT, DELETE)
 └── app/auth/
     ├── login/route.ts     (POST)
+    ├── magic-link/route.ts (POST)
     ├── register/route.ts  (POST)
     └── refresh/route.ts   (POST)
 ```
@@ -232,6 +235,8 @@ COMPLETE_SETUP_GUIDE.md  (Step-by-step integration guide)
 ### Before Deployment
 - [ ] Run database migration: `supabase db push`
 - [ ] Test login endpoint: `POST /api/app/auth/login`
+- [ ] Test app config endpoint: `GET /api/app-config`
+- [ ] If enabled, test magic link endpoint: `POST /api/app/auth/magic-link`
 - [ ] Test announcements: `GET /api/announcements`
 - [ ] Test creating announcement: `POST /api/announcements` (with auth)
 - [ ] Test events and RSVP: `POST /api/events/:id/rsvp`

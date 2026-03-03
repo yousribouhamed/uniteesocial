@@ -2181,6 +2181,7 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
     tickets: false,
     calendarView: false,
     chat: false,
+    magicLinkLogin: false,
     exploreMembers: true,
     exploreCompany: true,
     exploreMembersScope: "all",
@@ -2273,6 +2274,12 @@ function ModulesContent({ initialData, refreshProfile }: { initialData?: any; re
           label="Chat"
           description="Enable chat for events"
           action={<AriaSwitch isSelected={modules.chat} onChange={isEditing ? updateModule("chat") : undefined} isDisabled={!isEditing} />}
+        />
+        <ModuleItem
+          icon={<Link2 className="w-4 h-4 text-muted-foreground" />}
+          label="Magic Link Login"
+          description="Allow app users to sign in via email magic link"
+          action={<AriaSwitch isSelected={modules.magicLinkLogin} onChange={isEditing ? updateModule("magicLinkLogin") : undefined} isDisabled={!isEditing} />}
         />
         <ModuleItem
           icon={<Users className="w-4 h-4 text-muted-foreground" />}

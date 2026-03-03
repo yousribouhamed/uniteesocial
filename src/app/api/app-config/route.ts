@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { resolveBusinessProfileByDomain } from "@/lib/business-profile-resolver";
 
 const DEFAULT_PRIMARY = "#3F52FF";
 const DEFAULT_INVERT = "#131953";
@@ -27,6 +28,31 @@ function parseColors(raw: unknown): Record<string, unknown> {
   return {};
 }
 
+function parseModules(raw: unknown): Record<string, unknown> {
+  if (!raw) return {};
+  if (typeof raw === "object" && !Array.isArray(raw)) return raw as Record<string, unknown>;
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        return parsed as Record<string, unknown>;
+      }
+    } catch {
+      return {};
+    }
+  }
+  return {};
+}
+
+function normalizeBoolean(value: unknown, fallback = false): boolean {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    if (value.toLowerCase() === "true") return true;
+    if (value.toLowerCase() === "false") return false;
+  }
+  return fallback;
+}
+
 function normalizeString(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -34,24 +60,27 @@ function normalizeString(value: unknown): string | null {
 }
 
 // Public app configuration for mobile clients.
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const adminClient = createAdminClient();
     const { data, error } = await adminClient
       .from("business_profiles")
-      .select("colors, web_login_image, getstarted_background_image, updated_at")
-      .maybeSingle();
+      .select("domain, colors, modules, web_login_image, updated_at")
+      .order("updated_at", { ascending: false });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    const colors = parseColors(data?.colors);
+    const profile = resolveBusinessProfileByDomain(data || [], request.headers);
+    const colors = parseColors(profile?.colors);
+    const modules = parseModules(profile?.modules);
     const primaryColor = normalizeHex(colors.primary, DEFAULT_PRIMARY);
     const invertColor = normalizeHex(colors.invert, DEFAULT_INVERT);
+    const magicLinkLoginEnabled = normalizeBoolean(modules.magicLinkLogin, false);
 
     const splashLogo =
-      normalizeString(data?.web_login_image) ||
+      normalizeString(profile?.web_login_image) ||
       normalizeString(colors.splash_screen_logo) ||
       normalizeString(colors.splashScreenLogo) ||
       normalizeString(colors.splashLogo) ||
@@ -69,7 +98,9 @@ export async function GET() {
       null;
 
     const getstartedBackgroundImage =
-      normalizeString(data?.getstarted_background_image) || null;
+      normalizeString(colors.get_started_background_image) ||
+      normalizeString(colors.get_started_background) ||
+      null;
 
     return NextResponse.json(
       {
@@ -84,8 +115,12 @@ export async function GET() {
             getStartedLogo,
             getStartedBackground,
           },
+          features: {
+            magicLinkLoginEnabled,
+            magic_link_login_enabled: magicLinkLoginEnabled,
+          },
           getstartedBackgroundImage,
-          updatedAt: data?.updated_at ?? null,
+          updatedAt: profile?.updated_at ?? null,
         },
       },
       {
