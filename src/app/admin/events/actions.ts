@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 
 const EVENT_IMAGES_BUCKET = "event-images";
 let hasMatchDetailsColumnCache: boolean | null = null;
+let hasDedicatedChatEnabledColumnCache: boolean | null = null;
+let hasChatsEventIdColumnCache: boolean | null = null;
 
 function isMissingColumnError(error: unknown, columnName: string) {
   if (!error) return false;
@@ -33,6 +35,32 @@ async function hasEventsColumnMatchDetails(supabase: Awaited<ReturnType<typeof c
   return hasMatchDetailsColumnCache;
 }
 
+async function hasEventsColumnDedicatedChatEnabled(
+  supabase: Awaited<ReturnType<typeof createClient>>
+) {
+  if (hasDedicatedChatEnabledColumnCache !== null) return hasDedicatedChatEnabledColumnCache;
+
+  const { error } = await supabase
+    .from("events")
+    .select("dedicated_chat_enabled")
+    .limit(1);
+
+  hasDedicatedChatEnabledColumnCache = !isMissingColumnError(error, "dedicated_chat_enabled");
+  return hasDedicatedChatEnabledColumnCache;
+}
+
+async function hasChatsColumnEventId(supabase: Awaited<ReturnType<typeof createClient>>) {
+  if (hasChatsEventIdColumnCache !== null) return hasChatsEventIdColumnCache;
+
+  const { error } = await supabase
+    .from("chats")
+    .select("event_id")
+    .limit(1);
+
+  hasChatsEventIdColumnCache = !isMissingColumnError(error, "event_id");
+  return hasChatsEventIdColumnCache;
+}
+
 export interface EventData {
   id?: string;
   title: string;
@@ -46,6 +74,7 @@ export interface EventData {
   max_signups: number;
   description?: string;
   match_details?: any | null;
+  dedicated_chat_enabled?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -75,6 +104,7 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
   try {
     const supabase = await createClient();
     const canWriteMatchDetails = await hasEventsColumnMatchDetails(supabase);
+    const canWriteDedicatedChatEnabled = await hasEventsColumnDedicatedChatEnabled(supabase);
 
     const descriptionText = eventData.description ?? "";
     const embeddedDescription = eventData.match_details
@@ -94,9 +124,13 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
       description: (canWriteMatchDetails ? descriptionText : embeddedDescription) || null,
     };
 
-    const payload = canWriteMatchDetails
-      ? { ...basePayload, match_details: eventData.match_details || null }
-      : basePayload;
+    const payload: Record<string, unknown> = {
+      ...basePayload,
+      ...(canWriteMatchDetails ? { match_details: eventData.match_details || null } : {}),
+      ...(canWriteDedicatedChatEnabled
+        ? { dedicated_chat_enabled: Boolean(eventData.dedicated_chat_enabled) }
+        : {}),
+    };
 
     const fallbackPayload = {
       ...basePayload,
@@ -116,9 +150,22 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
     if (canWriteMatchDetails && isMissingColumnError(error, "match_details")) {
       console.warn("match_details column missing; retrying without it.");
       hasMatchDetailsColumnCache = false;
+      if ("match_details" in payload) delete payload.match_details;
       ({ data, error } = await supabase
         .from("events")
-        .insert(fallbackPayload)
+        .insert({ ...fallbackPayload, ...(canWriteDedicatedChatEnabled
+          ? { dedicated_chat_enabled: Boolean(eventData.dedicated_chat_enabled) }
+          : {}) })
+        .select()
+        .single());
+    }
+
+    if (canWriteDedicatedChatEnabled && isMissingColumnError(error, "dedicated_chat_enabled")) {
+      console.warn("dedicated_chat_enabled column missing; retrying without it.");
+      hasDedicatedChatEnabledColumnCache = false;
+      ({ data, error } = await supabase
+        .from("events")
+        .insert(canWriteMatchDetails ? basePayload : fallbackPayload)
         .select()
         .single());
     }
@@ -126,6 +173,42 @@ export async function createEvent(eventData: Omit<EventData, "id" | "created_at"
     if (error) {
       console.error("Error creating event:", error);
       return { success: false, error: error.message };
+    }
+
+    const shouldCreateDedicatedChat = Boolean(
+      eventData.dedicated_chat_enabled || eventData.match_details?.dedicatedChatEnabled
+    );
+    if (shouldCreateDedicatedChat && data?.id) {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user?.id) {
+          const canWriteEventId = await hasChatsColumnEventId(supabase);
+          const baseChatPayload: Record<string, unknown> = {
+            title: `${eventData.title} Chat`,
+            is_group: true,
+            created_by: user.id,
+          };
+          const chatPayload = canWriteEventId
+            ? { ...baseChatPayload, event_id: data.id }
+            : baseChatPayload;
+
+          const { error: createChatError } = await supabase
+            .from("chats")
+            .insert(chatPayload);
+
+          if (createChatError && isMissingColumnError(createChatError, "event_id")) {
+            hasChatsEventIdColumnCache = false;
+            await supabase.from("chats").insert(baseChatPayload);
+          } else if (createChatError) {
+            console.warn("Failed to create dedicated chat group:", createChatError.message);
+          }
+        }
+      } catch (chatErr) {
+        console.warn("Dedicated chat group creation failed:", chatErr);
+      }
     }
 
     revalidatePath("/admin/events");
@@ -150,6 +233,7 @@ export async function updateEvent(id: string, eventData: Partial<EventData>) {
   try {
     const supabase = await createClient();
     const canWriteMatchDetails = await hasEventsColumnMatchDetails(supabase);
+    const canWriteDedicatedChatEnabled = await hasEventsColumnDedicatedChatEnabled(supabase);
 
     const descriptionText = eventData.description ?? "";
     const embeddedDescription = eventData.match_details
@@ -170,9 +254,13 @@ export async function updateEvent(id: string, eventData: Partial<EventData>) {
       updated_at: new Date().toISOString(),
     };
 
-    const payload = canWriteMatchDetails
-      ? { ...basePayload, match_details: eventData.match_details }
-      : basePayload;
+    const payload: Record<string, unknown> = {
+      ...basePayload,
+      ...(canWriteMatchDetails ? { match_details: eventData.match_details } : {}),
+      ...(canWriteDedicatedChatEnabled && eventData.dedicated_chat_enabled !== undefined
+        ? { dedicated_chat_enabled: Boolean(eventData.dedicated_chat_enabled) }
+        : {}),
+    };
 
     const fallbackPayload = {
       ...basePayload,
@@ -192,9 +280,26 @@ export async function updateEvent(id: string, eventData: Partial<EventData>) {
     if (canWriteMatchDetails && isMissingColumnError(error, "match_details")) {
       console.warn("match_details column missing; retrying without it.");
       hasMatchDetailsColumnCache = false;
+      if ("match_details" in payload) delete payload.match_details;
       ({ data, error } = await supabase
         .from("events")
-        .update(fallbackPayload)
+        .update({
+          ...fallbackPayload,
+          ...(canWriteDedicatedChatEnabled && eventData.dedicated_chat_enabled !== undefined
+            ? { dedicated_chat_enabled: Boolean(eventData.dedicated_chat_enabled) }
+            : {}),
+        })
+        .eq("id", id)
+        .select()
+        .single());
+    }
+
+    if (canWriteDedicatedChatEnabled && isMissingColumnError(error, "dedicated_chat_enabled")) {
+      console.warn("dedicated_chat_enabled column missing; retrying without it.");
+      hasDedicatedChatEnabledColumnCache = false;
+      ({ data, error } = await supabase
+        .from("events")
+        .update(canWriteMatchDetails ? basePayload : fallbackPayload)
         .eq("id", id)
         .select()
         .single());

@@ -23,6 +23,7 @@ import {
   Link2,
   Search,
   User,
+  MessageCircleMore,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems, Portal } from "@headlessui/react";
 import { AriaDatePicker } from "@/components/ui/aria-date-picker";
@@ -76,6 +77,7 @@ export interface EventFormData {
   livestreamUrl?: string;
   stadiumVenueName?: string;
   matchDescription?: string;
+  createDedicatedChatGroup?: boolean;
 }
 
 export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateEventScreenProps) {
@@ -119,6 +121,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [chapter, setChapter] = useState("Select Chapter");
   const [ticketGoLive, setTicketGoLive] = useState("Custom Date");
   const [capacity, setCapacity] = useState("Unlimited");
+  const [createDedicatedChatGroup, setCreateDedicatedChatGroup] = useState(false);
   const [coverImage, setCoverImage] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -708,6 +711,7 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
       chapter,
       ticketGoLive,
       capacity,
+      createDedicatedChatGroup,
       type: (isMatchEvent
         ? (matchLocationType === "virtual" ? "Online" : "Onsite")
         : (locationType === "virtual" ? "Online" : "Onsite")) as "Onsite" | "Online" | "Hybrid",
@@ -1528,6 +1532,23 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                     </Portal>
                   </Menu>
 
+                  <div className="px-3 py-2 border-b border-border bg-card">
+                    <div className="flex items-center gap-2 w-full">
+                      <MessageCircleMore className="w-4 h-4 text-foreground" strokeWidth={1.75} />
+                      <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                        {t(
+                          "Create a dedicated chat groupe",
+                          "إنشاء مجموعة دردشة مخصصة",
+                          "Créer un groupe de discussion dédié"
+                        )}
+                      </span>
+                      <AriaSwitch
+                        isSelected={createDedicatedChatGroup}
+                        onChange={setCreateDedicatedChatGroup}
+                      />
+                    </div>
+                  </div>
+
                   {/* Tickets Go Live */}
                   <Menu as="div" className="relative">
                     <MenuButton className="w-full px-3 py-2 flex items-center gap-2 hover:bg-background transition-colors">
@@ -2171,6 +2192,23 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
                       </MenuItems>
                     </Portal>
                   </Menu>
+
+                  <div className="px-3 py-2 border-t border-border bg-card">
+                    <div className="flex items-center gap-2 w-full">
+                      <MessageCircleMore className="w-4 h-4 text-foreground" strokeWidth={1.75} />
+                      <span className={`text-base font-medium text-foreground flex-1 ${isArabic ? "text-right" : "text-left"}`}>
+                        {t(
+                          "Create a dedicated chat groupe",
+                          "إنشاء مجموعة دردشة مخصصة",
+                          "Créer un groupe de discussion dédié"
+                        )}
+                      </span>
+                      <AriaSwitch
+                        isSelected={createDedicatedChatGroup}
+                        onChange={setCreateDedicatedChatGroup}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 

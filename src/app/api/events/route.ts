@@ -46,6 +46,10 @@ function normalizeEventForMobile(event: any) {
   const isMatchEvent =
     event?.event_category === "match" ||
     Boolean(league || matchDetails?.homeTeam || matchDetails?.awayTeam);
+  const dedicatedChatEnabled = Boolean(
+    event?.dedicated_chat_enabled ??
+    matchDetails?.dedicatedChatEnabled
+  );
 
   return {
     ...event,
@@ -54,6 +58,8 @@ function normalizeEventForMobile(event: any) {
     league: league || null,
     home_team: typeof matchDetails?.homeTeam === "string" ? matchDetails.homeTeam : null,
     away_team: typeof matchDetails?.awayTeam === "string" ? matchDetails.awayTeam : null,
+    dedicated_chat_enabled: dedicatedChatEnabled,
+    dedicatedChatEnabled: dedicatedChatEnabled,
     chapter: isMatchEvent && league ? league : event?.chapter,
     badge_label: isMatchEvent ? league || event?.chapter || "League" : event?.chapter,
   };

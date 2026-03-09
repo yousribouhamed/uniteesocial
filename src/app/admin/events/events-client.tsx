@@ -71,6 +71,7 @@ interface EventItem {
   livestreamUrl?: string;
   stadiumVenueName?: string;
   ticketsUrl?: string;
+  dedicatedChatEnabled?: boolean;
   type: "Onsite" | "Online" | "Hybrid";
   eventCategory: "general" | "match";
   date?: string;
@@ -3494,6 +3495,11 @@ function dbEventToEventItem(dbEvent: any): EventItem {
   const descriptionText = descriptionTextFromParsed
     || descriptionTextFromMatchDetails
     || (typeof dbEvent.description === "string" ? dbEvent.description : "");
+  const dedicatedChatEnabled = Boolean(
+    dbEvent.dedicated_chat_enabled ??
+    matchDetails?.dedicatedChatEnabled ??
+    parsedDescription?.dedicated_chat_enabled
+  );
 
   const eventDate = dbEvent.event_date ? new Date(dbEvent.event_date) : null;
   const dateGroup = eventDate
@@ -3516,6 +3522,7 @@ function dbEventToEventItem(dbEvent: any): EventItem {
     livestreamUrl: matchDetails?.livestreamUrl || "",
     stadiumVenueName: matchDetails?.stadiumVenueName || "",
     ticketsUrl: matchDetails?.ticketsUrl || "",
+    dedicatedChatEnabled,
     type: dbEvent.type || "Onsite",
     eventCategory: dbEvent.event_category || "general",
     date: dbEvent.event_date,
@@ -3768,6 +3775,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         location: savedEvent.location,
         signups: savedEvent.signups,
         max_signups: savedEvent.maxSignups,
+        dedicated_chat_enabled: Boolean(savedEvent.dedicatedChatEnabled),
         match_details: savedEvent.eventCategory === "match" ? {
           league: savedEvent.league || "",
           homeTeam: savedEvent.homeTeam || "",
@@ -3780,6 +3788,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
           livestreamUrl: savedEvent.livestreamUrl || "",
           stadiumVenueName: savedEvent.stadiumVenueName || "",
           ticketsUrl: savedEvent.ticketsUrl || "",
+          dedicatedChatEnabled: Boolean(savedEvent.dedicatedChatEnabled),
         } : null,
       };
 
@@ -3870,6 +3879,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
         location: formData.location,
         signups: 0,
         max_signups: maxSignups,
+        dedicated_chat_enabled: Boolean(formData.createDedicatedChatGroup),
         description: resolvedDescription,
         // Match-specific fields stored as JSON in description or separate fields
         match_details: formData.eventCategory === "match" ? {
@@ -3883,6 +3893,7 @@ function EventsPageContent({ currentUser }: EventsPageClientProps) {
           awayTeamLineup: formData.awayTeamLineup,
           livestreamUrl: formData.livestreamUrl,
           stadiumVenueName: formData.stadiumVenueName,
+          dedicatedChatEnabled: Boolean(formData.createDedicatedChatGroup),
         } : null,
       };
 
