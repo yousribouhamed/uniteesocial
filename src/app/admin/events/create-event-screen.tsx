@@ -31,6 +31,7 @@ import { AriaSlider } from "@/components/ui/aria-slider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
 import { toastQueue } from "@/components/ui/aria-toast";
+import { useLocale } from "@/components/locale-provider";
 import { today, getLocalTimeZone, DateValue } from "@internationalized/date";
 import { TIMEZONES } from "@/data/timezones";
 
@@ -147,8 +148,11 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   const [timezone, setTimezone] = useState(TIMEZONES[13] || "UTC+01:00 — Paris / Berlin / Rome / Madrid");
   const [timezoneQuery, setTimezoneQuery] = useState("");
   const [showTimezoneModal, setShowTimezoneModal] = useState(false);
+  const { locale } = useLocale();
 
-  const [language, setLanguage] = useState<"English" | "French" | "Arabic">("English");
+  const [language, setLanguage] = useState<"English" | "French" | "Arabic">(
+    locale === "ar" ? "Arabic" : "English",
+  );
   const isArabic = language === "Arabic";
   const t = (english: string, arabic?: string, french?: string) => {
     if (language === "Arabic") return arabic ?? english;
@@ -157,18 +161,15 @@ export function CreateEventScreen({ onClose, onSave, isSaving = false }: CreateE
   };
 
   useEffect(() => {
-    const html = document.documentElement;
-    const previousLang = html.lang || "en";
-    const previousDir = html.dir || "ltr";
+    if (locale === "ar") {
+      setLanguage("Arabic");
+      return;
+    }
 
-    html.lang = isArabic ? "ar" : "en";
-    html.dir = isArabic ? "rtl" : "ltr";
-
-    return () => {
-      html.lang = previousLang;
-      html.dir = previousDir;
-    };
-  }, [isArabic]);
+    if (language === "Arabic") {
+      setLanguage("English");
+    }
+  }, [locale, language]);
   const lineupOptions = [
     "15 min before match",
     "30 min before match",

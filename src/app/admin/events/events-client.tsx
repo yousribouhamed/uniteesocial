@@ -48,6 +48,7 @@ import { AriaCheckbox } from "@/components/ui/aria-checkbox";
 import { AriaSlider } from "@/components/ui/aria-slider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 import { AriaSelect, AriaSelectItem } from "@/components/ui/aria-select";
+import { useLocale } from "@/components/locale-provider";
 import { today, getLocalTimeZone, DateValue, parseDate } from "@internationalized/date";
 import { toastQueue } from "@/components/ui/aria-toast";
 import { getEvents, createEvent, updateEvent, deleteEvent, EventData } from "./actions";
@@ -392,7 +393,10 @@ function EventPreviewCard({
 // --- Create Event View ---
 function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: EventItem | null; onClose: () => void; onSave: (event: EventItem) => void; isSaving?: boolean }) {
   const [detailTab, setDetailTab] = useState<"overview" | "guests" | "analytics" | "advanced">("overview");
-  const [language, setLanguage] = useState<"English" | "French" | "Arabic">("English");
+  const { locale } = useLocale();
+  const [language, setLanguage] = useState<"English" | "French" | "Arabic">(
+    locale === "ar" ? "Arabic" : "English",
+  );
   const isArabic = language === "Arabic";
   const t = (english: string, arabic?: string, french?: string) => {
     if (language === "Arabic") return arabic ?? english;
@@ -611,18 +615,15 @@ function CreateEventView({ event, onClose, onSave, isSaving = false }: { event: 
   const totalGuestPages = Math.max(1, Math.ceil(filteredGuests.length / guestsPerPage));
 
   useEffect(() => {
-    const html = document.documentElement;
-    const previousLang = html.lang || "en";
-    const previousDir = html.dir || "ltr";
+    if (locale === "ar") {
+      setLanguage("Arabic");
+      return;
+    }
 
-    html.lang = isArabic ? "ar" : "en";
-    html.dir = isArabic ? "rtl" : "ltr";
-
-    return () => {
-      html.lang = previousLang;
-      html.dir = previousDir;
-    };
-  }, [isArabic]);
+    if (language === "Arabic") {
+      setLanguage("English");
+    }
+  }, [locale, language]);
 
   useEffect(() => {
     const fetchTeams = async () => {

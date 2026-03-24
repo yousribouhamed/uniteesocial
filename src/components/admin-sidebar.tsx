@@ -20,9 +20,11 @@ import {
   Trophy,
   Moon,
   Settings,
+  Languages,
   X,
 } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
+import { useLocale } from "@/components/locale-provider";
 import { AriaSwitch } from "@/components/ui/aria-switch";
 
 interface SidebarItem {
@@ -71,6 +73,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { resolvedTheme, setTheme } = useTheme();
+  const { locale, isArabic, setLocale, t } = useLocale();
   const [mounted, setMounted] = useState(false);
   const desktopMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -114,7 +117,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search ..."
+            placeholder={t("Search ...")}
             className="flex-1 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none border-none p-0 focus:ring-0"
           />
           <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">⌘K</span>
@@ -126,7 +129,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
         <nav className="flex flex-col gap-12">
           {sidebarSections.map((section) => (
             <div key={section.title} className="flex flex-col gap-4">
-              <span className="text-xs font-semibold text-muted-foreground">{section.title}</span>
+              <span className="text-xs font-semibold text-muted-foreground">{t(section.title)}</span>
               <div className="flex flex-col gap-1">
                 {section.items.map((item) => {
                   const isActive = pathname.startsWith(item.href) && item.href !== "#";
@@ -140,24 +143,24 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
                             ? "bg-primary/10 text-primary"
                             : "text-muted-foreground hover:bg-muted/60"
                         }`}
-                      >
+                        >
                         <div className="flex items-center gap-2">
                           <item.icon className="w-5 h-5" />
-                          {item.label}
+                          {t(item.label)}
                         </div>
                         {hasChildren && (
                           <ChevronDown className={`w-4 h-4 transition-transform ${isActive ? "rotate-0" : "-rotate-90"}`} />
                         )}
                       </Link>
                       {hasChildren && isActive && (
-                        <div className="flex flex-col gap-1 ml-6 mt-1 border-l border-border pl-4">
+                        <div className={`mt-1 flex flex-col gap-1 border-border ${isArabic ? "mr-6 border-r pr-4" : "ml-6 border-l pl-4"}`}>
                           {item.children!.map((child) => (
                             <Link
                               key={child.label}
                               href={child.href}
                               className="text-sm font-medium text-muted-foreground hover:text-foreground py-2 transition-colors"
                             >
-                              {child.label}
+                              {t(child.label)}
                             </Link>
                           ))}
                         </div>
@@ -187,7 +190,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
             />
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-foreground">
-                {currentUser.full_name || "User"}
+                {currentUser.full_name || t("User")}
               </span>
               <span className="text-sm font-medium text-muted-foreground">
                 {currentUser.email || "email@example.com"}
@@ -212,12 +215,24 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
               <div className="flex items-center justify-between h-9 px-2 py-1.5 rounded hover:bg-muted/60 transition-colors">
                 <div className="flex items-center gap-2 flex-1">
                   <Moon className="w-4 h-4 text-foreground" />
-                  <span className="text-sm font-medium text-foreground">Dark Mode</span>
+                  <span className="text-sm font-medium text-foreground">{t("Dark Mode")}</span>
                 </div>
                 <AriaSwitch
                   isSelected={mounted && resolvedTheme === "dark"}
                   onChange={(selected) => setTheme(selected ? "dark" : "light")}
-                  aria-label="Toggle dark mode"
+                  aria-label={t("Toggle dark mode")}
+                />
+              </div>
+
+              <div className="flex items-center justify-between h-9 px-2 py-1.5 rounded hover:bg-muted/60 transition-colors">
+                <div className="flex items-center gap-2 flex-1">
+                  <Languages className="w-4 h-4 text-foreground" />
+                  <span className="text-sm font-medium text-foreground">{t("Arabic Language")}</span>
+                </div>
+                <AriaSwitch
+                  isSelected={locale === "ar"}
+                  onChange={(selected) => setLocale(selected ? "ar" : "en")}
+                  aria-label={t("Toggle Arabic language")}
                 />
               </div>
 
@@ -231,7 +246,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
               >
                 <div className="flex items-center gap-2 flex-1">
                   <UserRound className="w-4 h-4 text-foreground" />
-                  <span className="text-sm font-medium text-foreground">View Profile</span>
+                  <span className="text-sm font-medium text-foreground">{t("View Profile")}</span>
                 </div>
                 <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded h-5 flex items-center">⌘KP</span>
               </button>
@@ -246,7 +261,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
               >
                 <div className="flex items-center gap-2 flex-1">
                   <Settings className="w-4 h-4 text-foreground" />
-                  <span className="text-sm font-medium text-foreground">Account Setting</span>
+                  <span className="text-sm font-medium text-foreground">{t("Account Setting")}</span>
                 </div>
                 <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded h-5 flex items-center">⌘S</span>
               </button>
@@ -262,7 +277,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
                 >
                   <div className="flex items-center gap-2 flex-1">
                     <LogOut className="w-4 h-4 text-destructive" />
-                    <span className="text-sm font-medium text-destructive">Sign Out</span>
+                    <span className="text-sm font-medium text-destructive">{t("Sign Out")}</span>
                   </div>
                   <span className="bg-muted text-muted-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded h-5 flex items-center">⌥⇧Q</span>
                 </button>
@@ -271,7 +286,7 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
 
             {/* Footer: Version & Terms */}
             <div className="px-2">
-              <span className="text-sm font-medium text-muted-foreground">v1.0 - Terms & Conditions</span>
+              <span className="text-sm font-medium text-muted-foreground">{t("v1.0 - Terms & Conditions")}</span>
             </div>
           </motion.div>
         )}
@@ -295,17 +310,19 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
-              className="absolute inset-y-0 left-0 w-[85%] max-w-[320px] bg-sidebar border-r border-sidebar-border p-4 text-sidebar-foreground flex flex-col"
-              initial={{ x: "-100%" }}
+              className={`absolute inset-y-0 w-[85%] max-w-[320px] bg-sidebar p-4 text-sidebar-foreground flex flex-col ${
+                isArabic ? "right-0 border-l border-sidebar-border" : "left-0 border-r border-sidebar-border"
+              }`}
+              initial={{ x: isArabic ? "100%" : "-100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
+              exit={{ x: isArabic ? "100%" : "-100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
             >
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-muted-foreground">Menu</span>
+                <span className="text-sm font-semibold text-muted-foreground">{t("Menu")}</span>
                 <button
                   type="button"
-                  aria-label="Close sidebar"
+                  aria-label={t("Close sidebar")}
                   className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"
                   onClick={() => setMobileOpen(false)}
                 >
@@ -321,7 +338,13 @@ export default function AdminSidebar({ currentUser }: { currentUser: CurrentUser
       </AnimatePresence>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col justify-between lg:w-[325px] h-dvh bg-sidebar border-r border-sidebar-border rounded-tr-xl rounded-br-xl p-4 text-sidebar-foreground">
+      <aside
+        className={`hidden h-dvh flex-col justify-between bg-sidebar p-4 text-sidebar-foreground lg:flex lg:w-[325px] ${
+          isArabic
+            ? "border-l border-sidebar-border rounded-tl-xl rounded-bl-xl"
+            : "border-r border-sidebar-border rounded-tr-xl rounded-br-xl"
+        }`}
+      >
         {renderSidebarBody(desktopMenuRef)}
       </aside>
     </>
